@@ -1,28 +1,32 @@
 {
-    "name": "backend",
-    "version": "1.0.0",
-    "description": "",
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "scripts": {
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
     "build": "npm install && tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run services/movieService.logic.test.ts",
+    "test:watch": "vitest",
     "start": "nodemon --legacy-watch --exec ts-node --transpile-only index.ts",
     "start-prod": "node dist/index.js"
-    },
-    "dependencies": {
+  },
+  "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "mysql2": "3.12.0",
     "nodemon": "^3.1.10",
     "pg": "^8.16.3",
     "reflect-metadata": "0.2.2",
     "typeorm": "^0.3.27"
-    },
-    "devDependencies": {
+  },
+  "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "ts-node": "^10.9.2"
-    }
+    "@types/node": "^20.10.5",
+    "@vitest/coverage-v8": "^1.6.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "vitest": "^1.6.0"
+  }
 }

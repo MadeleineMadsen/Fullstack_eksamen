@@ -1,0 +1,8 @@
+{
+    "name": "fullstack-eksamen",
+    "version": "1.0.0", 
+    "private": true,
+    "dependencies": {
+    "@tanstack/react-query": "^4.42.0"
+    }
+}
