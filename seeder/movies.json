@@ -1,0 +1,9 @@
+{
+    "tmdb_config": {
+        "api_key": "YOUR_TMDB_API_KEY",
+        "base_url": "https://api.themoviedb.org/3",
+        "image_base_url": "https://image.tmdb.org/t/p/original",
+        "language": "da-DK"
+    },
+    "seed_movies": []
+}
