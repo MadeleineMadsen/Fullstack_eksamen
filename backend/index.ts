@@ -1,7 +1,7 @@
-import express from "express";
 import cors from "cors";
-import { setupSwagger } from "./swagger";
+import express from "express";
 import { setupRouters } from "./startup/setupRouters";
+import { setupSwagger } from "./swagger";
 
 const app = express();
 

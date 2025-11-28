@@ -1,13 +1,7 @@
-import { Router, Request } from "express";
+import { Request, Router } from "express";
 import { Movie } from "../entities/Movie";
 import { StreamingPlatform } from "../entities/StreamingPlatform";
-import {
-    //getMovies,
-    //getMovie,
-    //getMovieTrailers,
-    //deleteMovieById,
-    //createMovie,
-} from "../services/movieService";
+import { } from "../services/movieService";
 
 export type ModifiedMovie = Omit<Movie, "streaming_platforms"> & {
     streaming_platforms: { platform: StreamingPlatform }[];
