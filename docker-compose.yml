@@ -24,7 +24,7 @@ services:
     ports:
       - "5001:5000"
     environment:
-      DATABASE_URL: postgres://app_user:app_password@postgres:5432/rawgDatabase
+      DATABASE_URL: "postgres://postgres:password@postgres:5432/movie_db"
       DB_TYPE: postgres
       SERVER_URL: http://localhost:5000
     depends_on:
