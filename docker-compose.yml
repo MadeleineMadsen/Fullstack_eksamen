@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: movie_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data_rawg:/var/lib/postgresql
+      - ./seeder/movie-seed.sql:/docker-entrypoint-initdb.d/movie-seed.sql
+
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+    ports:
+      - "5001:5000"
+    environment:
+      DATABASE_URL: postgres://app_user:app_password@postgres:5432/rawgDatabase
+      DB_TYPE: postgres
+      SERVER_URL: http://localhost:5000
+    depends_on:
+      - postgres
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_URL: http://localhost:5001
+      CHOKIDAR_USEPOLLING: "true"
+
+volumes:
+  postgres-data_rawg:
