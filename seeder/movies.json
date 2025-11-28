@@ -1,6 +1,6 @@
 {
     "tmdb_config": {
-        "api_key": "YOUR_TMDB_API_KEY",
+        "api_key": "1f6dc7215bb66ffdda1d1db32d0fb343",
         "base_url": "https://api.themoviedb.org/3",
         "image_base_url": "https://image.tmdb.org/t/p/original",
         "language": "da-DK"
