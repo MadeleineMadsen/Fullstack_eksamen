@@ -44,5 +44,13 @@ services:
       VITE_API_URL: http://localhost:5001
       CHOKIDAR_USEPOLLING: "true"
 
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+
 volumes:
   postgres-data_rawg:
