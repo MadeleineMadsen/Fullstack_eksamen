@@ -1,11 +1,13 @@
 import { Request, Router } from "express";
 import { Movie } from "../entities/Movie";
-import { StreamingPlatform } from "../entities/StreamingPlatform";
-import { } from "../services/movieService";
-
-export type ModifiedMovie = Omit<Movie, "streaming_platforms"> & {
-    streaming_platforms: { platform: StreamingPlatform }[];
-};
+import {
+    getMovies,
+    getMovie,
+    deleteMovieById,
+    createMovie,
+    MovieFilters,
+    PaginationOptions,
+} from "../services/movieService";
 
 export const DEFAULT_PAGE_SIZE = 20;
 export const START_PAGE = 1;
@@ -14,13 +16,13 @@ export const MAX_PAGE_SIZE = 40;
 interface MoviesResponse {
     count: number;
     next: string | null;
-    results: ModifiedMovie[];
+    results: Movie[];
 }
 
 const movieRouter = Router();
 
 const buildMoviesResponse = (
-    movies: ModifiedMovie[],
+    movies: Movie[],
     total: number,
     req: Request
 ): MoviesResponse => {
@@ -35,7 +37,6 @@ const buildMoviesResponse = (
     }
 
     const totalPages = Math.ceil(total / pageSize);
-
     const baseUrl = process.env.SERVER_URL ?? "http://localhost:5000";
 
     return {
@@ -48,11 +49,30 @@ const buildMoviesResponse = (
     };
 };
 
-// GET /api/movies – liste af film (data kan komme fra TMDB + jeres DB)
+// GET /api/movies – liste af film
 movieRouter.get("/", async (req, res, next) => {
     try {
-    const { modifiedMovies, total } = await getMovies(req); // service snakker med TMDB/DB
-    const response = buildMoviesResponse(modifiedMovies, total, req);
+    const filters: MovieFilters = {
+        title: req.query.title as string | undefined,
+        genre: req.query.genre ? Number(req.query.genre) : undefined,
+        minRating: req.query.minRating
+        ? Number(req.query.minRating)
+        : undefined,
+        maxRating: req.query.maxRating
+        ? Number(req.query.maxRating)
+        : undefined,
+        year: req.query.year ? Number(req.query.year) : undefined,
+    };
+
+    const pagination: PaginationOptions = {
+        page: req.query.page ? Number(req.query.page) : START_PAGE,
+        pageSize: req.query.page_size
+        ? Number(req.query.page_size)
+        : DEFAULT_PAGE_SIZE,
+    };
+
+    const { movies, total } = await getMovies(filters, pagination);
+    const response = buildMoviesResponse(movies, total, req);
     res.send(response);
     } catch (error) {
     next(error);
@@ -61,9 +81,11 @@ movieRouter.get("/", async (req, res, next) => {
 
 // GET /api/movies/:id – én film
 movieRouter.get("/:id", async (req, res, next) => {
-    const movieId = req.params.id;
+    const movieId = Number(req.params.id);
+
     try {
     const movie = await getMovie(movieId);
+
     if (movie) {
         res.send(movie);
     } else {
@@ -74,18 +96,10 @@ movieRouter.get("/:id", async (req, res, next) => {
     }
 });
 
-// GET /api/movies/:id/trailers – trailers/videoer til en film (TMDB)
-movieRouter.get("/:id/trailers", async (req, res, next) => {
-    try {
-    const movieId = Number(req.params.id);
-    const trailers = await getMovieTrailers(movieId);
-    res.send({ count: trailers.length, results: trailers });
-    } catch (error) {
-    next(error);
-    }
-});
+// !!! Trailers-route fjernet for nu, da getMovieTrailers ikke findes i service
+// Når I har en TMDB-service, kan I tilføje den igen.
 
-// POST /api/movies – opret film (senere: beskyttet af auth)
+// POST /api/movies – opret film
 movieRouter.post("/", async (req, res, next) => {
     try {
     const data = req.body;
@@ -104,8 +118,14 @@ movieRouter.post("/", async (req, res, next) => {
 // DELETE /api/movies/:id – slet film
 movieRouter.delete("/:id", async (req, res, next) => {
     const movieId = Number(req.params.id);
+
     try {
-    await deleteMovieById(movieId);
+    const deleted = await deleteMovieById(movieId);
+
+    if (!deleted) {
+        return res.status(404).send({ error: "Movie not found." });
+    }
+
     res.status(204).send();
     } catch (error) {
     next(error);
