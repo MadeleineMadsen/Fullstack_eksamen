@@ -3,7 +3,7 @@ import React from 'react';
 
 const MovieCard = ({ movie }: any) => {
   const handleClick = () => {
-    // Brug window.location for navigation
+    // Midlertidig løsning - brug window.location indtil router virker
     window.location.href = `/movies/${movie.id}`;
   };
 
