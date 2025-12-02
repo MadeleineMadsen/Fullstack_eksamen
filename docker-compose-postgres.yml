@@ -6,13 +6,13 @@ services:
     container_name: postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: movie_db
     ports:
       - "5432:5432"
     volumes:
       - ./seeder/movie-seed.sql:/docker-entrypoint-initdb.d/movie-seed.sql
-      - postgres-data_rawg:/var/lib/postgresql
+      - postgres-data:/var/lib/postgresql
 
 volumes:
-  postgres-data_rawg:
+  postgres-data:
