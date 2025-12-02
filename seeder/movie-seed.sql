@@ -1,150 +1,140 @@
--- PostgreSQL
+-- movie-schema.sql
+-- Kun tabeldefinitioner - ingen test data!
+
 -- ======================
--- TABLES
+-- MAIN TABLES
 -- ======================
 
--- Brug snake_case og flertalsnavne for at matche TypeORM
-CREATE TABLE movies (
+CREATE TABLE IF NOT EXISTS movies (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     overview TEXT,
     released VARCHAR(50),
     runtime INT,
-    rating FLOAT,
+    rating FLOAT CHECK (rating >= 0 AND rating <= 10),
     background_image VARCHAR(500),
-    metacritic INT,
-    poster_image VARCHAR(255),
+    metacritic INT CHECK (metacritic >= 0 AND metacritic <= 100),
+    poster_image VARCHAR(500),
     plot TEXT,
-    director VARCHAR(255)
+    director VARCHAR(255),
+    tmdb_id INTEGER UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE genres (
+CREATE TABLE IF NOT EXISTS genres (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE
 );
 
-CREATE TABLE streaming_platforms (
+CREATE TABLE IF NOT EXISTS streaming_platforms (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
-    url VARCHAR(500)
+    url VARCHAR(500),
+    logo_url VARCHAR(500)
 );
 
-CREATE TABLE actors (
+CREATE TABLE IF NOT EXISTS actors (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    profile_image VARCHAR(500)
+    profile_image VARCHAR(500),
+    tmdb_id INTEGER UNIQUE
 );
 
--- ======================
--- ONE-TO-MANY RELATION
--- ======================
-
-CREATE TABLE trailers (
-    id SERIAL PRIMARY KEY,
-    url VARCHAR(500) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    movie_id INT NOT NULL,
-    FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE
-);
-
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
+    username VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(20) NOT NULL CHECK (role IN ('user', 'admin'))
+    role VARCHAR(20) NOT NULL CHECK (role IN ('user', 'admin')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP,
+    is_active BOOLEAN DEFAULT true
 );
 
 -- ======================
--- MANY-TO-MANY RELATIONS (Join Tables)
+-- RELATION TABLES
 -- ======================
 
-CREATE TABLE movies_has_genres (
-    movies_id INT NOT NULL,
-    genres_id INT NOT NULL,
-    PRIMARY KEY (movies_id, genres_id),
-    FOREIGN KEY (movies_id) REFERENCES movies(id) ON DELETE CASCADE,
-    FOREIGN KEY (genres_id) REFERENCES genres(id) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS movie_genres (
+    movie_id INT NOT NULL REFERENCES movies(id) ON DELETE CASCADE,
+    genre_id INT NOT NULL REFERENCES genres(id) ON DELETE CASCADE,
+    PRIMARY KEY (movie_id, genre_id)
 );
 
-CREATE TABLE movies_has_streaming_platforms (
-    movies_id INT NOT NULL,
-    streaming_platforms_id INT NOT NULL,
-    PRIMARY KEY (movies_id, streaming_platforms_id),
-    FOREIGN KEY (movies_id) REFERENCES movies(id) ON DELETE CASCADE,
-    FOREIGN KEY (streaming_platforms_id) REFERENCES streaming_platforms(id) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS movie_streaming (
+    movie_id INT NOT NULL REFERENCES movies(id) ON DELETE CASCADE,
+    platform_id INT NOT NULL REFERENCES streaming_platforms(id) ON DELETE CASCADE,
+    country_code VARCHAR(10) DEFAULT 'DK',
+    PRIMARY KEY (movie_id, platform_id, country_code)
 );
 
-CREATE TABLE movies_has_actors (
-    movies_id INT NOT NULL,
-    actors_id INT NOT NULL,
-    PRIMARY KEY (movies_id, actors_id),
-    FOREIGN KEY (movies_id) REFERENCES movies(id) ON DELETE CASCADE,
-    FOREIGN KEY (actors_id) REFERENCES actors(id) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS movie_actors (
+    movie_id INT NOT NULL REFERENCES movies(id) ON DELETE CASCADE,
+    actor_id INT NOT NULL REFERENCES actors(id) ON DELETE CASCADE,
+    character_name VARCHAR(255),
+    PRIMARY KEY (movie_id, actor_id)
 );
 
-CREATE TABLE users_favorite_movies (
-    user_id INT NOT NULL,
-    movie_id INT NOT NULL,
-    PRIMARY KEY (user_id, movie_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS user_watchlist (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    movie_id INT NOT NULL REFERENCES movies(id) ON DELETE CASCADE,
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    notes TEXT,
+    UNIQUE(user_id, movie_id)
+);
+
+CREATE TABLE IF NOT EXISTS user_reviews (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    movie_id INT NOT NULL REFERENCES movies(id) ON DELETE CASCADE,
+    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, movie_id)
 );
 
 -- ======================
--- INDEXES for better performance
+-- INDEXES for Performance
 -- ======================
 
-CREATE INDEX idx_trailer_movie_id ON trailers(movie_id);
-CREATE INDEX idx_movies_has_genres_movies ON movies_has_genres(movies_id);
-CREATE INDEX idx_movies_has_genres_genres ON movies_has_genres(genres_id);
-CREATE INDEX idx_movies_has_platforms_movies ON movies_has_streaming_platforms(movies_id);
-CREATE INDEX idx_movies_has_platforms_platforms ON movies_has_streaming_platforms(streaming_platforms_id);
-CREATE INDEX idx_movies_has_actors_movies ON movies_has_actors(movies_id);
-CREATE INDEX idx_movies_has_actors_actors ON movies_has_actors(actors_id);
-CREATE INDEX idx_users_favorites_user ON users_favorite_movies(user_id);
-CREATE INDEX idx_users_favorites_movie ON users_favorite_movies(movie_id);
-CREATE INDEX idx_movie_title ON movies(title);
-CREATE INDEX idx_actor_name ON actors(name);
-CREATE INDEX idx_user_email ON users(email);
+-- Movies indexes
+CREATE INDEX IF NOT EXISTS idx_movies_title ON movies(title);
+CREATE INDEX IF NOT EXISTS idx_movies_rating ON movies(rating DESC);
+CREATE INDEX IF NOT EXISTS idx_movies_released ON movies(released DESC);
+CREATE INDEX IF NOT EXISTS idx_movies_tmdb_id ON movies(tmdb_id);
+
+-- Users indexes
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+
+-- Relation indexes
+CREATE INDEX IF NOT EXISTS idx_movie_genres_movie ON movie_genres(movie_id);
+CREATE INDEX IF NOT EXISTS idx_movie_genres_genre ON movie_genres(genre_id);
+CREATE INDEX IF NOT EXISTS idx_user_watchlist_user ON user_watchlist(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_watchlist_movie ON user_watchlist(movie_id);
+CREATE INDEX IF NOT EXISTS idx_user_reviews_user_movie ON user_reviews(user_id, movie_id);
 
 -- ======================
--- STATIC SEEDER DATA
+-- TRIGGER for auto-update
 -- ======================
 
--- Insert genres (TMDB standard genres)
-INSERT INTO genres (id, name) VALUES
-(28, 'Action'),
-(12, 'Eventyr'),
-(16, 'Animation'),
-(35, 'Komedie'),
-(80, 'Krimi'),
-(99, 'Dokumentar'),
-(18, 'Drama'),
-(10751, 'Familie'),
-(14, 'Fantasi'),
-(36, 'Historie'),
-(27, 'Gys'),
-(10402, 'Musik'),
-(9648, 'Mystik'),
-(10749, 'Romantik'),
-(878, 'Science Fiction'),
-(10770, 'TV-film'),
-(53, 'Thriller'),
-(10752, 'Krig'),
-(37, 'Western')
-ON CONFLICT (id) DO NOTHING;
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
--- Insert streaming platforms
-INSERT INTO streaming_platforms (name, url) VALUES
-('Netflix', 'https://netflix.com'),
-('Viaplay', 'https://viaplay.com'),
-('Disney+', 'https://disneyplus.com'),
-('HBO Max', 'https://hbomax.com'),
-('Amazon Prime Video', 'https://primevideo.com')
-ON CONFLICT (name) DO NOTHING;
+CREATE TRIGGER update_movies_timestamp 
+    BEFORE UPDATE ON movies 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
 
--- Insert sample users
-INSERT INTO users (email, password_hash, role) VALUES
-('admin@movieapp.dk', '$2b$10$ExampleHashedPassword123', 'admin'),
-('user@movieapp.dk', '$2b$10$ExampleHashedPassword456', 'user')
-ON CONFLICT (email) DO NOTHING;
+CREATE TRIGGER update_reviews_timestamp 
+    BEFORE UPDATE ON user_reviews 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();

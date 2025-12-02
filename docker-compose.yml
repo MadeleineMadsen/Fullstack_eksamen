@@ -19,7 +19,7 @@ services:
       TMDB_API_KEY: "1f6dc7215bb66ffdda1d1db32d0fb343"
     depends_on:
       - postgres
-    command: sh -c "sleep 5 && npm start"
+    command: sh -c "sleep 5 && npm start"  # Fjern typeorm migration
 
   seeder:
     build: ./seeder
@@ -29,11 +29,10 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       DB_NAME: movie_db
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/movie_db
       TMDB_API_KEY: "1f6dc7215bb66ffdda1d1db32d0fb343"
     depends_on:
-      - backend
-    command: sh -c "sleep 30 && npm run seed"
+      - postgres
+    command: sh -c "sleep 10 && npm run seed"  # Mindre ventetid
 
   frontend:
     build: ./frontend
