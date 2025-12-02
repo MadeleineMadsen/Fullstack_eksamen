@@ -27,7 +27,7 @@ async function seedMovies() {
 
         for (const movie of movies) {
             await client.query(
-                `INSERT INTO Movie (id, title, overview, released, rating, background_image) 
+                `INSERT INTO movies (id, title, overview, released, rating, background_image) 
                  VALUES ($1, $2, $3, $4, $5, $6) 
                  ON CONFLICT (id) DO UPDATE SET 
                    title = EXCLUDED.title,

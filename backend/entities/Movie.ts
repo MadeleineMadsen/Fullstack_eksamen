@@ -4,16 +4,16 @@ import {
     JoinTable,
     ManyToMany,
     OneToMany,
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
 } from "typeorm";
 import { Actor } from "./Actor";
-import { StreamingPlatform } from "./StreamingPlatform";
 import { Genre } from "./Genre";
+import { StreamingPlatform } from "./StreamingPlatform";
 import { Trailer } from "./Trailer";
 
 @Entity("movies")
 export class Movie {
-    @PrimaryGeneratedColumn({ type: "int", name: "id" })
+    @PrimaryColumn({ type: "int", name: "id" })
     id: number;
 
     @Column("varchar", { name: "title", length: 255 })

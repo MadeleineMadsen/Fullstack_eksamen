@@ -1,47 +1,46 @@
 services:
   postgres:
-    image: postgres:latest
-    container_name: postgres
+    image: postgres:18-alpine
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: movie_db
-    ports:
-      - "5432:5432"
     volumes:
       - postgres-data_rawg:/var/lib/postgresql/data
-      # Fjern eller kommenter ud hvis movie-seed.sql ikke eksisterer
-      # - ./seeder/movie-seed.sql:/docker-entrypoint-initdb.d/movie-seed.sql
+    ports:
+      - "5432:5432"
 
   backend:
-    container_name: backend
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    volumes:
-      - ./backend:/app
-      - /app/node_modules  # Tilføj denne for at undgå node_modules konflikter
+    build: ./backend
     ports:
       - "5001:5000"
     environment:
-      # Database configuration
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: movie_db
-      DB_USER: postgres
-      DB_PASSWORD: password
-      DATABASE_URL: "postgresql://postgres:password@postgres:5432/movie_db"
-      DB_TYPE: postgres
-      
-      # TMDB API
-      TMDB_API_KEY: 1f6dc7215bb66ffdda1d1db32d0fb343
-      
-      # App configuration
-      SERVER_URL: http://localhost:5000
-      NODE_ENV: development
-      PORT: 5000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/movie_db
+      TMDB_API_KEY: "1f6dc7215bb66ffdda1d1db32d0fb343"
     depends_on:
       - postgres
+    command: sh -c "sleep 5 && npm start"
+
+  seeder:
+    build: ./seeder
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: movie_db
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/movie_db
+      TMDB_API_KEY: "1f6dc7215bb66ffdda1d1db32d0fb343"
+    depends_on:
+      - backend
+    command: sh -c "sleep 30 && npm run seed"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
 
   adminer:
     image: adminer
