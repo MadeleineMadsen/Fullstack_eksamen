@@ -1,7 +1,7 @@
 // frontend/src/components/MovieDetailPage.tsx
 import React from 'react';
 
-interface Movie {
+export interface Movie {
   id: number;
   title: string;
   overview?: string;
@@ -16,6 +16,7 @@ interface Movie {
 interface Props {
   movie: Movie;
 }
+
 
 const MovieDetailPage = ({ movie }: Props) => {
   const handleBack = () => {

@@ -1,58 +1,86 @@
 // frontend/src/pages/MovieDetailPage.tsx
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import MovieDetailPageComponent, {
+    Movie,
+} from "../components/MovieDetailPage";
+
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
 const MovieDetailPage = () => {
-    // Hent ID fra URL'en (simplet)
-    const path = window.location.pathname;
-    const id = path.split('/movies/')[1];
+    const { id } = useParams<{ id: string }>();
+    const [movie, setMovie] = useState<Movie | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Hardcodet film
-    const movie = {
-        id: Number(id),
-        title: "Inception",
-        overview: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
-        released: "2010-07-16",
-        runtime: 148,
-        rating: 8.8,
-        poster_image: "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
-        background_image: "https://image.tmdb.org/t/p/original/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
-        director: "Christopher Nolan"
-    };
+    useEffect(() => {
+        if (!id) return;
 
-    const handleBack = () => {
-        window.history.back();
-    };
+        const fetchMovie = async () => {
+            try {
+                setIsLoading(true);
+                setError(null);
 
-    return React.createElement('div', { className: 'movie-detail' },
-        React.createElement('div', { className: 'movie-detail-header' },
-            React.createElement('img', {
-                src: movie.background_image,
-                alt: movie.title,
-                className: 'movie-detail-background'
-            }),
-            React.createElement('button', {
-                className: 'back-button',
-                onClick: handleBack
-            }, '← Tilbage')
-        ),
-        React.createElement('div', { className: 'movie-detail-content' },
-            React.createElement('img', {
-                src: movie.poster_image,
-                alt: movie.title,
-                className: 'movie-detail-poster'
-            }),
-            React.createElement('div', { className: 'movie-detail-info' },
-                React.createElement('h1', null, movie.title),
-                React.createElement('div', { className: 'movie-detail-rating' },
-                    '⭐ ', movie.rating, '/10'
-                ),
-                React.createElement('p', null, 'Udgivet: ', movie.released),
-                React.createElement('p', null, 'Varighed: ', movie.runtime, ' minutter'),
-                React.createElement('p', null, 'Instruktør: ', movie.director),
-                React.createElement('p', { className: 'movie-detail-overview' }, movie.overview)
-            )
-        )
-    );
+                if (!TMDB_API_KEY) {
+                    throw new Error("Mangler TMDB API key");
+                }
+
+                const url = new URL(`${TMDB_BASE_URL}/movie/${id}`);
+                url.searchParams.set("api_key", TMDB_API_KEY);
+                url.searchParams.set("language", "en-US");
+
+                const res = await fetch(url.toString());
+                if (!res.ok) throw new Error("Kunne ikke hente film");
+
+                const data = await res.json();
+
+                const mapped: Movie = {
+                    id: data.id,
+                    title: data.title,
+                    overview: data.overview,
+                    released: data.release_date,
+                    runtime: data.runtime,
+                    rating: data.vote_average,
+                    poster_image: data.poster_path
+                        ? `${TMDB_IMAGE_BASE}${data.poster_path}`
+                        : undefined,
+                    background_image: data.backdrop_path
+                        ? `${TMDB_IMAGE_BASE}${data.backdrop_path}`
+                        : undefined,
+                    // director kan evt. hentes senere via credits
+                };
+
+                setMovie(mapped);
+            } catch (err: any) {
+                console.error(err);
+                setError(err.message ?? "Der skete en fejl");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchMovie();
+    }, [id]);
+
+    if (isLoading) {
+        return React.createElement("p", null, "Henter film...");
+    }
+
+    if (error) {
+        return React.createElement(
+            "p",
+            { style: { color: "red" } },
+            error
+        );
+    }
+
+    if (!movie) {
+        return React.createElement("p", null, "Film ikke fundet.");
+    }
+
+    return React.createElement(MovieDetailPageComponent, { movie });
 };
 
 export default MovieDetailPage;
