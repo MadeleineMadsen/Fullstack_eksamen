@@ -1,90 +1,141 @@
 // frontend/src/pages/HomePage.tsx
-import React, { useState } from 'react';
-import GenreList from '../components/GenreList';
-import MovieGrid from '../components/MovieGrid';
-import SearchInput from '../components/SearchInput';
-import SortSelector from '../components/SortSelector';
+import React, { useEffect, useState } from "react";
+import GenreList from "../components/GenreList";
+import MovieGrid from "../components/MovieGrid";
+import SearchInput from "../components/SearchInput";
+import SortSelector from "../components/SortSelector";
+
+export interface Movie {
+    id: number;
+    title: string;
+    rating?: number;
+    released?: string;
+    poster_image?: string;
+    overview?: string;
+    background_image?: string;
+}
+
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
 const HomePage = () => {
-    const [searchText, setSearchText] = useState('');
+    const [searchText, setSearchText] = useState("");
     const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
-    const [sortOrder, setSortOrder] = useState('');
+    const [sortOrder, setSortOrder] = useState("");
+    const [movies, setMovies] = useState<Movie[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const testMovies = [
-        {
-            id: 1,
-            title: "Inception",
-            rating: 8.8,
-            released: "2010-07-16",
-            poster_image: "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg"
-        },
-        {
-            id: 2,
-            title: "The Dark Knight",
-            rating: 9.0,
-            released: "2008-07-18",
-            poster_image: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg"
-        },
-        {
-            id: 3,
-            title: "Interstellar",
-            rating: 8.6,
-            released: "2014-11-07",
-            poster_image: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
-        },
-        {
-            id: 4,
-            title: "Avatar",
-            rating: 7.8,
-            released: "2009-12-18",
-            poster_image: "https://image.tmdb.org/t/p/w500/kyeqWdyUXW608qlYkRqosgbbJyK.jpg"
-        }
-    ];
+    useEffect(() => {
+        const fetchMovies = async () => {
+            try {
+                setIsLoading(true);
+                setError(null);
 
-    // Filtrer og sorter film
-    let filteredMovies = testMovies.filter(movie =>
-        movie.title.toLowerCase().includes(searchText.toLowerCase())
-    );
+                if (!TMDB_API_KEY) {
+                    throw new Error("Mangler TMDB API key");
+                }
 
-    if (selectedGenre) {
-        // Simuler genre filtrering
-        filteredMovies = filteredMovies.filter(movie =>
-            movie.title.includes('Action') // Midlertidig
-        );
-    }
+                // basis-url til discover
+                const url = new URL(`${TMDB_BASE_URL}/discover/movie`);
+                url.searchParams.set("api_key", TMDB_API_KEY);
+                url.searchParams.set("language", "en-US");
+                url.searchParams.set("sort_by", "popularity.desc");
 
-    // Sorter film
-    if (sortOrder === 'rating') {
-        filteredMovies.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    } else if (sortOrder === 'released') {
-        filteredMovies.sort((a, b) => new Date(b.released || '').getTime() - new Date(a.released || '').getTime());
-    } else if (sortOrder === 'title') {
-        filteredMovies.sort((a, b) => a.title.localeCompare(b.title));
-    }
+                // sortering
+                if (sortOrder === "rating") {
+                    url.searchParams.set("sort_by", "vote_average.desc");
+                } else if (sortOrder === "released") {
+                    url.searchParams.set("sort_by", "primary_release_date.desc");
+                } else if (sortOrder === "title") {
+                    url.searchParams.set("sort_by", "original_title.asc");
+                }
 
-    const handleSearch = (text: string) => {
-        setSearchText(text);
-    };
+                if (selectedGenre) {
+                    url.searchParams.set("with_genres", String(selectedGenre));
+                }
 
-    const handleGenre = (genreId: number) => {
-        setSelectedGenre(genreId);
-    };
+                let res: Response;
 
-    const handleSort = (sortOrder: string) => {
-        setSortOrder(sortOrder);
-    };
+                // hvis der søges, brug search-endpoint
+                if (searchText.trim().length > 0) {
+                    const searchUrl = new URL(`${TMDB_BASE_URL}/search/movie`);
+                    searchUrl.searchParams.set("api_key", TMDB_API_KEY);
+                    searchUrl.searchParams.set("language", "en-US");
+                    searchUrl.searchParams.set("query", searchText);
+                    res = await fetch(searchUrl.toString());
+                } else {
+                    res = await fetch(url.toString());
+                }
 
-    return React.createElement('div', null,
-        React.createElement('div', { className: 'filter-container' },
+                if (!res.ok) {
+                    throw new Error("Kunne ikke hente film");
+                }
+
+                const data = await res.json();
+
+                const mapped: Movie[] = (data.results ?? []).map((m: any) => ({
+                    id: m.id,
+                    title: m.title,
+                    rating: m.vote_average,
+                    released: m.release_date,
+                    poster_image: m.poster_path
+                        ? `${TMDB_IMAGE_BASE}${m.poster_path}`
+                        : undefined,
+                    overview: m.overview,
+                    background_image: m.backdrop_path
+                        ? `${TMDB_IMAGE_BASE}${m.backdrop_path}`
+                        : undefined,
+                }));
+
+                setMovies(mapped);
+            } catch (err: any) {
+                setError(err.message ?? "Der skete en fejl");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchMovies();
+    }, [searchText, selectedGenre, sortOrder]);
+
+    const handleSearch = (text: string) => setSearchText(text);
+    const handleGenre = (genreId: number) => setSelectedGenre(genreId);
+    const handleSort = (sort: string) => setSortOrder(sort);
+
+    return React.createElement(
+        "div",
+        null,
+        React.createElement(
+            "div",
+            { className: "filter-container" },
             React.createElement(SearchInput, { onSearch: handleSearch }),
-            React.createElement('div', { className: 'filters-right' },
+            React.createElement(
+                "div",
+                { className: "filters-right" },
                 React.createElement(GenreList, { onSelectGenre: handleGenre }),
                 React.createElement(SortSelector, { onSelectSort: handleSort })
             )
         ),
-        React.createElement('div', { style: { padding: '20px' } },
-            React.createElement('p', null, `Viser ${filteredMovies.length} film`),
-            React.createElement(MovieGrid, { movies: filteredMovies })
+        React.createElement(
+            "div",
+            { style: { padding: "20px" } },
+            isLoading && React.createElement("p", null, "Henter film..."),
+            error &&
+            React.createElement("p", { style: { color: "red" } }, error),
+            !isLoading &&
+            !error &&
+            React.createElement(
+                React.Fragment,
+                null,
+                React.createElement(
+                    "p",
+                    null,
+                    `Viser ${movies.length} film`
+                ),
+                React.createElement(MovieGrid, { movies })
+            )
         )
     );
 };

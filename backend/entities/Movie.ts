@@ -25,6 +25,10 @@ export class Movie {
     @Column("varchar", { name: "poster_image", nullable: true, length: 255 })
     poster_image?: string;
 
+    // 👇 NY KOLONNE – matcher seederens "overview"
+    @Column({ type: "text", nullable: true })
+    overview?: string;
+
     @Column({ nullable: true })
     released?: string;
 
@@ -33,6 +37,10 @@ export class Movie {
 
     @Column("int", { nullable: true })
     runtime?: number;
+
+    // 👇 NY KOLONNE – matcher seederens "background_image"
+    @Column("varchar", { name: "background_image", nullable: true, length: 255 })
+    background_image?: string;
 
     @Column({ type: "text", nullable: true })
     plot?: string;
