@@ -8,7 +8,7 @@ export const useAuth = () => {
         loading,
         error,
         login,
-        register,
+        signup,
         logout,
         fetchMe,
         clearError
@@ -31,7 +31,7 @@ export const useAuth = () => {
 
         // Actions
         login,
-        register,
+        signup,
         logout,
         fetchMe,
         clearError,

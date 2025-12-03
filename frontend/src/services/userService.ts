@@ -5,7 +5,7 @@ export interface LoginData {
     password: string;
 }
 
-export interface RegisterData {
+export interface SignupData {
     username: string;
     email: string;
     password: string;
@@ -28,14 +28,14 @@ class UserService {
         return response.json();
     }
 
-    // Register
-    async register(registerData: RegisterData): Promise<{ user: User; token: string }> {
-        const response = await fetch(`${this.baseUrl}/auth/register`, {
+    // Signup
+    async signup(signupData: SignupData): Promise<{ user: User; token: string }> {
+        const response = await fetch(`${this.baseUrl}/auth/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(registerData),
+            body: JSON.stringify(signupData),
         });
         
         if (!response.ok) throw new Error('Registration failed');

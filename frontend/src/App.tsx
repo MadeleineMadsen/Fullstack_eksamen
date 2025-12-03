@@ -67,15 +67,24 @@
 
 
 
-// frontend/src/App.tsx
+
+
+
+
+
+
+
+
+
 import React, { useState } from 'react';
 import GenreList from './components/GenreList';
 import MovieGrid from './components/MovieGrid';
+import NavBar from './components/NavBar';
 import SearchInput from './components/SearchInput';
 import SortSelector from './components/SortSelector';
 import './style/kamilla.css';
 
-function App() {
+const App: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
   const [sortOrder, setSortOrder] = useState('');
@@ -117,9 +126,8 @@ function App() {
   );
 
   if (selectedGenre) {
-    // Simuler genre filtrering (i virkeligheden ville film have genre IDs)
     filteredMovies = filteredMovies.filter(movie => 
-      movie.title.includes('Action') // Midlertidig - bare for demo
+      movie.title.includes('Action')
     );
   }
 
@@ -143,20 +151,21 @@ function App() {
   const handleSort = (sortOrder: string) => {
     setSortOrder(sortOrder);
   };
-
-return React.createElement('div', null,
-  React.createElement('div', { className: 'filter-container' },
-    React.createElement(SearchInput, { onSearch: handleSearch }),
-    React.createElement('div', { className: 'filters-right' },
-      React.createElement(GenreList, { onSelectGenre: handleGenre }),
-      React.createElement(SortSelector, { onSelectSort: handleSort })
-    )
-  ),
-    React.createElement('div', { style: { padding: '20px' } },
+  
+  return React.createElement('div', { className: 'app-container' },
+    React.createElement(NavBar),
+    React.createElement('div', { className: 'filter-container' },
+      React.createElement(SearchInput, { onSearch: handleSearch }),
+      React.createElement('div', { className: 'filters-right' },
+        React.createElement(GenreList, { onSelectGenre: handleGenre }),
+        React.createElement(SortSelector, { onSelectSort: handleSort })
+      )
+    ),
+    React.createElement('div', { className: 'movie-list-container' },
       React.createElement('p', null, `Viser ${filteredMovies.length} film`),
       React.createElement(MovieGrid, { movies: filteredMovies })
     )
   );
-}
+};
 
 export default App;

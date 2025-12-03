@@ -17,7 +17,7 @@ interface AuthState {
 
     // Actions som beskrevet i opgaven
     login: (email: string, password: string) => Promise<void>;
-    register: (email: string, password: string, name?: string) => Promise<void>;
+    signup: (email: string, password: string, name?: string) => Promise<void>;
     logout: () => Promise<void>;
     fetchMe: () => Promise<void>;
     clearError: () => void;
@@ -105,13 +105,13 @@ const useAuthStore = create<AuthState>((set, get) => ({
         }
     },
 
-    // Register action
-    register: async (email: string, password: string, name?: string) => {
+    // signup action
+    signup: async (email: string, password: string, name?: string) => {
         set({ loading: true, error: null });
 
         try {
             // ========== MOCK VERSION ==========
-            console.log("Register attempt with:", { email, password, name });
+            console.log("Signup attempt with:", { email, password, name });
 
             await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -145,7 +145,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
             // ========== REAL FETCH VERSION ==========
             /*
-            const response = await fetch("http://localhost:3000/auth/register", {
+            const response = await fetch("http://localhost:3000/auth/signup", {
               method: "POST",
               credentials: "include",
               body: JSON.stringify({ email, password, name }),
