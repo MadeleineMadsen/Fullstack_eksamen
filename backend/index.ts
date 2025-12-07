@@ -5,6 +5,7 @@ import "dotenv/config";
 import express from "express";
 
 import { AppDataSource } from "./data-source";
+import tmdbRoutes from './routes/tmdbRoutes';
 import { setupRouters } from "./startup/setupRouters";
 import { setupSwagger } from "./swagger";
 
@@ -30,6 +31,7 @@ app.use(
 // ====== Swagger & Routes ======
 setupSwagger(app);
 setupRouters(app);
+app.use('/api/tmdb', tmdbRoutes);
 
 // Root route (info)
 app.get("/", (req, res) => {

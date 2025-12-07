@@ -15,9 +15,7 @@ export interface Movie {
     background_image?: string;
 }
 
-const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-const TMDB_BASE_URL = "https://api.themoviedb.org/3";
-const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://fullstack-eksamen-backend.onrender.com";
 
 const HomePage = () => {
     const [searchText, setSearchText] = useState("");
@@ -33,41 +31,22 @@ const HomePage = () => {
                 setIsLoading(true);
                 setError(null);
 
-                if (!TMDB_API_KEY) {
-                    throw new Error("Mangler TMDB API key");
+                // NY: Byg URL til DIN backend i stedet for TMDB
+                const url = new URL(`${API_BASE_URL}/api/tmdb/movies`);
+
+                // Send parametrene som query params til DIN backend
+                if (sortOrder) {
+                    url.searchParams.set("sort_by", sortOrder);
                 }
-
-                // basis-url til discover
-                const url = new URL(`${TMDB_BASE_URL}/discover/movie`);
-                url.searchParams.set("api_key", TMDB_API_KEY);
-                url.searchParams.set("language", "en-US");
-                url.searchParams.set("sort_by", "popularity.desc");
-
-                // sortering
-                if (sortOrder === "rating") {
-                    url.searchParams.set("sort_by", "vote_average.desc");
-                } else if (sortOrder === "released") {
-                    url.searchParams.set("sort_by", "primary_release_date.desc");
-                } else if (sortOrder === "title") {
-                    url.searchParams.set("sort_by", "original_title.asc");
-                }
-
                 if (selectedGenre) {
                     url.searchParams.set("with_genres", String(selectedGenre));
                 }
-
-                let res: Response;
-
-                // hvis der søges, brug search-endpoint
                 if (searchText.trim().length > 0) {
-                    const searchUrl = new URL(`${TMDB_BASE_URL}/search/movie`);
-                    searchUrl.searchParams.set("api_key", TMDB_API_KEY);
-                    searchUrl.searchParams.set("language", "en-US");
-                    searchUrl.searchParams.set("query", searchText);
-                    res = await fetch(searchUrl.toString());
-                } else {
-                    res = await fetch(url.toString());
+                    url.searchParams.set("query", searchText);
                 }
+
+                // FJERNET: API key tjek - det håndterer backend nu
+                const res = await fetch(url.toString());
 
                 if (!res.ok) {
                     throw new Error("Kunne ikke hente film");
@@ -75,17 +54,18 @@ const HomePage = () => {
 
                 const data = await res.json();
 
+                // Backenden returnerer data i samme format som TMDB
                 const mapped: Movie[] = (data.results ?? []).map((m: any) => ({
                     id: m.id,
                     title: m.title,
                     rating: m.vote_average,
                     released: m.release_date,
                     poster_image: m.poster_path
-                        ? `${TMDB_IMAGE_BASE}${m.poster_path}`
+                        ? `https://image.tmdb.org/t/p/w500${m.poster_path}`
                         : undefined,
                     overview: m.overview,
                     background_image: m.backdrop_path
-                        ? `${TMDB_IMAGE_BASE}${m.backdrop_path}`
+                        ? `https://image.tmdb.org/t/p/w500${m.backdrop_path}`
                         : undefined,
                 }));
 
