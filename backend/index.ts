@@ -18,7 +18,7 @@ app.use(cookieParser());
 // CORS – tillad både lokal udvikling og din Render-frontend
 const allowedOrigins = [
     "http://localhost:5173",                        // lokal Vite
-    "https://fullstack-eksamen.onrender.com/", // frontend-URL
+    "https://fullstack-eksamen.onrender.com", // frontend-URL
 ];
 
 app.use(
