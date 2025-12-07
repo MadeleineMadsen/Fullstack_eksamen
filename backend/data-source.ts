@@ -1,3 +1,4 @@
+import "dotenv/config"; 
 import { DataSource } from "typeorm";
 import { Movie } from "./entities/Movie";
 import { Actor } from "./entities/Actor";
