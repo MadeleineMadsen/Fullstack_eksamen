@@ -1,34 +1,37 @@
-import cors from "cors";
-import express from "express";
+// index.ts
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import "dotenv/config";
+import express from "express";
 
+import { AppDataSource } from "./data-source";
 import { setupRouters } from "./startup/setupRouters";
 import { setupSwagger } from "./swagger";
-import { AppDataSource } from "./data-source";
 
 const app = express();
 
-// JSON body parser
+// ====== Middleware ======
 app.use(express.json());
-
-// Cookie parser (NØDVENDIG for auth!)
 app.use(cookieParser());
 
-// CORS – strammet til Vite frontend
+// CORS – tillad både lokal udvikling og din Render-frontend
+const allowedOrigins = [
+    "http://localhost:5173",                        // lokal Vite
+    "https://fullstack-eksamen.onrender.com/", // frontend-URL
+];
+
 app.use(
     cors({
-        origin: "http://localhost:5173",  // din frontend
-        credentials: true,                // gør cookies mulige
+        origin: allowedOrigins,
+        credentials: true, // gør cookies mulige
     })
 );
 
-// Swagger
+// ====== Swagger & Routes ======
 setupSwagger(app);
-
-// Routers
 setupRouters(app);
 
-// Test route
+// Root route (info)
 app.get("/", (req, res) => {
     res.json({
         message: "Movie API Backend is running! 🎬",
@@ -43,13 +46,19 @@ app.get("/", (req, res) => {
     });
 });
 
-// Health-check
+// Health-check – viser også om TMDB API key er sat
 app.get("/health", (req, res) => {
-    res.json({ status: "OK" });
+    res.json({
+        status: "OK",
+        tmdbApiKey: !!process.env.TMDB_API_KEY,
+    });
 });
 
-// ==== IMPORTANT: Start server only after DB is ready ====
+// ====== Start server KUN når DB er klar ======
 const PORT = process.env.PORT || 5000;
+
+// Log lige om TMDB key er sat
+console.log("TMDB_API_KEY configured:", !!process.env.TMDB_API_KEY);
 
 AppDataSource.initialize()
     .then(() => {
@@ -62,3 +71,4 @@ AppDataSource.initialize()
     .catch((err) => {
         console.error(" Error initializing database:", err);
     });
+
