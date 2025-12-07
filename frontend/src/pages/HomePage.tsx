@@ -15,6 +15,7 @@ export interface Movie {
     background_image?: string;
 }
 
+// Brug miljøvariabel eller fallback til din backend
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://fullstack-eksamen-backend.onrender.com";
 
 const HomePage = () => {
@@ -31,10 +32,10 @@ const HomePage = () => {
                 setIsLoading(true);
                 setError(null);
 
-                // NY: Byg URL til DIN backend i stedet for TMDB
+                // NY: Kald DIN BACKEND i stedet for TMDB direkte
                 const url = new URL(`${API_BASE_URL}/api/tmdb/movies`);
-
-                // Send parametrene som query params til DIN backend
+                
+                // Send parametrene - din backend håndterer dem
                 if (sortOrder) {
                     url.searchParams.set("sort_by", sortOrder);
                 }
@@ -45,16 +46,16 @@ const HomePage = () => {
                     url.searchParams.set("query", searchText);
                 }
 
-                // FJERNET: API key tjek - det håndterer backend nu
+                // FJERNET: API key tjek - din backend har nøglen
                 const res = await fetch(url.toString());
-
+                
                 if (!res.ok) {
-                    throw new Error("Kunne ikke hente film");
+                    throw new Error("Kunne ikke hente film fra server");
                 }
 
                 const data = await res.json();
 
-                // Backenden returnerer data i samme format som TMDB
+                // Din backend returnerer data i samme format som TMDB
                 const mapped: Movie[] = (data.results ?? []).map((m: any) => ({
                     id: m.id,
                     title: m.title,
@@ -71,7 +72,8 @@ const HomePage = () => {
 
                 setMovies(mapped);
             } catch (err: any) {
-                setError(err.message ?? "Der skete en fejl");
+                console.error("Fetch error:", err);
+                setError(err.message ?? "Der skete en fejl ved hentning af film");
             } finally {
                 setIsLoading(false);
             }

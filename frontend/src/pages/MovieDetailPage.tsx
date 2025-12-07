@@ -5,6 +5,7 @@ import MovieDetailPageComponent, {
     Movie,
 } from "../components/MovieDetailPage";
 
+// Brug miljøvariabel
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://fullstack-eksamen-backend.onrender.com";
 
 const MovieDetailPage = () => {
@@ -21,13 +22,17 @@ const MovieDetailPage = () => {
                 setIsLoading(true);
                 setError(null);
 
+                // NY: Kald DIN BACKEND i stedet for TMDB direkte
                 const url = `${API_BASE_URL}/api/tmdb/movies/${id}`;
                 const res = await fetch(url);
-
-                if (!res.ok) throw new Error("Kunne ikke hente film");
+                
+                if (!res.ok) {
+                    throw new Error(`Kunne ikke hente film (status: ${res.status})`);
+                }
 
                 const data = await res.json();
 
+                // Map data fra din backend til din Movie type
                 const mapped: Movie = {
                     id: data.id,
                     title: data.title,
@@ -45,8 +50,8 @@ const MovieDetailPage = () => {
 
                 setMovie(mapped);
             } catch (err: any) {
-                console.error(err);
-                setError(err.message ?? "Der skete en fejl");
+                console.error("Fetch error:", err);
+                setError(err.message ?? "Der skete en fejl ved hentning af filmdetaljer");
             } finally {
                 setIsLoading(false);
             }
@@ -63,7 +68,7 @@ const MovieDetailPage = () => {
         return React.createElement(
             "p",
             { style: { color: "red" } },
-            error
+            `Fejl: ${error}`
         );
     }
 
