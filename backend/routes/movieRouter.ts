@@ -1,10 +1,10 @@
 import { Request, Router } from "express";
 import { Movie } from "../entities/Movie";
 import {
-    getMovies,
-    getMovie,
-    deleteMovieById,
     createMovie,
+    deleteMovieById,
+    getMovie,
+    getMovies,
     MovieFilters,
     PaginationOptions,
 } from "../services/movieService";
@@ -37,7 +37,7 @@ const buildMoviesResponse = (
     }
 
     const totalPages = Math.ceil(total / pageSize);
-    const baseUrl = process.env.SERVER_URL ?? "http://localhost:5000";
+    const baseUrl = process.env.SERVER_URL ?? "http://localhost:5001";
 
     return {
     count: total,

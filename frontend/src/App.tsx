@@ -1,12 +1,13 @@
 // frontend/src/App.tsx
 import React from "react";
 import HomePage from "./pages/HomePage";
+import Layout from "./pages/Layout";
 import "./style/kamilla.css";
 
+// App er en sheel rundt omkring homepage
 function App() {
-  // App er nu bare en “shell” rundt om HomePage
   return React.createElement(
-    React.Fragment,
+    Layout,
     null,
     React.createElement(HomePage)
   );

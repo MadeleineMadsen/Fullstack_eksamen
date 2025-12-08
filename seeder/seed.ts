@@ -77,9 +77,10 @@ async function seedMovies() {
         for (const movie of movies) {
             try {
                 await client.query(
-                    `INSERT INTO movies (title, overview, released, rating, background_image, poster_image, plot)
-                     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                    `INSERT INTO movies (id, title, overview, released, rating, background_image, poster_image, plot)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
                     [
+                        movie.id,
                         movie.title,
                         movie.overview || '',
                         movie.release_date || null,

@@ -2,7 +2,12 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App";
-import MovieDetailPage from "./pages/MovieDetailPage"; // ⬅️ VIGTIGT: fra pages
+import MovieDetailPage from './components/MovieDetailPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import LoginPage from './pages/LoginPage';
+import ProfilePage from './pages/ProfilePage';
+import SignupPage from './pages/SignupPage';
+
 
 const router = createBrowserRouter([
   {
@@ -13,6 +18,24 @@ const router = createBrowserRouter([
     path: "/movies/:id",
     element: React.createElement(MovieDetailPage), // ⬅️ INGEN hardcoded movie
   },
+    {
+    path: "/login",
+    element: React.createElement(LoginPage)
+  },
+  {
+    path: "/signup",
+    element: React.createElement(SignupPage)
+  },
+  {
+    path: "/profile",
+    element: React.createElement(ProtectedRoute),
+    children: [
+      {
+        path: "",
+        element: React.createElement(ProfilePage)
+      }
+    ]
+  }
 ]);
 
 const AppRoutes = () => {
@@ -20,3 +43,5 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
+
+
