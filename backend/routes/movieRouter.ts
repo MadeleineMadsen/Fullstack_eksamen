@@ -1,5 +1,5 @@
 import { Request, Router } from "express";
-import { Movie } from "../entities/Movie";
+//import { Movie } from "../entities/Movie";
 import {
     createMovie,
     deleteMovieById,
@@ -16,7 +16,8 @@ export const MAX_PAGE_SIZE = 40;
 interface MoviesResponse {
     count: number;
     next: string | null;
-    results: Movie[];
+    //results: Movie[];
+    results: any[];
 }
 
 const movieRouter = Router();

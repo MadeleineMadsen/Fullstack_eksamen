@@ -7,7 +7,7 @@
     "license": "ISC",
     "scripts": {
         "build": "npm install && tsc",
-        "test": "vitest run services/movieService.logic.test.ts",
+        "test": "vitest",
         "test:watch": "vitest",
         "start": "nodemon --legacy-watch --exec ts-node --transpile-only index.ts",
         "start-prod": "node dist/index.js"
