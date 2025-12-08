@@ -14,13 +14,20 @@ export interface Movie {
 }
 
 interface Props {
-  movie: Movie;
+  movie?: Movie;
 }
 
 
 const MovieDetailPage = ({ movie }: Props) => {
+  // TJEK: Hvis movie er undefined, returnér loading
+  if (!movie) {
+    return React.createElement('div', { className: 'movie-detail' },
+      React.createElement('div', null, 'Henter film...')
+    );
+  }
+
   const handleBack = () => {
-    window.history.back(); // Brug browserens tilbage funktion
+    window.history.back();
   };
 
   return React.createElement('div', { className: 'movie-detail' },

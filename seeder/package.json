@@ -4,15 +4,21 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "seed": "node dist/seed.js"
+    "seed": "node dist/seed.js",
+    "seed:dev": "ts-node seed.ts",
+    "seed:admin": "ts-node -e \"import { seedDatabase } from './seed.js'; seedDatabase();\""
   },
   "dependencies": {
-    "pg": "^8.11.3",
-    "node-fetch": "^3.3.2"
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^17.2.3",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
-    "typescript": "^5.3.3",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.10.5",
     "@types/pg": "^8.10.7",
-    "@types/node": "^20.10.5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }
