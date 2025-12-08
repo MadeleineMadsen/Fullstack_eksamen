@@ -7,12 +7,13 @@ const swaggerDocument = {
     info: {
         title: "Movie API",
         version: "1.0.0",
-        description: "API til håndtering af film fra The Movie Database (TMDB)",
+        description:
+            "API til håndtering af film. Læsning (GET) sker fra TMDB, mens oprettelse/sletning (POST/DELETE) sker i den lokale database.",
     },
     servers: [
         {
             url: "http://localhost:5001",
-            description: "Local development server"
+            description: "Local development server",
         },
     ],
 
@@ -21,17 +22,18 @@ const swaggerDocument = {
             get: {
                 tags: ["Movies"],
                 summary: "Hent liste af populære film fra TMDB",
-                description: "Henter en pagineret liste af populære film fra The Movie Database",
+                description:
+                    "Henter en pagineret liste af populære film fra The Movie Database (TMDB).",
                 parameters: [
                     {
                         name: "page",
                         in: "query",
-                        description: "Side nummer for pagination",
+                        description: "Side-nummer for pagination",
                         required: false,
-                        schema: { 
-                            type: "integer", 
+                        schema: {
+                            type: "integer",
                             default: 1,
-                            minimum: 1
+                            minimum: 1,
                         },
                     },
                     {
@@ -39,68 +41,70 @@ const swaggerDocument = {
                         in: "query",
                         description: "Antal film per side",
                         required: false,
-                        schema: { 
-                            type: "integer", 
+                        schema: {
+                            type: "integer",
                             default: 20,
-                            maximum: 40
+                            maximum: 40,
                         },
                     },
                     {
                         name: "title",
                         in: "query",
-                        description: "Filtrer efter titel",
+                        description: "Filtrer efter titel (ikke anvendt på TMDB lige nu)",
                         required: false,
                         schema: { type: "string" },
                     },
                     {
                         name: "genre",
-                        in: "query", 
-                        description: "Filtrer efter genre ID",
+                        in: "query",
+                        description: "Filtrer efter genre ID (ikke anvendt på TMDB lige nu)",
                         required: false,
                         schema: { type: "integer" },
                     },
                     {
                         name: "minRating",
                         in: "query",
-                        description: "Minimum bedømmelse",
+                        description: "Minimum bedømmelse (ikke anvendt på TMDB lige nu)",
                         required: false,
                         schema: { type: "number" },
                     },
                     {
                         name: "maxRating",
                         in: "query",
-                        description: "Maksimum bedømmelse", 
+                        description: "Maksimum bedømmelse (ikke anvendt på TMDB lige nu)",
                         required: false,
                         schema: { type: "number" },
                     },
                     {
                         name: "year",
                         in: "query",
-                        description: "Filtrer efter udgivelsesår",
+                        description: "Filtrer efter udgivelsesår (ikke anvendt på TMDB lige nu)",
                         required: false,
                         schema: { type: "integer" },
-                    }
+                    },
                 ],
                 responses: {
                     200: {
-                        description: "Successfuldt response med film liste",
+                        description: "Successfuldt response med filmliste",
                         content: {
                             "application/json": {
                                 schema: {
-                                    $ref: "#/components/schemas/MoviesResponse"
+                                    $ref: "#/components/schemas/MoviesResponse",
                                 },
                             },
                         },
                     },
                     500: {
-                        description: "Server fejl"
-                    }
+                        description: "Serverfejl",
+                    },
                 },
             },
+
             post: {
                 tags: ["Movies"],
-                summary: "Opret en ny film",
-                description: "⚠️ Ikke implementeret - API'et bruger skrivebeskyttet TMDB data",
+                summary: "Opret en ny film i den lokale database",
+                description:
+                    "Opretter en ny film i den lokale Postgres-database. Denne route bruger IKKE TMDB, men jeres egen Movie-tabel.",
                 requestBody: {
                     required: true,
                     content: {
@@ -118,8 +122,8 @@ const swaggerDocument = {
                             },
                         },
                     },
-                    400: { description: "Ugyldige data" },
-                    501: { description: "Ikke implementeret" }
+                    400: { description: "Ugyldige data (title mangler eller lign.)" },
+                    500: { description: "Serverfejl" },
                 },
             },
         },
@@ -127,58 +131,62 @@ const swaggerDocument = {
         "/api/movies/{id}": {
             get: {
                 tags: ["Movies"],
-                summary: "Hent detaljer for en specifik film",
-                description: "Henter detaljerede oplysninger om en enkelt film fra The Movie Database",
+                summary: "Hent detaljer for en specifik film (fra TMDB)",
+                description:
+                    "Henter detaljerede oplysninger om en enkelt film fra The Movie Database (TMDB) baseret på TMDB's film-ID.",
                 parameters: [
                     {
                         name: "id",
                         in: "path",
                         required: true,
-                        schema: { 
+                        schema: {
                             type: "integer",
-                            example: 550 
+                            example: 550,
                         },
                         description: "TMDB Film ID",
                     },
                 ],
                 responses: {
                     200: {
-                        description: "Film detaljer",
+                        description: "Filmdetaljer",
                         content: {
                             "application/json": {
                                 schema: { $ref: "#/components/schemas/Movie" },
                             },
-                        },  
+                        },
                     },
-                    404: { 
-                        description: "Film ikke fundet i TMDB" 
+                    404: {
+                        description: "Film ikke fundet i TMDB",
                     },
-                    500: { 
-                        description: "Server fejl" 
-                    }
+                    500: {
+                        description: "Serverfejl",
+                    },
                 },
             },
+
             delete: {
                 tags: ["Movies"],
-                summary: "Slet en film",
-                description: "⚠️ Ikke implementeret - API'et bruger skrivebeskyttet TMDB data",
+                summary: "Slet en film fra den lokale database",
+                description:
+                    "Sletter en film fra den lokale Movie-tabel baseret på dens ID i databasen (ikke TMDB ID).",
                 parameters: [
                     {
                         name: "id",
                         in: "path",
                         required: true,
                         schema: { type: "integer" },
+                        description: "Lokalt Movie ID (fra jeres database)",
                     },
                 ],
                 responses: {
                     204: { description: "Film slettet" },
                     404: { description: "Film ikke fundet" },
-                    501: { description: "Ikke implementeret" }
+                    500: { description: "Serverfejl" },
                 },
             },
         },
     },
-    
+
     components: {
         schemas: {
             MoviesResponse: {
@@ -186,118 +194,184 @@ const swaggerDocument = {
                 properties: {
                     count: {
                         type: "integer",
-                        description: "Total antal film"
+                        description: "Total antal film",
                     },
                     next: {
                         type: "string",
                         nullable: true,
-                        description: "URL til næste side af resultater"
+                        description: "URL til næste side af resultater (eller null)",
                     },
                     results: {
                         type: "array",
-                        items: { 
-                            $ref: "#/components/schemas/Movie" 
-                        }
-                    }
-                }
+                        items: {
+                            $ref: "#/components/schemas/Movie",
+                        },
+                    },
+                },
             },
-            
+
+            // "Movie" bruges både til TMDB-respons og lokal DB-film.
+            // Derfor har den felter fra begge verdener, hvor nogle er optional.
             Movie: {
                 type: "object",
                 properties: {
-                    id: { 
+                    // Fælles / TMDB-felter
+                    id: {
                         type: "integer",
-                        description: "TMDB film ID" 
+                        description: "Film ID (TMDB ID eller lokalt DB-ID afhængigt af endpoint)",
                     },
-                    title: { 
+                    title: {
                         type: "string",
-                        description: "Film titel" 
+                        description: "Film titel",
                     },
-                    overview: { 
+                    overview: {
                         type: "string",
-                        description: "Film beskrivelse" 
+                        description: "Film beskrivelse",
                     },
-                    release_date: { 
-                        type: "string", 
+                    release_date: {
+                        type: "string",
                         format: "date",
-                        description: "Udgivelsesdato" 
+                        description: "Udgivelsesdato (TMDB format)",
                     },
-                    poster_path: { 
+                    poster_path: {
                         type: "string",
-                        description: "Sti til plakatbillede" 
+                        nullable: true,
+                        description: "Sti til plakatbillede (TMDB)",
                     },
-                    backdrop_path: { 
+                    backdrop_path: {
                         type: "string",
-                        description: "Sti til baggrundsbillede" 
+                        nullable: true,
+                        description: "Sti til baggrundsbillede (TMDB)",
                     },
-                    vote_average: { 
-                        type: "number", 
+                    vote_average: {
+                        type: "number",
                         format: "float",
-                        description: "Gennemsnitlig bedømmelse (0-10)" 
+                        description: "Gennemsnitlig bedømmelse (0-10, TMDB)",
                     },
-                    vote_count: { 
+                    vote_count: {
                         type: "integer",
-                        description: "Antal stemmer" 
+                        description: "Antal stemmer (TMDB)",
                     },
-                    adult: { 
+                    adult: {
                         type: "boolean",
-                        description: "Er filmen for voksne?" 
+                        description: "Er filmen kun for voksne? (TMDB)",
                     },
                     genre_ids: {
                         type: "array",
                         items: { type: "integer" },
-                        description: "Liste af genre IDs"
+                        description: "Liste af genre IDs (TMDB)",
                     },
                     popularity: {
                         type: "number",
-                        format: "float", 
-                        description: "Popularitets score"
+                        format: "float",
+                        description: "Popularitets-score (TMDB)",
                     },
                     video: {
                         type: "boolean",
-                        description: "Har filmen video?"
+                        description: "Har filmen video? (TMDB)",
                     },
                     original_language: {
                         type: "string",
-                        description: "Originalsprog"
+                        description: "Originalsprog (TMDB)",
                     },
                     original_title: {
-                        type: "string", 
-                        description: "Original titel"
-                    }
-                }
+                        type: "string",
+                        description: "Original titel (TMDB)",
+                    },
+
+                    // Lokale DB-felter (bruges især ved POST/DELETE respons)
+                    released: {
+                        type: "string",
+                        nullable: true,
+                        description: "Udgivelsesdato som brugt i DB (fx '2025-12-31')",
+                    },
+                    runtime: {
+                        type: "integer",
+                        nullable: true,
+                        description: "Varighed i minutter (lokal DB)",
+                    },
+                    rating: {
+                        type: "number",
+                        format: "float",
+                        nullable: true,
+                        description: "Bedømmelse (lokal DB)",
+                    },
+                    background_image: {
+                        type: "string",
+                        nullable: true,
+                        description: "URL eller sti til baggrundsbillede (lokal DB)",
+                    },
+                    metacritic: {
+                        type: "integer",
+                        nullable: true,
+                        description: "Metacritic-score (lokal DB)",
+                    },
+                    poster_image: {
+                        type: "string",
+                        nullable: true,
+                        description: "URL eller sti til plakatbillede (lokal DB)",
+                    },
+                    plot: {
+                        type: "string",
+                        nullable: true,
+                        description: "Detaljeret plot-beskrivelse (lokal DB)",
+                    },
+                    director: {
+                        type: "string",
+                        nullable: true,
+                        description: "Instruktør (lokal DB)",
+                    },
+                },
             },
-            
+
+            // Schema til at oprette ny film i DB
             NewMovie: {
                 type: "object",
                 required: ["title"],
-                description: "Schema for at oprette en ny film (ikke implementeret)",
+                description:
+                    "Schema for at oprette en ny film i den lokale database (bruges af POST /api/movies).",
                 properties: {
-                    title: { 
+                    title: {
                         type: "string",
-                        description: "Film titel (påkrævet)" 
+                        description: "Film titel (påkrævet)",
                     },
-                    overview: { 
+                    overview: {
                         type: "string",
-                        description: "Film beskrivelse" 
+                        description: "Kort beskrivelse af filmen",
                     },
-                    release_date: { 
-                        type: "string", 
+                    released: {
+                        type: "string",
                         format: "date",
-                        description: "Udgivelsesdato" 
+                        description: "Udgivelsesdato (fx '2025-12-31')",
                     },
-                    runtime: { 
+                    runtime: {
                         type: "integer",
-                        description: "Varighed i minutter" 
+                        description: "Varighed i minutter",
                     },
-                    rating: { 
-                        type: "number", 
+                    rating: {
+                        type: "number",
                         format: "float",
-                        description: "Bedømmelse" 
+                        description: "Bedømmelse (0-10)",
                     },
-                    background_image: { 
+                    background_image: {
                         type: "string",
-                        description: "URL til baggrundsbillede" 
+                        description: "URL til baggrundsbillede",
+                    },
+                    poster_image: {
+                        type: "string",
+                        description: "URL til plakatbillede",
+                    },
+                    plot: {
+                        type: "string",
+                        description: "Detaljeret plot-beskrivelse",
+                    },
+                    director: {
+                        type: "string",
+                        description: "Instruktør",
+                    },
+                    metacritic: {
+                        type: "integer",
+                        description: "Metacritic-score",
                     },
                 },
             },
@@ -307,8 +381,10 @@ const swaggerDocument = {
 
 export function setupSwagger(app: Express) {
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
-        customCss: '.swagger-ui .info h2 { display: none }', // Fjerner "Movie API" overskriften to gange
-        customSiteTitle: "Movie API Documentation"
+        customCss: ".swagger-ui .info h2 { display: none }",
+        customSiteTitle: "Movie API Documentation",
     }));
-    console.log("📚 Swagger dokumentation tilgængelig på http://localhost:5001/api-docs");
+    console.log(
+        "📚 Swagger dokumentation tilgængelig på http://localhost:5001/api-docs"
+    );
 }
