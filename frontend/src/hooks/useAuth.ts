@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+// useAuth.ts
 import useAuthStore from '../store/authStore';
 
 export const useAuth = () => {
@@ -13,14 +13,6 @@ export const useAuth = () => {
         fetchMe,
         clearError
     } = useAuthStore();
-
-    // Fetch bruger ved komponent mount (hvis nødvendigt)
-    useEffect(() => {
-        // Kun fetch hvis ikke allerede loading og ikke authenticated
-        if (!loading && !isAuthenticated) {
-            fetchMe();
-        }
-    }, [fetchMe, loading, isAuthenticated]);
 
     return {
         // State

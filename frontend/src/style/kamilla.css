@@ -270,6 +270,57 @@
   padding: 20px;
 }
 
+/* frontend/src/style/profile.css */
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.profile-title {
+  color: #2c3e50;
+  border-bottom: 3px solid #3498db;
+  padding-bottom: 10px;
+  margin-bottom: 30px;
+}
+
+.profile-info {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.profile-email {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+.profile-name {
+  color: #2c3e50;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Signup container */
 .signup-container {
   padding: 20px;
@@ -444,4 +495,13 @@
   margin-bottom: 20px;
   border: 1px solid #f5c6cb;
   font-size: 14px;
+}
+
+
+
+/* frontend/src/style/layout.css */
+.layout-main {
+  padding-top: 80px; /* Plads til fixed navbar */
+  min-height: calc(100vh - 80px); /* Fyld resten af viewport */
+  background-color: #f5f5f5; /* Lys baggrund */
 }

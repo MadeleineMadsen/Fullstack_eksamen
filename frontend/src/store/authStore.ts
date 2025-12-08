@@ -5,95 +5,55 @@ export interface User {
     id: number;
     email: string;
     name?: string;
-    // Tilføj flere felter baseret på dit backend response
+    username?: string; // Tilføj username
 }
 
 interface AuthState {
-    // State som beskrevet i opgaven
     user: User | null;
     isAuthenticated: boolean;
     loading: boolean;
     error: string | null;
 
-    // Actions som beskrevet i opgaven
     login: (email: string, password: string) => Promise<void>;
-    signup: (email: string, password: string, name?: string) => Promise<void>;
+    signup: (email: string, password: string, name?: string) => Promise<{ success: boolean; message: string }>; // Ændret return type
     logout: () => Promise<void>;
     fetchMe: () => Promise<void>;
     clearError: () => void;
 }
 
-const useAuthStore = create<AuthState>((set, get) => ({
+const API_BASE_URL = "http://localhost:5001/api"; 
+
+const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set'
     // Initial state
     user: null,
     isAuthenticated: false,
     loading: false,
     error: null,
 
-    // Login action med fetch som beskrevet i opgaven
+    // Login action
     login: async (email: string, password: string) => {
         set({ loading: true, error: null });
 
         try {
-            // ========== MOCK VERSION (midlertidig) ==========
-            console.log("Login attempt with:", { email, password });
-
-            // Simuler API delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Simuler validering
-            if (!email || !password) {
-                throw new Error("Email og password er påkrævet");
-            }
-
-            if (password.length < 6) {
-                throw new Error("Password skal være mindst 6 tegn");
-            }
-
-            // Mock succes response
-            const mockUser: User = {
-                id: 1,
-                email: email,
-                name: email.split('@')[0],
-            };
-
-            set({
-                user: mockUser,
-                isAuthenticated: true,
-                loading: false
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                method: "POST",
+                credentials: "include",
+                body: JSON.stringify({ email, password }),
+                headers: { "Content-Type": "application/json" },
             });
 
-            // Gem mock token i localStorage til fetchMe
-            localStorage.setItem("mock_auth_token", "valid_token");
-            // ==============================================
-
-            // ========== REAL FETCH VERSION ==========
-            /*
-            const response = await fetch("http://localhost:3000/auth/login", {
-              method: "POST",
-              credentials: "include", // Som beskrevet i opgaven
-              body: JSON.stringify({ email, password }),
-              headers: { 
-                "Content-Type": "application/json",
-                // Tilføj CSRF token hvis nødvendigt
-                // "X-CSRF-Token": getCsrfToken(),
-              },
-            });
-            
             if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.message || "Login fejlede");
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Login fejlede");
             }
-            
+
             const userData = await response.json();
             
             set({ 
-              user: userData.user, 
-              isAuthenticated: true, 
-              loading: false 
+                user: userData,
+                isAuthenticated: true, 
+                loading: false 
             });
-            */
-            // ========================================
 
         } catch (error: any) {
             set({
@@ -102,78 +62,50 @@ const useAuthStore = create<AuthState>((set, get) => ({
                 isAuthenticated: false,
                 user: null
             });
+            throw error;
         }
     },
 
-    // Signup action
+    // Signup action - ÆNDRET
     signup: async (email: string, password: string, name?: string) => {
         set({ loading: true, error: null });
 
         try {
-            // ========== MOCK VERSION ==========
-            console.log("Signup attempt with:", { email, password, name });
+            const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+                method: "POST",
+                credentials: "include",
+                body: JSON.stringify({ 
+                    email, 
+                    password, 
+                    username: name || email.split('@')[0] 
+                }),
+                headers: { "Content-Type": "application/json" },
+            });
 
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Validering
-            if (!email || !password) {
-                throw new Error("Email og password er påkrævet");
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Signup fejlede");
             }
 
-            if (password.length < 6) {
-                throw new Error("Password skal være mindst 6 tegn");
-            }
-
-            if (!email.includes("@")) {
-                throw new Error("Ugyldig email format");
-            }
-
-            const mockUser: User = {
-                id: Date.now(),
-                email,
-                name: name || email.split("@")[0],
+            // Success - men vi logger ikke brugeren ind
+            set({ loading: false });
+            
+            return { 
+                success: true, 
+                message: "Bruger oprettet! Log venligst ind." 
             };
 
+        } catch (error: any) {
+            const errorMsg = error.message || "Signup fejlede";
             set({
-                user: mockUser,
-                isAuthenticated: true,
+                error: errorMsg,
                 loading: false
             });
-
-            localStorage.setItem("mock_auth_token", "valid_token");
-            // =================================
-
-            // ========== REAL FETCH VERSION ==========
-            /*
-            const response = await fetch("http://localhost:3000/auth/signup", {
-              method: "POST",
-              credentials: "include",
-              body: JSON.stringify({ email, password, name }),
-              headers: { "Content-Type": "application/json" },
-            });
             
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.message || "Signup fejlede");
-            }
-            
-            const userData = await response.json();
-            
-            set({ 
-              user: userData.user, 
-              isAuthenticated: true, 
-              loading: false 
-            });
-            */
-            // ========================================
-
-        } catch (error: any) {
-            set({
-                error: error.message || "Signup fejlede",
-                loading: false,
-                isAuthenticated: false,
-                user: null
-            });
+            return { 
+                success: false, 
+                message: errorMsg 
+            };
         }
     },
 
@@ -182,21 +114,12 @@ const useAuthStore = create<AuthState>((set, get) => ({
         set({ loading: true });
 
         try {
-            // ========== MOCK VERSION ==========
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await fetch(`${API_BASE_URL}/auth/logout`, {
+                method: "POST",
+                credentials: "include",
+            }).catch(() => {}); // Ignorer fejl hvis endpoint ikke findes
 
-            localStorage.removeItem("mock_auth_token");
-            // =================================
-
-            // ========== REAL FETCH VERSION ==========
-            /*
-            await fetch("http://localhost:3000/auth/logout", {
-              method: "POST",
-              credentials: "include",
-            });
-            */
-            // ========================================
-
+            // Ryd frontend state
             set({
                 user: null,
                 isAuthenticated: false,
@@ -212,64 +135,31 @@ const useAuthStore = create<AuthState>((set, get) => ({
         }
     },
 
-    // Fetch current user (fetchMe) - tjekker om bruger er logget ind
+    // Fetch current user
     fetchMe: async () => {
-        // Skip hvis allerede authenticated
-        if (get().isAuthenticated) return;
-
         set({ loading: true });
 
         try {
-            // ========== MOCK VERSION ==========
-            await new Promise(resolve => setTimeout(resolve, 800));
-
-            const mockToken = localStorage.getItem("mock_auth_token");
-
-            if (mockToken === "valid_token") {
-                const mockUser: User = {
-                    id: 1,
-                    email: "test@example.com",
-                    name: "Test Bruger",
-                };
-
-                set({
-                    user: mockUser,
-                    isAuthenticated: true,
-                    loading: false
-                });
-            } else {
-                set({
-                    user: null,
-                    isAuthenticated: false,
-                    loading: false
-                });
-            }
-            // =================================
-
-            // ========== REAL FETCH VERSION ==========
-            /*
-            const response = await fetch("http://localhost:3000/auth/me", {
-              method: "GET",
-              credentials: "include",
+            const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+                method: "GET",
+                credentials: "include",
             });
-            
+
             if (response.ok) {
-              const userData = await response.json();
-              set({ 
-                user: userData.user, 
-                isAuthenticated: true, 
-                loading: false 
-              });
+                const userData = await response.json();
+                set({ 
+                    user: userData, 
+                    isAuthenticated: true, 
+                    loading: false 
+                });
             } else {
-              // Ikke authenticated
-              set({ 
-                user: null, 
-                isAuthenticated: false, 
-                loading: false 
-              });
+                // Ikke authenticated
+                set({ 
+                    user: null, 
+                    isAuthenticated: false, 
+                    loading: false 
+                });
             }
-            */
-            // ========================================
 
         } catch (error: any) {
             set({

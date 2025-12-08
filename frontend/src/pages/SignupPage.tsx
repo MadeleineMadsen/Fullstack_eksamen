@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import Layout from '../pages/Layout';
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +10,7 @@ const SignupPage: React.FC = () => {
     confirmPassword: '',
     name: ''
   });
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState(''); // Ændret fra error til message
   const [isLoading, setIsLoading] = useState(false);
   
   const { signup } = useAuth();
@@ -25,45 +26,62 @@ const SignupPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setMessage('');
 
-    // Validering
+    // Validering (beholder din fine validering)
     if (!formData.email || !formData.password) {
-      setError('Email og password er påkrævet');
+      setMessage('❌ Email og password er påkrævet');
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password skal være mindst 6 tegn');
+      setMessage('❌ Password skal være mindst 6 tegn');
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords er ikke ens');
+      setMessage('❌ Passwords er ikke ens');
       return;
     }
 
     if (!formData.email.includes('@')) {
-      setError('Ugyldig email format');
+      setMessage('❌ Ugyldig email format');
       return;
     }
 
     setIsLoading(true);
 
     try {
-      await signup(formData.email, formData.password, formData.name);
-      navigate('/profile'); // Redirect til profil efter registrering
+      // Kalder signup som returnerer { success, message }
+      const result = await signup(formData.email, formData.password, formData.name);
+      
+      if (result.success) {
+        // Success - vis besked og redirect til login
+        setMessage(`✅ ${result.message} Du vil blive viderestillet til login...`);
+        
+        // Vent 3 sekunder og redirect til login
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
+      } else {
+        // Error - vis besked
+        setMessage(`❌ ${result.message}`);
+      }
+      
     } catch (err: any) {
-      setError(err.message || 'Registrering fejlede');
+      setMessage(`❌ ${err.message || 'Registrering fejlede'}`);
     } finally {
       setIsLoading(false);
     }
   };
 
-  return React.createElement('div', { className: 'signup-container' },
-    React.createElement('h2', null, 'Opret ny bruger'),
+  const signupContent = React.createElement('div', { className: 'signup-container' },
+    React.createElement('h2', null, '📝 Opret ny bruger'),
     
-    error && React.createElement('div', { className: 'error-message' }, error),
+    // Vis message (kan være både success og error)
+    message && React.createElement('div', { 
+      className: message.includes('✅') ? 'success-message' : 'error-message' 
+    }, message),
     
     React.createElement('form', { onSubmit: handleSubmit, className: 'signup-form' },
       // Navn (valgfrit)
@@ -139,9 +157,16 @@ const SignupPage: React.FC = () => {
       'Har du allerede en konto? ',
       React.createElement('button', {
         onClick: () => navigate('/login'),
-        className: 'link-button'
+        className: 'link-button',
+        disabled: isLoading
       }, 'Log ind her')
     )
+  );
+
+  return React.createElement(
+    Layout,
+    null,
+    signupContent
   );
 };
 

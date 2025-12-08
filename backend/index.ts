@@ -1,10 +1,10 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
-import cookieParser from "cookie-parser";
 
+import { AppDataSource } from "./data-source";
 import { setupRouters } from "./startup/setupRouters";
 import { setupSwagger } from "./swagger";
-import { AppDataSource } from "./data-source";
 
 const app = express();
 
@@ -17,7 +17,7 @@ app.use(cookieParser());
 // CORS – strammet til Vite frontend
 app.use(
     cors({
-        origin: "http://localhost:5173",  // din frontend
+        origin: "http://localhost:3000",  // din frontend
         credentials: true,                // gør cookies mulige
     })
 );
@@ -49,7 +49,7 @@ app.get("/health", (req, res) => {
 });
 
 // ==== IMPORTANT: Start server only after DB is ready ====
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 AppDataSource.initialize()
     .then(() => {
