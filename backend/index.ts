@@ -60,7 +60,7 @@ app.get("/health", (req, res) => {
 });
 
 // ====== Start server KUN når DB er klar ======
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 
 // Log lige om TMDB key er sat
 console.log("TMDB_API_KEY configured:", !!process.env.TMDB_API_KEY);
