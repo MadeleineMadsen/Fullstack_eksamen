@@ -5,6 +5,10 @@
     "module": "ESNext",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
-}
+    "skipLibCheck": true,
+    "moduleResolution": "node", 
+    "types": ["node", "react", "react-dom"], 
+    "lib": ["ES2020", "DOM", "DOM.Iterable"] 
+    },
+    "include": ["src/**/*"], 
 }
