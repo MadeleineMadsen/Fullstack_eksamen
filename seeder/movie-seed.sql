@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS users (
     is_active BOOLEAN DEFAULT true
 );
 
+
 -- ======================
 -- RELATION TABLES
 -- ======================

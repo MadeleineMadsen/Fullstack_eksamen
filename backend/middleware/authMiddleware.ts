@@ -6,6 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
 interface JwtPayload {
     userId: number;
     email: string;
+    role: string;
 }
 
 export function authMiddleware(
@@ -23,6 +24,7 @@ export function authMiddleware(
         const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
         (req as any).userId = decoded.userId;
         (req as any).userEmail = decoded.email;
+        (req as any).userRole = decoded.role;
         next();
     } catch (err) {
         console.error("JWT verify error", err);

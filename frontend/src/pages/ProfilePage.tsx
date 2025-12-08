@@ -12,7 +12,7 @@ const ProfilePage: React.FC = () => {
       React.createElement('p', { className: 'profile-email' }, 
         `📧 Email: ${user?.email || 'Ikke logget ind'}`),
       React.createElement('p', { className: 'profile-name' }, 
-        `👤 Navn: ${user?.name || 'Ikke angivet'}`)
+        `👤 Navn: ${user?.username || 'Ikke angivet'}`)
     )
   );
 

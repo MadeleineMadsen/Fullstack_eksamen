@@ -3,16 +3,25 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import MovieDetailPageComponent, {
     Movie,
-} from "../components/MovieDetailPage";
+} from "../components/MovieDetailComponent";
+import Layout from "./Layout";
+
 
 // Brug miljøvariabel
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://fullstack-eksamen-backend.onrender.com";
 
 const MovieDetailPage = () => {
+
+    console.log('🎬 MOVIE DETAIL PAGE MOUNTED');
+
     const { id } = useParams<{ id: string }>();
     const [movie, setMovie] = useState<Movie | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+
+
+    console.log('🔄 MovieDetailPage render - movie:', movie, 'isLoading:', isLoading, 'error:', error)
 
     useEffect(() => {
         if (!id) return;
@@ -23,7 +32,7 @@ const MovieDetailPage = () => {
                 setError(null);
 
                 // NY: Kald DIN BACKEND i stedet for TMDB direkte
-                const url = `${API_BASE_URL}/api/tmdb/movies/${id}`;
+                const url = `${API_BASE_URL}/api/movies/${id}`;
                 const res = await fetch(url);
                 
                 if (!res.ok) {
@@ -59,24 +68,21 @@ const MovieDetailPage = () => {
 
         fetchMovie();
     }, [id]);
-
+    // Bestem indhold baseret på state
+    let content;
+    
     if (isLoading) {
-        return React.createElement("p", null, "Henter film...");
+        content = React.createElement("p", null, "Henter film...");
+    } else if (error) {
+        content = React.createElement("p", { style: { color: "red" } }, `Fejl: ${error}`);
+    } else if (!movie) {
+        content = React.createElement("p", null, "Film ikke fundet.");
+    } else {
+        content = React.createElement(MovieDetailPageComponent, { movie });
     }
 
-    if (error) {
-        return React.createElement(
-            "p",
-            { style: { color: "red" } },
-            `Fejl: ${error}`
-        );
-    }
-
-    if (!movie) {
-        return React.createElement("p", null, "Film ikke fundet.");
-    }
-
-    return React.createElement(MovieDetailPageComponent, { movie });
+    // Wrap med Layout komponent
+    return React.createElement(Layout, {children: content});
 };
 
 export default MovieDetailPage;

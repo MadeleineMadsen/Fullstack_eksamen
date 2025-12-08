@@ -1,6 +1,6 @@
+import bcrypt from "bcrypt";
 import { AppDataSource } from "../data-source";
 import { User } from "../entities/User";
-import bcrypt from "bcrypt";
 
 const userRepository = AppDataSource.getRepository(User);
 
@@ -8,6 +8,7 @@ export interface CreateUserInput {
     username: string;
     email: string;
     password: string;
+    role?: string;
 }
 
 export async function hashPassword(plain: string): Promise<string> {
@@ -27,6 +28,7 @@ export async function createUser(input: CreateUserInput): Promise<User> {
     user.username = input.username;
     user.email = input.email;
     user.password = await hashPassword(input.password);
+    user.role = input.role || 'user';
     return userRepository.save(user);
 }
 

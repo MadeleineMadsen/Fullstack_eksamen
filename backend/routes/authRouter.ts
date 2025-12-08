@@ -1,20 +1,22 @@
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import jwt from "jsonwebtoken";
+import { authMiddleware } from "../middleware/authMiddleware";
 import {
     comparePassword,
     createUser,
     findUserByEmail,
     findUserById,
 } from "../services/userService";
-import { authMiddleware } from "../middleware/authMiddleware";
 
 const router = Router();
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
 const JWT_EXPIRES_IN = "7d";
 
-function signToken(userId: number, email: string) {
-    return jwt.sign({ userId, email }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+function signToken(userId: number, email: string, role: string) {
+    return jwt.sign({ userId, email, role }, JWT_SECRET, { 
+        expiresIn: JWT_EXPIRES_IN 
+    });
 }
 
 function setAuthCookie(res: Response, token: string) {
@@ -41,13 +43,14 @@ router.post("/signup", async (req: Request, res: Response) => {
         }
 
         const newUser = await createUser({ username, email, password });
-        const token = signToken(newUser.id, newUser.email);
+        const token = signToken(newUser.id, newUser.email, newUser.role);
         setAuthCookie(res, token);
 
         return res.status(201).json({
             id: newUser.id,
             username: newUser.username,
             email: newUser.email,
+            role: newUser.role,
             created_at: newUser.created_at,
         });
     } catch (err) {
@@ -61,27 +64,47 @@ router.post("/login", async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
 
+        console.log("🔍 Login attempt for email:", email);
+
         if (!email || !password) {
             return res.status(400).json({ message: "email og password er påkrævet" });
         }
 
         const user = await findUserByEmail(email);
+        console.log("🔍 User found:", user ? "Yes" : "No");
+        
         if (!user) {
             return res.status(401).json({ message: "Forkert email eller password" });
         }
 
+        console.log("🔍 User object:", {
+            id: user.id,
+            email: user.email,
+            role: user.role,  // Tjek denne!
+            hasRoleProperty: "role" in user
+        });
+
         const valid = await comparePassword(password, user.password);
+        console.log("🔍 Password valid:", valid);
+        
         if (!valid) {
             return res.status(401).json({ message: "Forkert email eller password" });
         }
 
-        const token = signToken(user.id, user.email);
+        const token = signToken(user.id, user.email, user.role);
         setAuthCookie(res, token);
+
+        console.log("🔍 Login successful, returning:", {
+            id: user.id,
+            email: user.email,
+            role: user.role
+        });
 
         return res.json({
             id: user.id,
             username: user.username,
             email: user.email,
+            role: user.role,
             created_at: user.created_at,
         });
     } catch (err) {
@@ -108,6 +131,7 @@ router.get("/profile", authMiddleware, async (req: Request, res: Response) => {
             id: user.id,
             username: user.username,
             email: user.email,
+            role: user.role,
             created_at: user.created_at,
         });
     } catch (err) {
