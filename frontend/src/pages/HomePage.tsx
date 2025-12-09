@@ -38,7 +38,7 @@ const HomePage = () => {
 
                 // Kald backend, som igen taler med TMDB
                 const url = new URL(`${API_BASE_URL}/api/tmdb/movies`);
-                
+
                 // Tilføj query params baseret på filtre
                 if (sortOrder) {
                     url.searchParams.set("sort_by", sortOrder);
@@ -51,7 +51,7 @@ const HomePage = () => {
                 }
 
                 const res = await fetch(url.toString());
-                
+
                 if (!res.ok) {
                     throw new Error("Kunne ikke hente film fra server");
                 }
@@ -118,7 +118,7 @@ const HomePage = () => {
         // Indhold: loader, fejl eller filmgrid
         React.createElement(
             "div",
-            { style: { padding: "20px" } },
+            { className: "home-content" },
             isLoading && React.createElement("p", null, "Henter film..."),
 
             React.createElement(ErrorMessage, {

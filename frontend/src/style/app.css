@@ -115,6 +115,10 @@ h4 { font-size: 1.25rem; }
   padding: 1.5rem;
 }
 
+.home-content {
+    padding: 20px;
+}
+
 /* ================================================
    4. KOMPONENTER - NESTET OVERSIGT
 ================================================ */
@@ -418,6 +422,7 @@ button, .button-like {
   border: 1px solid var(--gray-200);
   height: 100%;
   display: flex;
+  cursor: pointer;
   flex-direction: column;
   
   &:hover {
@@ -970,7 +975,9 @@ button, .button-like {
   .form-container,
   .signup-container,
   .login-container,
-  .admin-create-page .page-container {
+  .admin-create-page, 
+  .page-container,
+  .profile-container {
     margin: 3rem auto;
   }
 }
@@ -1028,7 +1035,7 @@ button, .button-like {
 }
 
 /* ================================================
-   6. UTILITY CLASSES
+  6. UTILITY CLASSES
 ================================================ */
 .text-center { text-align: center; }
 .mb-1 { margin-bottom: 0.5rem; }
