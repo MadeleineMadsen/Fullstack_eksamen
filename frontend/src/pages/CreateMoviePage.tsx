@@ -156,7 +156,7 @@ const CreateMoviePage: React.FC = () => {
             React.createElement(
                 "div",
                 { className: "page-container" },
-                React.createElement("h1", null, "Admin – Opret ny film"),
+                React.createElement("h1", null, "Opret ny film"),
                 React.createElement(
                     "button",
                     {

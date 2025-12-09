@@ -1,6 +1,6 @@
 // Login-side: håndterer login, fejl og redirect til /profile
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
 import { useAuth } from '../hooks/useAuth';
 
@@ -88,12 +88,13 @@ const LoginPage: React.FC = () => {
         className: 'submit-button'
       }, isLoading ? 'Logger ind...' : 'Log ind')
     ),
-    // Link til signup
-    React.createElement('p', null,
-      'Har du ikke en konto? ',
-      React.createElement(Link, { to: '/signup' }, 'Opret dig her')
-    )
-  );
+React.createElement('p', null,
+  'Har du ikke en konto? ',
+  React.createElement('button', {
+    className: 'link-button',
+    onClick: () => navigate('/signup')  // Brug navigate i stedet for Link
+  }, 'Opret dig her'),
+  ));
 };
 
 export default LoginPage;

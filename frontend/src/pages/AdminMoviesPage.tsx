@@ -175,7 +175,7 @@ const AdminMoviesPage: React.FC = () => {
                                 onClick: () => handleDelete(movie.id, movie.title),
                                 disabled: deletingId === movie.id,
                             },
-                            deletingId === movie.id ? "Sletter..." : "🗑 Slet"
+                            deletingId === movie.id ? "Sletter..." : "Slet"
                         )
                     )
                 )
@@ -190,7 +190,7 @@ const AdminMoviesPage: React.FC = () => {
         React.createElement(
             "div",
             { className: "admin-movies-page" },
-            React.createElement("h1", null, "Admin – Film i systemet"),
+            React.createElement("h1", null, "Film i systemet"),
             content
         )
     );
