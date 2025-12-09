@@ -220,6 +220,7 @@ h4 { font-size: 1.25rem; }
 /* 4.2 Knapper (alle typer) */
 button, .button-like {
   &.back-button {
+    background-color: var(--gray-100);
     position: absolute;
     top: 20px;
     left: 20px;
@@ -228,18 +229,20 @@ button, .button-like {
   
   &.secondary-button,
   &.admin-list-button {
-    background-color: transparent;
-    color: var(--gray-700);
+    background-color: var(--primary-color) !important;
+    color: var(--white) !important;
     border: 1px solid var(--gray-300);
+    margin-bottom: 1rem !important;
   }
   
   &.submit-button,
   &.admin-delete-button,
   &.not-found-link {
-    background-color: var(--hover-color);
-    color: var(--white);
+    background-color: var(--hover-color) !important;
+    color: var(--white) !important;
     padding: 0.5rem 1.25rem;
     font-weight: 600;
+    margin-bottom: 1rem !important;
   }
   
   /* Fælles button styling */
@@ -251,11 +254,12 @@ button, .button-like {
     font-size: 0.9rem;
     font-weight: 500;
     transition: all var(--transition-fast);
-    background: none;
+    background: var(--white);
     border: none;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     font-family: inherit;
     
@@ -286,7 +290,7 @@ button, .button-like {
 .login-container,
 .admin-create-page .page-container {
   max-width: 500px;
-  margin: 3rem auto;
+  margin: 3rem 1rem;
   padding: 2.5rem;
   background-color: var(--white);
   border-radius: var(--radius-lg);
@@ -508,7 +512,6 @@ button, .button-like {
     margin: -100px auto 0;
     padding: 2rem;
     position: relative;
-    display: grid;
     gap: 2rem;
     
     .movie-detail-poster {
@@ -549,6 +552,7 @@ button, .button-like {
         color: var(--warning);
         background-color: rgba(245, 158, 11, 0.1);
         padding: 0.5rem 1rem;
+        margin-bottom: 1rem;
         border-radius: var(--radius-full);
       }
       
@@ -700,7 +704,7 @@ button, .button-like {
 /* 4.9 Profile Page */
 .profile-container {
   max-width: 600px;
-  margin: 3rem auto;
+  margin: 3rem 1rem;
   padding: 2.5rem;
   background-color: var(--white);
   border-radius: var(--radius-lg);
@@ -920,6 +924,7 @@ button, .button-like {
     }
     
     .movie-detail-info {
+      padding-top: 6rem;
       h1 { font-size: 2.5rem; }
     }
   }
@@ -961,6 +966,13 @@ button, .button-like {
   
   .admin-movie-item { flex-direction: row; }
   .form-actions:not(.admin-create-page .form-actions) { flex-direction: row; }
+
+  .form-container,
+  .signup-container,
+  .login-container,
+  .admin-create-page .page-container {
+    margin: 3rem auto;
+  }
 }
 
 /* Desktop (1024px+) */

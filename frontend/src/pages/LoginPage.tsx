@@ -1,8 +1,9 @@
 // Login-side: håndterer login, fejl og redirect til /profile
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
 import { useAuth } from '../hooks/useAuth';
+import Layout from '../components/Layout'; // Tilføj denne import
 
 const LoginPage: React.FC = () => {
   // Lokal form-state
@@ -43,7 +44,8 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  return React.createElement('div', { className: 'login-container' },
+  // Opret login-indhold
+  const loginContent = React.createElement('div', { className: 'login-container' },
     React.createElement('h2', null, 'Log ind'),
     // Viser auth-fejl eller lokale fejl
     React.createElement(ErrorMessage, {
@@ -59,7 +61,6 @@ const LoginPage: React.FC = () => {
       React.createElement('div', { className: 'form-group' },
         // Email
         React.createElement('label', { htmlFor: 'email' }, 'Email:'),
-
         React.createElement('input', {
           type: 'email',
           id: 'email',
@@ -88,13 +89,19 @@ const LoginPage: React.FC = () => {
         className: 'submit-button'
       }, isLoading ? 'Logger ind...' : 'Log ind')
     ),
-React.createElement('p', null,
-  'Har du ikke en konto? ',
-  React.createElement('button', {
-    className: 'link-button',
-    onClick: () => navigate('/signup')  // Brug navigate i stedet for Link
-  }, 'Opret dig her'),
-  ));
+    // Link til signup
+    React.createElement('p', null,
+      'Har du ikke en konto? ',
+      React.createElement(Link, { to: '/signup' }, 'Opret dig her')
+    )
+  );
+
+  // Indpak i Layout komponenten (samme som SignupPage)
+  return React.createElement(
+    Layout,
+    null,
+    loginContent
+  );
 };
 
 export default LoginPage;
