@@ -77,8 +77,6 @@ const MovieDetailPage = () => {
 
                 setMovie(mapped);
 
-
-                setMovie(mapped);
             } catch (err: any) {
                 console.error("Fetch error:", err);
                 setError(err.message ?? "Der skete en fejl ved hentning af filmdetaljer");
@@ -89,8 +87,6 @@ const MovieDetailPage = () => {
 
         fetchMovie();
     }, [id]);
-    // Bestem indhold baseret på state
-    let content;
 
     if (isLoading) {
         return React.createElement("p", null, "Henter film...");
