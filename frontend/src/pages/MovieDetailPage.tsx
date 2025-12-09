@@ -1,9 +1,8 @@
 // frontend/src/pages/MovieDetailPage.tsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import MovieDetailPageComponent, {
-    Movie,
-} from "../components/MovieDetailPage";
+import MovieDetailPageComponent, { Movie, } from "../components/MovieDetailPage";
+import ErrorMessage from '../components/ErrorMessage';
 
 // Brug miljøvariabel
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://fullstack-eksamen-backend.onrender.com";
@@ -66,9 +65,13 @@ const MovieDetailPage = () => {
 
     if (error) {
         return React.createElement(
-            "p",
-            { style: { color: "red" } },
-            `Fejl: ${error}`
+            React.Fragment,
+            null,
+            React.createElement(ErrorMessage, {
+                message: error,
+                onClose: () => setError(null),
+            }),
+            React.createElement("p", null, "Kunne ikke hente denne film.")
         );
     }
 

@@ -4,7 +4,9 @@ import GenreList from "../components/GenreList";
 import MovieGrid from "../components/MovieGrid";
 import SearchInput from "../components/SearchInput";
 import SortSelector from "../components/SortSelector";
+import ErrorMessage from '../components/ErrorMessage';
 import '../style/kamilla.css';
+import '../style/app.css';
 
 export interface Movie {
     id: number;
@@ -105,8 +107,12 @@ const HomePage = () => {
             "div",
             { style: { padding: "20px" } },
             isLoading && React.createElement("p", null, "Henter film..."),
-            error &&
-            React.createElement("p", { style: { color: "red" } }, error),
+
+            React.createElement(ErrorMessage, {
+                message: error,
+                onClose: () => setError(null),
+            }),
+
             !isLoading &&
             !error &&
             React.createElement(

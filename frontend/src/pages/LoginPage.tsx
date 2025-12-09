@@ -1,26 +1,38 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ErrorMessage from '../components/ErrorMessage';
 import { useAuth } from '../hooks/useAuth';
+import { Link } from 'react-router-dom';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [localError, setLocalError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, error: authError, clearError } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+
+    setLocalError('');
+    if (clearError) clearError();
+
+    // Simpel validering
+    if (!email || !password) {
+      setLocalError('Email og password er påkrævet');
+      return;
+    }
+    
     setIsLoading(true);
 
     try {
       await login(email, password);
       navigate('/profile');
     } catch (err: any) {
-      setError(err.message || 'Login fejlede');
+      // Ekstra sikkerhed, hvis login kaster en fejl
+      setLocalError(err?.message || 'Login fejlede');
     } finally {
       setIsLoading(false);
     }
@@ -29,7 +41,13 @@ const LoginPage: React.FC = () => {
   return React.createElement('div', { className: 'login-container' },
     React.createElement('h2', null, 'Log ind'),
     
-    error && React.createElement('div', { className: 'error-message' }, error),
+    React.createElement(ErrorMessage, {
+      message: localError || authError || '',
+      onClose: () => {
+        setLocalError('');
+        if (clearError) clearError();
+      }
+    }),
     
     React.createElement('form', { onSubmit: handleSubmit },
       React.createElement('div', { className: 'form-group' },
@@ -65,7 +83,7 @@ const LoginPage: React.FC = () => {
     
     React.createElement('p', null,
       'Har du ikke en konto? ',
-      React.createElement('a', { href: '/signup' }, 'Opret dig her')
+      React.createElement(Link, { to: '/signup' }, 'Opret dig her')
     )
   );
 };
