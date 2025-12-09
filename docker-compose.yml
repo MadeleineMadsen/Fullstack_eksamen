@@ -23,7 +23,9 @@ services:
     environment:
       DATABASE_URL: postgresql://movie_app:movie_app_password@postgres:5432/movie_db
       TMDB_API_KEY: "1f6dc7215bb66ffdda1d1db32d0fb343"
-      
+    volumes:
+    - ./backend:/app
+    - /app/node_modules  # Undgå at overskrive node_modules
     depends_on:
       postgres:
         condition: service_healthy  # ← VENT på at postgres er healthy
