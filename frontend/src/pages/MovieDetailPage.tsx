@@ -1,8 +1,8 @@
 // frontend/src/pages/MovieDetailPage.tsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import MovieDetailPageComponents, { Movie, } from "../components/MovieDetailComponent";
 import ErrorMessage from '../components/ErrorMessage';
+import MovieDetailPageComponents, { Movie, } from "../components/MovieDetailComponent";
 
 // Brug miljøvariabel
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://fullstack-eksamen-backend.onrender.com";
@@ -112,7 +112,7 @@ const MovieDetailPage = () => {
         return React.createElement("p", null, "Film ikke fundet.");
     }
 
-    return React.createElement(MovieDetailPageComponent, { movie });
+    return React.createElement(MovieDetailPageComponents, { movie });
 };
 
 export default MovieDetailPage;
