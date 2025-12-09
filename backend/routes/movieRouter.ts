@@ -1,7 +1,7 @@
 import { Request, Router } from "express";
 import { adminMiddleware } from "../middleware/adminMiddleware"; // TILFØJ denne import
 import { authMiddleware } from "../middleware/authMiddleware";
-//import { Movie } from "../entities/Movie";
+
 import {
     createMovie,
     deleteMovieById,
@@ -12,29 +12,39 @@ import {
     PaginationOptions,
 } from "../services/movieService";
 
+// Standard værdier til pagination
 export const DEFAULT_PAGE_SIZE = 20;
 export const START_PAGE = 1;
 export const MAX_PAGE_SIZE = 40;
 
+// Typen for det svar vi sender tilbage på liste-endpointet
 interface MoviesResponse {
-    count: number;
-    next: string | null;
+    count: number;          // samlet antal film der matcher filteret
+    next: string | null;    // link til næste side (eller null hvis ingen)
     //results: Movie[];
-    results: any[];
+    results: any[];         // her kunne vi bruge Movie-type, men bruger any for simpelt
 }
 
 const movieRouter = Router();
 
+
+// Helper-funktion som bygger et standardiseret svar til /api/movies
 const buildMoviesResponse = (
     movies: any[],
     total: number,
     req: Request
 ): MoviesResponse => {
+    // Nuvarande side
     const page = req.query.page ? Number(req.query.page) : START_PAGE;
+
+      // Side-størrelse (antal film per side)
     const pageSize = req.query.page_size
         ? Number(req.query.page_size)
         : DEFAULT_PAGE_SIZE;
+
+    // Samlet antal sider
     const totalPages = Math.ceil(total / pageSize);
+    // Base-URL til at bygge "next"-link (fallback til localhost hvis env ikke sat)
     const baseUrl = process.env.SERVER_URL ?? "http://localhost:5001";
 
     return {
@@ -55,39 +65,50 @@ movieRouter.get("/test-auth", authMiddleware, (req, res) => {
 
 
 
-// GET /api/movies – liste af film (PUBLIC)
+// GET /api/movies – liste af film (med filters + pagination)
 movieRouter.get("/", async (req, res, next) => {
     try {
-        const filters: MovieFilters = {
-            title: req.query.title as string | undefined,
-            genre: req.query.genre ? Number(req.query.genre) : undefined,
-            minRating: req.query.minRating
-                ? Number(req.query.minRating)
-                : undefined,
-            maxRating: req.query.maxRating
-                ? Number(req.query.maxRating)
-                : undefined,
-            year: req.query.year ? Number(req.query.year) : undefined,
-        };
+    // Byg filter-objekt ud fra query params
+    const filters: MovieFilters = {
+        title: req.query.title as string | undefined,
+        genre: req.query.genre ? Number(req.query.genre) : undefined,
+        minRating: req.query.minRating
+        ? Number(req.query.minRating)
+        : undefined,
+        maxRating: req.query.maxRating
+        ? Number(req.query.maxRating)
+        : undefined,
+        year: req.query.year ? Number(req.query.year) : undefined,
+    };
+ // Pagination-opsætning baseret på query params
+    const pagination: PaginationOptions = {
+        page: req.query.page ? Number(req.query.page) : START_PAGE,
+        pageSize: req.query.page_size
+        ? Number(req.query.page_size)
+        : DEFAULT_PAGE_SIZE,
+    };
 
-        const pagination: PaginationOptions = {
-            page: req.query.page ? Number(req.query.page) : START_PAGE,
-            pageSize: req.query.page_size
-                ? Number(req.query.page_size)
-                : DEFAULT_PAGE_SIZE,
-        };
-
-        const { movies, total } = await getMovies(filters, pagination);
-        const response = buildMoviesResponse(movies, total, req);
-        res.send(response);
+     // Hent film fra service-laget
+    const { movies, total } = await getMovies(filters, pagination);
+    // Byg standardiseret response (count, next, results)
+    const response = buildMoviesResponse(movies, total, req);
+    res.send(response);
     } catch (error) {
-        next(error);
+    // Send fejlen videre til global error handler
+    next(error);
     }
 });
 
-// GET /api/movies/admin – kun film oprettet af admin i DB (ADMIN ONLY)
-movieRouter.get("/admin", authMiddleware, adminMiddleware, async (req, res, next) => {
+// GET /api/movies/admin – kun film oprettet af admin i DB
+// Beskyttet med authMiddleware + rollecheck
+movieRouter.get("/admin", authMiddleware, async (req, res, next) => {
     try {
+        const role = (req as any).userRole;
+        // Kun admin-brugere må få adgang
+        if (role !== "admin") {
+            return res.status(403).json({ message: "Forbidden: admin only" });
+        }
+
         const movies = await getAdminMoviesFromDb();
         res.json(movies);
     } catch (error) {
@@ -95,7 +116,7 @@ movieRouter.get("/admin", authMiddleware, adminMiddleware, async (req, res, next
     }
 });
 
-// GET /api/movies/:id – én film (PUBLIC)
+// GET /api/movies/:id – hent én film ud fra id
 movieRouter.get("/:id", async (req, res, next) => {
     const movieId = Number(req.params.id);
 
@@ -112,34 +133,42 @@ movieRouter.get("/:id", async (req, res, next) => {
     }
 });
 
-// POST /api/movies – opret film (ADMIN ONLY)
-movieRouter.post("/", authMiddleware, adminMiddleware, async (req, res, next) => {
+
+// !!! Trailers-route fjernet for nu, da getMovieTrailers ikke findes i service
+// Når iv har en TMDB-service, kan I tilføje den igen.
+
+
+// POST /api/movies – opret en ny film
+// (pt. uden auth, så alle kan oprette – kan senere begrænses til admin)
+movieRouter.post("/", async (req, res, next) => {
     try {
         const data = req.body;
 
-        if (!data.title) {
-            return res.status(400).send({ error: "title is required" });
-        }
+    // Simpel validering: title er påkrævet
+    if (!data.title) {
+        return res.status(400).send({ error: "title is required" });
+    }
 
-        const movie = await createMovie(data);
-        res.status(201).send(movie);
+    // Opret film via service-laget
+    const movie = await createMovie(data);
+    res.status(201).send(movie);
     } catch (error) {
         next(error);
     }
 });
 
-// DELETE /api/movies/:id – slet film (ADMIN ONLY)
-movieRouter.delete("/:id", authMiddleware, adminMiddleware, async (req, res, next) => {
+// DELETE /api/movies/:id – slet film med given id
+movieRouter.delete("/:id", async (req, res, next) => {
     const movieId = Number(req.params.id);
 
     try {
         const deleted = await deleteMovieById(movieId);
 
-        if (!deleted) {
-            return res.status(404).send({ error: "Movie not found." });
-        }
-
-        res.status(204).send();
+    if (!deleted) {
+        return res.status(404).send({ error: "Movie not found." });
+    }
+    // 204 = No Content (ingen body, men succesfuld sletning)
+    res.status(204).send();
     } catch (error) {
         next(error);
     }

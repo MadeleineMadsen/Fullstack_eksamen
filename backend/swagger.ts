@@ -1,7 +1,7 @@
-// backend/swagger.ts
 import { Express } from "express";
 import swaggerUi from "swagger-ui-express";
 
+// Swagger/OpenAPI dokumentation som et plain JS-objekt
 const swaggerDocument = {
     openapi: "3.0.0",
     info: {
@@ -17,8 +17,14 @@ const swaggerDocument = {
         },
     ],
 
+    // ========================
+    // ROUTE BESKRIVELSER (paths)
+    // ========================
     paths: {
         "/api/movies": {
+            // -------------------------
+            // GET /api/movies
+            // -------------------------
             get: {
                 tags: ["Movies"],
                 summary: "Hent liste af populære film fra TMDB",
@@ -100,6 +106,9 @@ const swaggerDocument = {
                 },
             },
 
+            // -------------------------
+            // POST /api/movies
+            // -------------------------
             post: {
                 tags: ["Movies"],
                 summary: "Opret en ny film i den lokale database",
@@ -129,6 +138,9 @@ const swaggerDocument = {
         },
 
         "/api/movies/{id}": {
+            // -------------------------
+            // GET /api/movies/{id}
+            // -------------------------
             get: {
                 tags: ["Movies"],
                 summary: "Hent detaljer for en specifik film (fra TMDB)",
@@ -164,6 +176,9 @@ const swaggerDocument = {
                 },
             },
 
+             // -------------------------
+            // DELETE /api/movies/{id}
+            // -------------------------
             delete: {
                 tags: ["Movies"],
                 summary: "Slet en film fra den lokale database",
@@ -187,6 +202,9 @@ const swaggerDocument = {
         },
     },
 
+    // ========================
+    // COMPONENTS (schemas)
+    // ========================
     components: {
         schemas: {
             MoviesResponse: {
@@ -379,6 +397,7 @@ const swaggerDocument = {
     },
 };
 
+// Funktion der mount'er Swagger UI på /api-docs
 export function setupSwagger(app: Express) {
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
         customCss: ".swagger-ui .info h2 { display: none }",
