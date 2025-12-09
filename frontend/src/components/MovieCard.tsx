@@ -40,11 +40,11 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       React.createElement(
         "div",
         { className: "movie-card-content" },
-        React.createElement("h3", null, movie.title),
-        React.createElement("div", null, "⭐ ", movie.rating),
+        React.createElement("h3", { className: "movie-card-title" }, movie.title),
+        React.createElement("div", { className: "movie-card-rating" }, "⭐ ", movie.rating),
         React.createElement(
           "p",
-          null,
+          { className: "movie-card-year" },
           movie.released ? movie.released.substring(0, 4) : ""
         )
       )

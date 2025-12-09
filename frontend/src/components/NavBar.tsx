@@ -32,7 +32,7 @@ const NavBar: React.FC = () => {
         'button',
         {
           onClick: () => handleNavigation('/admin/movies/new'),
-          className: 'nav-link'
+          className: 'nav-link admin-link'
         },
         ' Opret film'
       ),

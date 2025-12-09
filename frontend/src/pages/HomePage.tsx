@@ -1,12 +1,12 @@
 // frontend/src/pages/HomePage.tsx
 import React, { useEffect, useState } from "react";
+import ErrorMessage from '../components/ErrorMessage';
 import GenreList from "../components/GenreList";
 import MovieGrid from "../components/MovieGrid";
 import SearchInput from "../components/SearchInput";
 import SortSelector from "../components/SortSelector";
-import ErrorMessage from '../components/ErrorMessage';
-import '../style/kamilla.css';
 import '../style/app.css';
+import '../style/kamilla.css';
 
 export interface Movie {
     id: number;
@@ -51,7 +51,6 @@ const HomePage = () => {
                     url.searchParams.set("query", searchText);
                 }
 
-                // FJERNET: API key tjek - din backend har nøglen
                 const res = await fetch(url.toString());
                 
                 if (!res.ok) {
@@ -99,15 +98,25 @@ const HomePage = () => {
         React.createElement(
             "div",
             { className: "filter-container" },
-            React.createElement(SearchInput, { onSearch: handleSearch }),
             React.createElement(
                 "div",
-                { className: "filters-right" },
-                React.createElement(GenreList, { onSelectGenre: handleGenre }),
-                React.createElement(SortSelector, { onSelectSort: handleSort })
+                { className: "filters-grid" },
+                // Search i venstre side
+                React.createElement(
+                    "div",
+                    { className: "search-wrapper" },
+                    React.createElement(SearchInput, { onSearch: handleSearch })
+                ),
+                // Genre og Sort i højre side
+                React.createElement(
+                    "div",
+                    { className: "filters-wrapper" },
+                    React.createElement(GenreList, { onSelectGenre: handleGenre }),
+                    React.createElement(SortSelector, { onSelectSort: handleSort })
+                )
             )
         ),
-         // Indhold: loader, fejl eller filmgrid
+        // Indhold: loader, fejl eller filmgrid
         React.createElement(
             "div",
             { style: { padding: "20px" } },
