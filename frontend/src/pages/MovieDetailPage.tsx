@@ -1,11 +1,8 @@
 // frontend/src/pages/MovieDetailPage.tsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import MovieDetailPageComponent, {
-    Movie,
-} from "../components/MovieDetailComponent";
-import Layout from "./Layout";
-
+import MovieDetailPageComponent, { Movie, } from "../components/MovieDetailPage";
+import ErrorMessage from '../components/ErrorMessage';
 
 // Brug miljøvariabel
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://fullstack-eksamen-backend.onrender.com";
@@ -96,17 +93,26 @@ const MovieDetailPage = () => {
     let content;
 
     if (isLoading) {
-        content = React.createElement("p", null, "Henter film...");
-    } else if (error) {
-        content = React.createElement("p", { style: { color: "red" } }, `Fejl: ${error}`);
-    } else if (!movie) {
-        content = React.createElement("p", null, "Film ikke fundet.");
-    } else {
-        content = React.createElement(MovieDetailPageComponent, { movie });
+        return React.createElement("p", null, "Henter film...");
     }
 
-    // Wrap med Layout komponent
-    return React.createElement(Layout, { children: content });
+    if (error) {
+        return React.createElement(
+            React.Fragment,
+            null,
+            React.createElement(ErrorMessage, {
+                message: error,
+                onClose: () => setError(null),
+            }),
+            React.createElement("p", null, "Kunne ikke hente denne film.")
+        );
+    }
+
+    if (!movie) {
+        return React.createElement("p", null, "Film ikke fundet.");
+    }
+
+    return React.createElement(MovieDetailPageComponent, { movie });
 };
 
 export default MovieDetailPage;

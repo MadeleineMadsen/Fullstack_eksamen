@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Layout from '../pages/Layout';
+import ErrorMessage from '../components/ErrorMessage';
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -10,10 +11,13 @@ const SignupPage: React.FC = () => {
     confirmPassword: '',
     name: ''
   });
-  const [message, setMessage] = useState(''); // Ændret fra error til message
-  const [isLoading, setIsLoading] = useState(false);
 
-  const { signup } = useAuth();
+  // Adskil fejl- og succes-beskeder
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { signup, error: authError, clearError } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,7 +30,10 @@ const SignupPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage("");
+
+    setErrorMessage('');
+    setSuccessMessage("");
+    if (clearError) clearError();
 
     // 🔐 XSS-beskyttelse for navn (bloker < og >)
     if (
@@ -39,22 +46,22 @@ const SignupPage: React.FC = () => {
 
     // Validering
     if (!formData.email || !formData.password) {
-      setMessage("❌ Email og password er påkrævet");
+      setErrorMessage('Email og password er påkrævet');
       return;
     }
 
     if (formData.password.length < 6) {
-      setMessage("❌ Password skal være mindst 6 tegn");
+      setErrorMessage('Password skal være mindst 6 tegn');
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setMessage("❌ Passwords er ikke ens");
+      setErrorMessage('Passwords er ikke ens');
       return;
     }
 
-    if (!formData.email.includes("@")) {
-      setMessage("❌ Ugyldig email format");
+    if (!formData.email.includes('@')) {
+      setErrorMessage('Ugyldig email format');
       return;
     }
 
@@ -66,32 +73,45 @@ const SignupPage: React.FC = () => {
       if (result.success) {
         // Success - vis besked og redirect til login
         setMessage(`✅ ${result.message} Du vil blive viderestillet til login...`);
-
+        
         // Vent 3 sekunder og redirect til login
         setTimeout(() => {
           navigate('/login');
         }, 3000);
       } else {
         // Error - vis besked
-        setMessage(`❌ ${result.message}`);
+        setErrorMessage(`${result.message}`);
       }
 
     } catch (err: any) {
-      setMessage(`❌ ${err.message || 'Registrering fejlede'}`);
+      setErrorMessage(`${err.message || 'Registrering fejlede'}`);
     } finally {
       setIsLoading(false);
     }
   };
 
   const signupContent = React.createElement('div', { className: 'signup-container' },
-    React.createElement('h2', null, '📝 Opret ny bruger'),
+    React.createElement('h2', null, 'Opret ny bruger'),
 
-    // Vis message (kan være både success og error)
-    message && React.createElement('div', {
-      className: message.includes('✅') ? 'success-message' : 'error-message'
-    }, message),
+    // ERROR: brug fælles ErrorMessage-komponent (lokal fejl + authStore-fejl)
+    React.createElement(ErrorMessage, {
+      message: errorMessage || authError || '',
+      onClose: () => {
+        setErrorMessage('');
+        if (clearError) clearError();
+      }
+    }),
+
+    // SUCCESS: vises separat med success-css
+    successMessage &&
+      React.createElement(
+        'div',
+        { className: 'success-message' },
+        successMessage
+      ),
 
     React.createElement('form', { onSubmit: handleSubmit, className: 'signup-form' },
+      
       // Navn (valgfrit)
       React.createElement('div', { className: 'form-group' },
         React.createElement('label', { htmlFor: 'name' }, 'Fulde navn:'),
