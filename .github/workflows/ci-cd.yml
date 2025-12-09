@@ -81,18 +81,17 @@ jobs:
     
     - name: Install frontend dependencies
       working-directory: ./frontend
-      run: |
-        rm -rf node_modules package-lock.json
-        npm install --legacy-peer-deps --no-audit
+      run: npm ci
     
     - name: Run frontend tests
       working-directory: ./frontend
       env:
         VITE_TMDB_API_KEY: 1f6dc7215bb66ffdda1d1db32d0fb343
         NODE_ENV: test
+        NODE_OPTIONS: "--experimental-vm-modules"
       run: |
         rm -rf node_modules/.vite
-        npx vitest run --no-threads
+        npx vitest run --reporter=verbose
 
   build-docker:
     name: "Build Docker Images"
