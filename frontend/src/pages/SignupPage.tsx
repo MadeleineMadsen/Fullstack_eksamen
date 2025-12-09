@@ -12,7 +12,7 @@ const SignupPage: React.FC = () => {
   });
   const [message, setMessage] = useState(''); // Ændret fra error til message
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { signup } = useAuth();
   const navigate = useNavigate();
 
@@ -26,39 +26,47 @@ const SignupPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage('');
+    setMessage("");
 
-    // Validering (beholder din fine validering)
+    // 🔐 XSS-beskyttelse for navn (bloker < og >)
+    if (
+      formData.name &&
+      (formData.name.includes("<") || formData.name.includes(">"))
+    ) {
+      setMessage("❌ Navn må ikke indeholde < eller >");
+      return;
+    }
+
+    // Validering
     if (!formData.email || !formData.password) {
-      setMessage('❌ Email og password er påkrævet');
+      setMessage("❌ Email og password er påkrævet");
       return;
     }
 
     if (formData.password.length < 6) {
-      setMessage('❌ Password skal være mindst 6 tegn');
+      setMessage("❌ Password skal være mindst 6 tegn");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setMessage('❌ Passwords er ikke ens');
+      setMessage("❌ Passwords er ikke ens");
       return;
     }
 
-    if (!formData.email.includes('@')) {
-      setMessage('❌ Ugyldig email format');
+    if (!formData.email.includes("@")) {
+      setMessage("❌ Ugyldig email format");
       return;
     }
 
     setIsLoading(true);
-
     try {
       // Kalder signup som returnerer { success, message }
       const result = await signup(formData.email, formData.password, formData.name);
-      
+
       if (result.success) {
         // Success - vis besked og redirect til login
         setMessage(`✅ ${result.message} Du vil blive viderestillet til login...`);
-        
+
         // Vent 3 sekunder og redirect til login
         setTimeout(() => {
           navigate('/login');
@@ -67,7 +75,7 @@ const SignupPage: React.FC = () => {
         // Error - vis besked
         setMessage(`❌ ${result.message}`);
       }
-      
+
     } catch (err: any) {
       setMessage(`❌ ${err.message || 'Registrering fejlede'}`);
     } finally {
@@ -77,12 +85,12 @@ const SignupPage: React.FC = () => {
 
   const signupContent = React.createElement('div', { className: 'signup-container' },
     React.createElement('h2', null, '📝 Opret ny bruger'),
-    
+
     // Vis message (kan være både success og error)
-    message && React.createElement('div', { 
-      className: message.includes('✅') ? 'success-message' : 'error-message' 
+    message && React.createElement('div', {
+      className: message.includes('✅') ? 'success-message' : 'error-message'
     }, message),
-    
+
     React.createElement('form', { onSubmit: handleSubmit, className: 'signup-form' },
       // Navn (valgfrit)
       React.createElement('div', { className: 'form-group' },
@@ -97,7 +105,7 @@ const SignupPage: React.FC = () => {
           placeholder: 'Indtast dit navn'
         })
       ),
-      
+
       // Email (påkrævet)
       React.createElement('div', { className: 'form-group' },
         React.createElement('label', { htmlFor: 'email' }, 'Email:'),
@@ -112,7 +120,7 @@ const SignupPage: React.FC = () => {
           placeholder: 'din@email.com'
         })
       ),
-      
+
       // Password (påkrævet)
       React.createElement('div', { className: 'form-group' },
         React.createElement('label', { htmlFor: 'password' }, 'Password:'),
@@ -128,7 +136,7 @@ const SignupPage: React.FC = () => {
           minLength: 6
         })
       ),
-      
+
       // Bekræft password (påkrævet)
       React.createElement('div', { className: 'form-group' },
         React.createElement('label', { htmlFor: 'confirmPassword' }, 'Bekræft password:'),
@@ -143,7 +151,7 @@ const SignupPage: React.FC = () => {
           placeholder: 'Gentag password'
         })
       ),
-      
+
       // Submit knap
       React.createElement('button', {
         type: 'submit',
@@ -151,7 +159,7 @@ const SignupPage: React.FC = () => {
         className: 'submit-button'
       }, isLoading ? 'Opretter bruger...' : 'Opret bruger')
     ),
-    
+
     // Link til login
     React.createElement('p', { className: 'login-link' },
       'Har du allerede en konto? ',
