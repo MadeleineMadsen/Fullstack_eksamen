@@ -23,7 +23,7 @@ function setAuthCookie(res: Response, token: string) {
     res.cookie("auth_token", token, {
         httpOnly: true,
         sameSite: "lax",
-        secure: false, // true i produktion (https)
+        secure: process.env.NODE_ENV === "production",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dage
     });
 }
@@ -139,5 +139,19 @@ router.get("/profile", authMiddleware, async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 });
+
+
+// POST /api/auth/logout
+router.post("/logout", (req: Request, res: Response) => {
+    // Fjern JWT-cookien
+    res.clearCookie("auth_token", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+    });
+
+    return res.json({ message: "Logged out" });
+});
+
 
 export default router;
