@@ -77,19 +77,9 @@ export class Movie {
     genres: Genre[];
 
 
-    // Many-to-many relation til skuespillere.
+   // Many-to-many relation til skuespillere.
+   // Join-tabel binder film og actors sammen.
     // Join-tabel binder film og actors sammen.
-    @ManyToMany(() => Genre, (genre) => genre.movies)
-    @JoinTable({
-        name: "movies_has_genres",
-        joinColumns: [{ name: "movies_id", referencedColumnName: "id" }],
-        inverseJoinColumns: [{ name: "genres_id", referencedColumnName: "id" }],
-    })
-    genres: Genre[];
-
-
-    // Many-to-many relation til streamingplatforme.
-    // En film kan findes på flere platforme (Netflix, HBO, osv.)
     @ManyToMany(() => Actor, (actor) => actor.movies)
     @JoinTable({
         name: "movies_has_actors",
@@ -99,8 +89,8 @@ export class Movie {
     actors: Actor[];
 
 
-     // One-to-many relation til trailers.
-    // En film kan have flere trailers knyttet til sig.
+     // Many-to-many relation til streamingplatforme.
+    // En film kan findes på flere platforme (Netflix, HBO, osv.)
     @ManyToMany(() => StreamingPlatform, (platform) => platform.movies)
     @JoinTable({
         name: "movies_has_streaming_platforms",

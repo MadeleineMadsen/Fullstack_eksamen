@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { MovieFilters, PaginationOptions } from './movieService';
+import type { MovieFilters, PaginationOptions } from '../services//movieService';
 
 // ============================================================================
 // FILTER-TESTS — Tester MovieFilters og PaginationOptions uden database
