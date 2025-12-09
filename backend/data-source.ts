@@ -11,7 +11,7 @@ export const AppDataSource = new DataSource({
     type: "postgres",
     url: process.env.DATABASE_URL,
     entities: [Movie, Actor, StreamingPlatform, Genre, Trailer, User],
-    synchronize: true,
+    synchronize: false,
     logging: true,
 });
 
