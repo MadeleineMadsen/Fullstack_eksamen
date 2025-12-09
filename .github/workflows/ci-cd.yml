@@ -90,7 +90,7 @@ jobs:
         NODE_ENV: test
       run: |
         rm -rf node_modules/.vite
-        npx vitest run --single-thread
+        npx vitest run --no-threads
 
   build-docker:
     name: "Build Docker Images"
