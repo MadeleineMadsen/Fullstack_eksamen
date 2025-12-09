@@ -3,8 +3,6 @@ import React from "react";
 import Layout from "./components/Layout";
 import HomePage from "./pages/HomePage";
 import "./style/app.css";
-import "./style/kamilla.css";
-import "./style/naomi.css";
 
 // ---------------------------------------------------------------------------
 // App-komponenten fungerer som "root" i frontend'en.

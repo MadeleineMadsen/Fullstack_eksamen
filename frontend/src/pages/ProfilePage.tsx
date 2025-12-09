@@ -2,7 +2,6 @@ import React from 'react';
 import Layout from '../components/Layout';
 import { useAuth } from '../hooks/useAuth';
 import '../style/app.css';
-import '../style/kamilla.css';
 
 // Side der viser brugerens profiloplysninger fra auth-store
 const ProfilePage: React.FC = () => {
