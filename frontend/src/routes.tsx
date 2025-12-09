@@ -1,4 +1,3 @@
-// frontend/src/routes.tsx
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App";
@@ -10,7 +9,7 @@ import SignupPage from './pages/SignupPage';
 import AdminRoute from "./components/AdminRoute";
 import CreateMoviePage from "./pages/CreateMoviePage";
 import AdminMoviesPage from "./pages/AdminMoviesPage";
-
+import NotFoundPage from "./pages/NotFoundPage";
 
 const router = createBrowserRouter([
   {
@@ -39,27 +38,26 @@ const router = createBrowserRouter([
       },
     ],
   },
-  // 🔐 ADMIN-DEL
+  // ADMIN-DEL
   {
     path: "/admin",
     element: React.createElement(AdminRoute),
     children: [
-        {
-        path: "movies",              // /admin/movies  -> liste med film
+      {
+        path: "movies",
         element: React.createElement(AdminMoviesPage),
       },
       {
-        path: "movies/new", // fuld path = /admin/movies/new
+        path: "movies/new",
         element: React.createElement(CreateMoviePage),
       },
     ],
   },
-
-  // (VALGFRI) 404-route, hvis du har en ErrorPage
-  // {
-  //   path: "*",
-  //   element: React.createElement(ErrorPage),
-  // },
+  // 404-route
+  {
+    path: "*",
+    element: React.createElement(NotFoundPage),
+  },
 ]);
 
 const AppRoutes = () => {
