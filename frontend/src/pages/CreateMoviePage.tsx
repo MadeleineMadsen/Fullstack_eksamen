@@ -8,6 +8,13 @@ const API_BASE_URL =
     import.meta.env.VITE_API_URL ||
     "https://fullstack-eksamen-backend.onrender.com";
 
+// 🔐 Security helpers – bruges til XSS/URL-validering
+const hasForbiddenChars = (value: string): boolean =>
+    value.includes("<") || value.includes(">");
+
+const isInvalidUrl = (url: string): boolean =>
+    url !== "" && !/^https?:\/\//i.test(url);
+
 const CreateMoviePage: React.FC = () => {
     const { isAdmin } = useAuth();
     const navigate = useNavigate();
@@ -42,6 +49,32 @@ const CreateMoviePage: React.FC = () => {
         e.preventDefault();
         setError(null);
         setSuccess(null);
+
+        // DEBUG: se hvad der faktisk bliver sendt til valideringen
+        console.log("🔍 formData ved submit:", formData);
+
+        // 🔐 1) XSS-beskyttelse på tekstfelter
+        if (
+            hasForbiddenChars(formData.title) ||
+            hasForbiddenChars(formData.plot) ||
+            hasForbiddenChars(formData.director)
+        ) {
+            setError(
+                "Titel, beskrivelse og instruktør må ikke indeholde < eller >"
+            );
+            return;
+        }
+
+        // 🔐 2) URL-sikkerhed (ingen javascript: osv.)
+        if (
+            isInvalidUrl(formData.poster_image) ||
+            isInvalidUrl(formData.background_image)
+        ) {
+            setError(
+                "Poster- og background-URL skal starte med http:// eller https://"
+            );
+            return;
+        }
 
         if (!isAdmin) {
             setError("Du skal være admin for at oprette film.");
@@ -103,7 +136,9 @@ const CreateMoviePage: React.FC = () => {
                 background_image: "",
             });
         } catch (err: any) {
-            setError(err.message || "Noget gik galt ved oprettelse af filmen.");
+            setError(
+                err.message || "Noget gik galt ved oprettelse af filmen."
+            );
         } finally {
             setIsSubmitting(false);
         }
@@ -114,10 +149,10 @@ const CreateMoviePage: React.FC = () => {
         null,
         React.createElement(
             "div",
-            { className: "admin-create-page" }, // ydre wrapper til kun admin-siden
+            { className: "admin-create-page" },
             React.createElement(
                 "div",
-                { className: "page-container" }, // kortet som CSS'en styler
+                { className: "page-container" },
                 React.createElement("h1", null, "Admin – Opret ny film"),
                 React.createElement(
                     "button",
