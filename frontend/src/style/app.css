@@ -296,7 +296,6 @@ h4 { font-size: 1.25rem; }
 }
 
 /* FÆLLES INPUT FIELDS - Tilføj [type="text"] og [type="name"] */
-input[type="text"],
 input[type="name"],
 input[type="email"],
 input[type="password"],
