@@ -13,6 +13,7 @@ export default interface Movie {
     runtime?: number;
     plot?: string;
     director?: string;
+    isAdmin: boolean;
     genres: Genre[];
     actors: Actor[];
     streaming_platforms: StreamingPlatform[];
