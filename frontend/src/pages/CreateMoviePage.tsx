@@ -4,11 +4,12 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../hooks/useAuth";
 
+// Base-URL til backend (fra .env eller fallback)
 const API_BASE_URL =
     import.meta.env.VITE_API_URL ||
     "https://fullstack-eksamen-backend.onrender.com";
 
-// 🔐 Security helpers – bruges til XSS/URL-validering
+//  Security helpers – bruges til XSS/URL-validering
 const hasForbiddenChars = (value: string): boolean =>
     value.includes("<") || value.includes(">");
 
@@ -18,7 +19,7 @@ const isInvalidUrl = (url: string): boolean =>
 const CreateMoviePage: React.FC = () => {
     const { isAdmin } = useAuth();
     const navigate = useNavigate();
-
+ // Formularens state
     const [formData, setFormData] = useState({
         title: "",
         plot: "",
@@ -35,6 +36,7 @@ const CreateMoviePage: React.FC = () => {
     const [success, setSuccess] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Opdaterer formData ved input-ændringer
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -45,15 +47,16 @@ const CreateMoviePage: React.FC = () => {
         }));
     };
 
+    // Håndter submit af formular (opret film)
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         setSuccess(null);
 
         // DEBUG: se hvad der faktisk bliver sendt til valideringen
-        console.log("🔍 formData ved submit:", formData);
+        console.log(" formData ved submit:", formData);
 
-        // 🔐 1) XSS-beskyttelse på tekstfelter
+        //  1) XSS-beskyttelse på tekstfelter
         if (
             hasForbiddenChars(formData.title) ||
             hasForbiddenChars(formData.plot) ||
@@ -65,7 +68,7 @@ const CreateMoviePage: React.FC = () => {
             return;
         }
 
-        // 🔐 2) URL-sikkerhed (ingen javascript: osv.)
+        //  2) URL-sikkerhed (ingen javascript: osv.)
         if (
             isInvalidUrl(formData.poster_image) ||
             isInvalidUrl(formData.background_image)
@@ -121,7 +124,7 @@ const CreateMoviePage: React.FC = () => {
 
             const created = await res.json();
 
-            setSuccess(`Filmen "${created.title}" er oprettet ✅`);
+            setSuccess(`Filmen "${created.title}" er oprettet `);
             setError(null);
 
             setFormData({

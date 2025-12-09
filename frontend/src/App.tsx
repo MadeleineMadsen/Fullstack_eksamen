@@ -6,7 +6,12 @@ import "./style/app.css";
 import "./style/kamilla.css";
 import "./style/naomi.css";
 
-// App er en sheel rundt omkring homepage
+// ---------------------------------------------------------------------------
+// App-komponenten fungerer som "root" i frontend'en.
+// Den wrapper hele appen i Layout (navbar + main container)
+// og viser HomePage som default indhold.
+// ---------------------------------------------------------------------------
+
 function App() {
   return React.createElement(
     Layout,

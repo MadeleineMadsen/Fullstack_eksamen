@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../hooks/useAuth";
 
+// Base-URL til backend (fra .env eller fallback)
 const API_BASE_URL =
     import.meta.env.VITE_API_URL ||
     "https://fullstack-eksamen-backend.onrender.com";
@@ -18,11 +19,13 @@ const AdminMoviesPage: React.FC = () => {
     const { isAdmin } = useAuth();
     const navigate = useNavigate();
 
+    // Lokal state til film, loading, fejl og aktiv sletning
     const [movies, setMovies] = useState<AdminMovie[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
+    // Hent liste af admin-oprettede film ved mount
     useEffect(() => {
     const fetchMovies = async () => {
         try {
@@ -40,7 +43,7 @@ const AdminMoviesPage: React.FC = () => {
             }
 
             const data: AdminMovie[] = await res.json();
-            console.log("🔍 /api/movies/admin response:", data);
+            console.log(" /api/movies/admin response:", data);
 
             setMovies(data);
         } catch (err: any) {
@@ -57,7 +60,7 @@ const AdminMoviesPage: React.FC = () => {
     fetchMovies();
 }, []);
 
-
+    // Håndter sletning af film (kun for admin)
     const handleDelete = async (movieId: number, title: string) => {
         if (!isAdmin) {
             setError("Du skal være admin for at slette film.");
@@ -91,6 +94,7 @@ const AdminMoviesPage: React.FC = () => {
                 throw new Error(msg);
             }
 
+            // Fjern filmen fra listen i UI
             setMovies((prev) => prev.filter((m) => m.id !== movieId));
         } catch (err: any) {
             console.error(err);
@@ -100,6 +104,7 @@ const AdminMoviesPage: React.FC = () => {
         }
     };
 
+    // Hvis ikke admin → vis besked
     if (!isAdmin) {
         return React.createElement(
             Layout,
@@ -116,6 +121,7 @@ const AdminMoviesPage: React.FC = () => {
         );
     }
 
+     // Vælg hvilket indhold der skal vises
     let content: React.ReactNode;
 
     if (isLoading) {
@@ -177,6 +183,7 @@ const AdminMoviesPage: React.FC = () => {
         );
     }
 
+    // Wrapper siden i Layout med overskrift + content
     return React.createElement(
         Layout,
         null,

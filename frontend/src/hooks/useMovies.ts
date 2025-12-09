@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { movieService, MovieFilters } from '../services/movieService';
 import Movie from '../entities/Movie';
 
+// Henter liste af film (med filtre)
 export const useMovies = (filters?: MovieFilters) => {
     return useQuery<Movie[], Error>({
         queryKey: ['movies', filters],
@@ -13,21 +14,21 @@ export const useMovies = (filters?: MovieFilters) => {
     });
 };
 
-// Optional: Separate hook for search
+// Henter film baseret på søgetekst
 export const useMovieSearch = (searchQuery: string) => {
     return useQuery<Movie[], Error>({
         queryKey: ['movies', 'search', searchQuery],
         queryFn: () => movieService.getAllMovies({ search: searchQuery }),
-        enabled: searchQuery.length > 0, // Only run if there's a search query
-        staleTime: 2 * 60 * 1000, // 2 minutes for search results
+        enabled: searchQuery.length > 0, 
+        staleTime: 2 * 60 * 1000, 
     });
 };
 
-// Optional: Hook for movies by genre
+// Henter film baseret på genre
 export const useMoviesByGenre = (genreId: number) => {
     return useQuery<Movie[], Error>({
         queryKey: ['movies', 'genre', genreId],
         queryFn: () => movieService.getAllMovies({ genre: genreId }),
-        enabled: !!genreId, // Only run if genreId is provided
+        enabled: !!genreId,  // Kør kun hvis genre er valgt
     });
 };

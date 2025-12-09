@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-// Types
+// Bruger-typen (frontend)
 export interface User {
     id: number;
     email: string;
@@ -9,12 +9,14 @@ export interface User {
     role?: string;
 }
 
+// Zustand state + actions
 interface AuthState {
     user: User | null;
     isAuthenticated: boolean;
     loading: boolean;
     error: string | null;
 
+// Auth funktioner
     login: (email: string, password: string) => Promise<void>;
     signup: (email: string, password: string, name?: string) => Promise<{ success: boolean; message: string }>; // Ændret return type
     logout: () => Promise<void>;
@@ -22,6 +24,7 @@ interface AuthState {
     clearError: () => void;
 }
 
+// Backend base URL
 const API_BASE_URL = "http://localhost:5001/api"; 
 
 const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set'
@@ -31,14 +34,15 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
     loading: false,
     error: null,
 
-    // Login action
+   // ---------------------- LOGIN ----------------------
+
     login: async (email: string, password: string) => {
         set({ loading: true, error: null });
 
         try {
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
-                credentials: "include",
+                credentials: "include",// Sender cookie med
                 body: JSON.stringify({ email, password }),
                 headers: { "Content-Type": "application/json" },
             });
@@ -49,7 +53,7 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
             }
 
             const userData = await response.json();
-            
+            // Gem bruger i Zustand
             set({ 
                 user: userData,
                 isAuthenticated: true, 
@@ -63,11 +67,11 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
                 isAuthenticated: false,
                 user: null
             });
-            throw error;
+            throw error;// Sender fejl tilbage til LoginPage
         }
     },
 
-    // Signup action - ÆNDRET
+     // ---------------------- SIGNUP ----------------------
     signup: async (email: string, password: string, name?: string) => {
         set({ loading: true, error: null });
 
@@ -88,7 +92,7 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
                 throw new Error(errorData.message || "Signup fejlede");
             }
 
-            // Success - men vi logger ikke brugeren ind
+             // Koden logger IKKE automatisk brugeren ind
             set({ loading: false });
             
             return { 
@@ -110,7 +114,7 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
         }
     },
 
-    // Logout action
+    // ---------------------- LOGOUT ----------------------
     logout: async () => {
         set({ loading: true });
 
@@ -136,7 +140,7 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
         }
     },
 
-    // Fetch current user
+    // ---------------------- FETCH ME ----------------------
     fetchMe: async () => {
         set({ loading: true });
 
@@ -172,7 +176,7 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
         }
     },
 
-    // Clear error action
+     // ---------------------- CLEAR ERROR ----------------------
     clearError: () => set({ error: null }),
 }));
 

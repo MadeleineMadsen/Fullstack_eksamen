@@ -1,10 +1,12 @@
 import User from '../entities/User';
 
+// Data til login
 export interface LoginData {
     email: string;
     password: string;
 }
 
+// Data til signup
 export interface SignupData {
     username: string;
     email: string;
@@ -12,9 +14,9 @@ export interface SignupData {
 }
 
 class UserService {
-    private baseUrl = '/api';
+    private baseUrl = '/api'; // Base URL for backend auth-routes
 
-    // Login
+    // Login → sender email + password til backend
     async login(loginData: LoginData): Promise<{ user: User; token: string }> {
         const response = await fetch(`${this.baseUrl}/auth/login`, {
             method: 'POST',
@@ -28,7 +30,7 @@ class UserService {
         return response.json();
     }
 
-    // Signup
+    // Signup → opretter ny bruge
     async signup(signupData: SignupData): Promise<{ user: User; token: string }> {
         const response = await fetch(`${this.baseUrl}/auth/signup`, {
             method: 'POST',
@@ -42,7 +44,7 @@ class UserService {
         return response.json();
     }
 
-    // Get current user
+     // Hent den nuværende bruger (bruger token)
     async getCurrentUser(token: string): Promise<User> {
         const response = await fetch(`${this.baseUrl}/auth/me`, {
             headers: {
@@ -54,28 +56,28 @@ class UserService {
         return response.json();
     }
 
-    // Logout (client-side)
+    // Fjern brugerdata lokalt (frontend logout)
     logout(): void {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
     }
 
-    // Save token to localStorage
+    // Gem token localStoragealt
     saveToken(token: string): void {
         localStorage.setItem('token', token);
     }
 
-    // Get token from localStorage
+    // Hent token lokalt localStorage
     getToken(): string | null {
         return localStorage.getItem('token');
     }
 
-    // Save user to localStorage
+    // Gem brugerinfo localStorage
     saveUser(user: User): void {
         localStorage.setItem('user', JSON.stringify(user));
     }
 
-    // Get user from localStorage
+    // // Hent brugerinfo localStorage
     getUser(): User | null {
         const userStr = localStorage.getItem('user');
         return userStr ? JSON.parse(userStr) : null;
