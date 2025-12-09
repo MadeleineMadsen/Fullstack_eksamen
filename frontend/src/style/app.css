@@ -1,96 +1,1327 @@
-.error-message {
-    background-color: #fee2e2;
-    color: #b91c1c;
-    border: 1px solid #fecaca;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+/* ================================================
+   MOVIE APP - MODERN LYS CSS
+   Mobile-first | Lys & moderne design
+================================================ */
+
+/* ================================================
+   1. VARIABLER & RESET
+================================================ */
+:root {
+  /* Lys farvepalette */
+  --primary-color: #0d9488;       /* Modern blå */
+  --primary-light: #60a5fa;       /* Lysere blå */
+  --primary-dark: #2563eb;        /* Mørkere blå */
+  
+  --secondary-color: #8b5cf6;     /* Lilla - sekundær */
+  --accent-color: #06b6d4;        /* Cyan - akcent */
+  
+    --hover-color: #0d9488;
+    --hover-color-light: rgba(13, 148, 136, 0.1);
+    --hover-color-dark: #0f766e;
+
+  /* Neutrale farver */
+  --white: #ffffff;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  
+  /* Status farver */
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  
+  /* Skygger */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  
+  /* Border-radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  line-height: 1.6;
+  color: var(--gray-800);
+  background-color: var(--gray-50);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ================================================
+   2. TYPOGRAPHY
+================================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--gray-900);
+  margin-bottom: 0.5em;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+
+@media (min-width: 768px) {
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.75rem; }
+}
+
+/* ================================================
+   3. LAYOUT CONTAINERS
+================================================ */
+.app-container {
+  min-height: 100vh;
+  background-color: var(--gray-50);
+}
+
+.layout-main {
+  padding-top: 70px;
+  min-height: calc(100vh - 70px);
+}
+
+.page-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+/* ================================================
+   4. NAVIGATION - Opdateret for React komponent
+================================================ */
+.main-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--white);
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+  z-index: 1000;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+/* Brand/logo (🎬 Film knappen) */
+.nav-brand {
+  color: var(--primary-color);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all var(--transition-fast);
+}
+
+.nav-brand:hover {
+  background-color: var(--gray-100);
+}
+
+/* Almindelige nav-links */
+.main-nav button.nav-link {
+  color: var(--gray-700);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: inherit;
+}
+
+.main-nav button.nav-link:hover {
+  color: var(--hover-color-dark);
+  background-color: var(--hover-color-light);
+}
+
+/* Alternativ: Tilføj en ekstra klasse til admin knappen i React */
+/* I din React kode: className="nav-link admin-link" for admin knappen */
+.main-nav button.nav-link.admin-link {
+  background-color: var(--hover-color);
+  color: var(--white);
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+}
+
+.main-nav button.nav-link.admin-link:hover {
+  background-color: var(--hover-color);
+  color: var(--white);
+}
+
+/* Højre side af navbar */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Log ud knap */
+.main-nav button.logout-button {
+  background-color: transparent;
+  color: var(--gray-600);
+  border: 1px solid var(--gray-300);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: inherit;
+}
+
+.main-nav button.logout-button:hover {
+  background-color: var(--gray-100);
+  border-color: var(--gray-400);
+}
+
+/* Responsive design for navbar */
+@media (min-width: 768px) {
+  .main-nav {
+    padding: 1rem 2rem;
+  }
+  
+  .nav-right {
+    gap: 1rem;
+  }
+  
+  .main-nav button.nav-link {
+    font-size: 1rem;
+  }
+  
+  .main-nav button.logout-button {
+    font-size: 1rem;
+  }
+}
+
+/* Visuelle indikatorer for aktive sider */
+.main-nav button.nav-link.active {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+/* ================================================
+   5. FORMS - Ens styling på ALLE forms
+================================================ */
+/* FÆLLES FORM CONTAINER */
+.form-container,
+.signup-container,
+.login-container,
+.admin-create-page .page-container {
+  max-width: 500px;
+  margin: 3rem auto;
+  padding: 2.5rem;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--gray-200);
+}
+
+.form-title,
+.signup-container h2,
+.login-container h2,
+.admin-create-page h1 {
+  text-align: center;
+  color: var(--gray-900);
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+/* FÆLLES FORM GRUPPER */
+.form-group,
+.signup-form .form-group,
+.login-form .form-group,
+.admin-create-page .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label,
+.signup-form label,
+.login-form label,
+.admin-create-page .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--gray-700);
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* FÆLLES INPUT FIELDS - Tilføj [type="text"] og [type="name"] */
+input[type="text"],
+input[type="name"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select,
+.form-input,
+.search-input,
+.genre-select,
+.sort-select,
+.admin-create-page .movie-form input,
+.admin-create-page .movie-form textarea {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  background-color: var(--white);
+  color: var(--gray-900);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+}
+
+/* Fokus styling - tilføj [type="text"] og [type="name"] */
+input[type="text"]:focus,
+input[type="name"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus,
+.form-input:focus,
+.search-input:focus,
+.genre-select:focus,
+.sort-select:focus,
+.admin-create-page .movie-form input:focus,
+.admin-create-page .movie-form textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Placeholder - gælder for alle inputs */
+input::placeholder,
+textarea::placeholder {
+  color: var(--gray-400);
+}
+
+/* FÆLLES TEXTAREA */
+textarea,
+.admin-create-page .movie-form textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* LINK-BUTTON (samme styling som nav-links) */
+.link-button {
+  background: none;
+  border: none;
+  color: var(--gray-700);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+    border: 1px solid var(--hover-color);
+}
+
+.link-button:hover {
+  color: var(--hover-color-dark);
+  background-color: var(--hover-color-light);
+  text-decoration: none;
+}
+
+/* FÆLLES FORM ACTIONS */
+.form-actions,
+.signup-form .form-actions,
+.login-form .form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* ADMIN CREATE PAGE - Buttons side by side */
+.admin-create-page .form-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.admin-create-page .submit-button,
+.admin-create-page .secondary-button {
+  width: auto;
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  justify-content: center;
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .admin-create-page .form-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .admin-create-page .submit-button,
+  .admin-create-page .secondary-button {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 0;
+  }
+  
+  /* Link-button mobile */
+  .link-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--hover-color);
+  }
+}
+
+/* ================================================
+   6. KNAPPER - Komplet styling
+================================================ */
+
+/* BASE STYLING FOR ALLE KNAPPER */
+.main-nav button.nav-link,
+.back-button,
+.secondary-button,
+.admin-create-page .secondary-button,
+.admin-list-button,
+.submit-button,
+.admin-create-page .submit-button,
+.admin-delete-button,
+.not-found-link {
+  color: var(--gray-700);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: inherit;
+}
+
+/* PRIMARY KNAPPER (Tyrkis - som admin-link) */
+.main-nav button.nav-link.admin-link,
+.submit-button,
+.admin-create-page .submit-button,
+.not-found-link,
+.admin-delete-button {
+  background-color: var(--hover-color); /* Tyrkis */
+  color: var(--white);
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+}
+
+/* PRIMARY KNAPPER HOVER */
+.main-nav button.nav-link.admin-link:hover,
+.submit-button:hover,
+.admin-create-page .submit-button:hover,
+.not-found-link:hover,
+.admin-delete-button:hover {
+  background-color: var(--hover-color-dark); /* Mørkere tyrkis */
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* SECONDARY KNAPPER (Grå) */
+.secondary-button,
+.admin-create-page .secondary-button,
+.admin-list-button,
+.back-button,
+.main-nav button.nav-link:not(.admin-link) {
+  background-color: transparent;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+}
+
+/* SECONDARY KNAPPER HOVER */
+.secondary-button:hover,
+.admin-create-page .secondary-button:hover,
+.admin-list-button:hover,
+.back-button:hover,
+.main-nav button.nav-link:not(.admin-link):hover {
+  background-color: var(--hover-color-light); /* Lys tyrkis */
+  border-color: var(--hover-color);
+  color: var(--hover-color-dark);
+}
+
+/* DANGER KNAPPER (Rød) - hvis admin-delete-button skal være rød i stedet for tyrkis */
+.admin-delete-button.danger {
+  background-color: var(--error);
+}
+
+.admin-delete-button.danger:hover {
+  background-color: #dc2626;
+}
+
+/* SPECIFIK PLACERING */
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+}
+
+/* LOGOUT KNAP */
+.logout-button {
+  background-color: transparent;
+  color: var(--gray-600);
+  border: 1px solid var(--gray-300);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: inherit;
+}
+
+.logout-button:hover {
+  background-color: var(--hover-color-light);
+  border-color: var(--hover-color);
+  color: var(--hover-color-dark);
+}
+
+/* DISABLED STATE */
+button:disabled,
+.submit-button:disabled,
+.admin-delete-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* MOBILE */
+@media (max-width: 767px) {
+  .back-button {
+    top: 15px;
+    left: 15px;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+  }
+  
+  .main-nav button.nav-link,
+  .secondary-button,
+  .submit-button,
+  .admin-delete-button {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* DESKTOP */
+@media (min-width: 768px) {
+  .main-nav button.nav-link,
+  .back-button,
+  .secondary-button,
+  .submit-button,
+  .admin-delete-button {
+    font-size: 1rem;
+  }
+}
+
+/* ================================================
+   7. BESKEDER - Error/Success
+================================================ */
+.error-message,
+.success-message,
+.admin-create-page .error-message,
+.admin-create-page .success-message {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.error-message,
+.admin-create-page .error-message {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.success-message,
+.admin-create-page .success-message {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
 }
 
 .error-close-button {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 1.1rem;
-    line-height: 1;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  opacity: 0.7;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
 }
 
-.success-message {
-    background-color: #dcfce7;
-    color: #166534;
-    border: 1px solid #bbf7d0;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-    font-size: 0.95rem;
+.error-close-button:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ================================================
+   8. MOVIE GRID & CARDS
+================================================ */
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.movie-card {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+  border: 1px solid var(--gray-200);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.movie-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-light);
+}
+
+.movie-card-image {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.movie-card:hover .movie-card-image {
+  transform: scale(1.05);
+}
+
+.movie-card-content {
+  padding: 1.25rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* For h3 (titel) */
+.movie-card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  transition: color var(--transition-fast);
+}
+
+.movie-card:hover .movie-card-title {
+  color: var(--primary-color);
+}
+
+.movie-card-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--warning);
+  font-weight: 600;
+  margin-top: auto;
+  padding: 0.375rem 0.75rem;
+  background-color: rgba(245, 158, 11, 0.1);
+  border-radius: var(--radius-full);
+  align-self: flex-start;
+}
+
+/* For p med released år */
+.movie-card-year {
+  color: var(--gray-500);
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.movie-card-meta {
+  color: var(--gray-600);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
 }
 
 
-/* frontend/src/pages/NotFoundPage.css */
-.not-found-container {
-    text-align: center;
-    padding: 50px;
-    min-height: 60vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+/* ================================================
+   9. MOVIE DETAIL PAGE
+================================================ */
+.movie-detail {
+  background-color: var(--white);
+  min-height: 100vh;
+}
+
+.movie-detail-header {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+}
+
+.movie-detail-background {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.3);
+}
+
+.back-button {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--gray-800);
+  border: 1px solid var(--gray-300);
+}
+
+.back-button:hover {
+  background-color: var(--white);
+}
+
+.movie-detail-content {
+  max-width: 1200px;
+  margin: -100px auto 0;
+  padding: 2rem;
+  position: relative;
+  display: grid;
+  gap: 2rem;
+}
+
+.movie-detail-poster {
+  width: 100%;
+  max-width: 300px;
+  height: 450px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  border: 3px solid var(--white);
+}
+
+.movie-detail-info {
+  color: var(--gray-800);
+}
+
+.movie-detail-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--gray-900);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.movie-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--gray-600);
+}
+
+.movie-detail-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--warning);
+  background-color: rgba(245, 158, 11, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+}
+
+.movie-detail-overview {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--gray-700);
+  margin-top: 1.5rem;
+}
+
+/* ================================================
+   10. FILTERS & SEARCH - Desktop med search venstre, selects højre
+================================================ */
+
+.filter-container {
+  background-color: var(--white);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
+  border: 1px solid var(--gray-200);
+}
+
+/* Mobil layout - stakket */
+.filters-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+/* Search input - fuld bredde på mobil */
+.search-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  padding-left: 3rem;
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  background-color: var(--white);
+  color: var(--gray-900);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 1rem center;
+  background-size: 1.25rem;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Select styling - fuld bredde på mobil */
+.genre-select,
+.sort-select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  background-color: var(--white);
+  color: var(--gray-900);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+
+.genre-select:focus,
+.sort-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Desktop layout - search venstre, selects højre med stort gap */
+@media (min-width: 768px) {
+  .filter-container {
+    padding: 1.75rem 2rem;
+  }
+  
+  .filters-grid {
+    grid-template-columns: 1fr auto;
+    gap: 3rem; /* Stort gap mellem search og selects */
     align-items: center;
-    background-color: #f8f9fa;
+  }
+  
+  /* Venstre side: Search - bruger meget plads */
+  .search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+  }
+  
+  /* Højre side: Filtrering/sortering - kompakt gruppe */
+  .filters-wrapper {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    min-width: 350px; /* Sikrer at selects ikke bliver for smalle */
+  }
+  
+  /* Selects på desktop - fixed bredde for pænt layout */
+  .filters-wrapper .genre-select,
+  .filters-wrapper .sort-select {
+    width: 160px; /* Fast bredde */
+    min-width: 160px;
+  }
+  
+  /* Search input fylder hele sin wrapper */
+  .search-input {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+/* Større desktop - øger gap og bredder */
+@media (min-width: 1024px) {
+  .filter-container {
+    padding: 2rem 2.5rem;
+  }
+  
+  .filters-grid {
+    gap: 4rem; /* Endnu større gap på store skærme */
+  }
+  
+  .search-wrapper {
+    min-width: 400px;
+    max-width: 600px;
+  }
+  
+  .filters-wrapper {
+    gap: 1.5rem;
+    min-width: 380px;
+  }
+  
+  .filters-wrapper .genre-select,
+  .filters-wrapper .sort-select {
+    width: 180px;
+    min-width: 180px;
+  }
+}
+
+/* Ekstra store skærme */
+@media (min-width: 1280px) {
+  .filters-grid {
+    gap: 5rem;
+  }
+  
+  .search-wrapper {
+    max-width: 700px;
+  }
+  
+  .filters-wrapper .genre-select,
+  .filters-wrapper .sort-select {
+    width: 200px;
+    min-width: 200px;
+  }
+}
+
+/* ================================================
+   11. ADMIN SECTION
+================================================ */
+.admin-movies-page {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.admin-page-title {
+  font-size: 1.75rem;
+  color: var(--gray-900);
+  font-weight: 700;
+}
+
+.admin-movie-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-movie-item {
+  background-color: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all var(--transition-fast);
+}
+
+.admin-movie-item:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-movie-info {
+  flex: 1;
+}
+
+.admin-movie-title {
+  font-weight: 600;
+  color: var(--gray-900);
+  font-size: 1.125rem;
+  margin-bottom: 0.25rem;
+}
+
+.admin-movie-released {
+  color: var(--gray-500);
+  font-size: 0.875rem;
+}
+
+.admin-movie-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ================================================
+   12. PROFILE PAGE
+================================================ */
+.profile-container {
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 2.5rem;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--gray-200);
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.profile-title {
+  color: var(--gray-900);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.profile-info-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.profile-info-item {
+  padding: 1.25rem;
+  background-color: var(--gray-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+}
+
+.profile-info-label {
+  color: var(--gray-600);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.profile-info-value {
+  color: var(--gray-900);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+/* ================================================
+   13. NOT FOUND PAGE
+================================================ */
+.not-found-container {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.not-found-content {
+  max-width: 500px;
+}
+
+.not-found-emoji {
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
 }
 
 .not-found-title {
-    font-size: 4rem;
-    color: #dc3545;
-    margin-bottom: 1rem;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--gray-900);
+  margin-bottom: 1rem;
+  line-height: 1;
 }
 
 .not-found-subtitle {
-    font-size: 2rem;
-    color: #343a40;
-    margin-bottom: 1rem;
+  font-size: 1.25rem;
+  color: var(--gray-600);
+  margin-bottom: 1.5rem;
 }
 
 .not-found-message {
-    font-size: 1.2rem;
-    color: #6c757d;
-    margin-bottom: 2rem;
-    max-width: 600px;
-    line-height: 1.6;
+  color: var(--gray-500);
+  line-height: 1.6;
+  margin-bottom: 2rem;
 }
 
-.not-found-link {
-    margin-top: 20px;
-    padding: 12px 24px;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-    border: none;
-    cursor: pointer;
+/* ================================================
+   14. LOADING & UTILITIES
+================================================ */
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid var(--gray-200);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 3rem auto;
 }
 
-.not-found-link:hover {
-    background-color: #0056b3;
-    text-decoration: none;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-    .not-found-container {
-    padding: 30px 20px;
-    }
-    
-    .not-found-title {
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+/* Utility classes */
+.text-center { text-align: center; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+/* ================================================
+   HOVER STYLING - Turkis hover effekter
+================================================ */
+
+/* Input fields focus - turkis */
+input:focus,
+textarea:focus,
+select:focus,
+.form-input:focus,
+.search-input:focus,
+.genre-select:focus,
+.sort-select:focus,
+.admin-create-page .movie-form input:focus,
+.admin-create-page .movie-form textarea:focus {
+  border-color: var(--hover-color);
+  box-shadow: 0 0 0 3px var(--hover-color-light);
+}
+
+/* Movie card hover - turkis */
+.movie-card:hover {
+  border-color: var(--hover-color);
+}
+
+.movie-card:hover .movie-card-title {
+  color: var(--hover-color-dark); /* Bruger din #0f766e farve */
+}
+
+/* Navigation hover - turkis */
+.nav-link:hover {
+  color: var(--hover-color-dark);
+  background-color: var(--hover-color-light);
+}
+
+/* Links hover - turkis */
+a:hover,
+.link-button:hover {
+  color: var(--hover-color-dark);
+}
+
+/* Button focus - turkis */
+button:focus-visible {
+  outline: 2px solid var(--hover-color);
+  outline-offset: 2px;
+}
+
+/* Rating hover - også turkis for konsistens */
+.movie-card-rating:hover {
+  background-color: var(--hover-color-light);
+  color: var(--hover-color-dark);
+}
+
+
+/* ================================================
+   15. RESPONSIVE DESIGN
+================================================ */
+
+/* Tablet (768px+) */
+@media (min-width: 768px) {
+  .page-container {
+    padding: 2rem;
+  }
+  
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+  }
+  
+  .movie-detail-content {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    margin-top: 0; /* Ændret fra -100px til 0 */
+    text-align: left;
+  }
+  
+  /* Poster starter højere oppe med negativ margin */
+  .movie-detail-poster {
+    margin-top: -80px; /* Poster rykkes op inden i containeren */
+    align-self: flex-start;
+  }
+  
+  /* Info beholder normal position */
+  .movie-detail-info {
+    text-align: left;
+    margin-top: 0; /* Ingen margin her */
+  }
+  
+  .movie-detail-info h1 {
+    font-size: 2.5rem;
+  }
+  
+  .filters-grid {
+    grid-template-columns: 1fr auto;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  
+  .admin-movie-item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .form-actions {
+    flex-direction: row;
+  }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .main-nav {
+    padding: 1rem 2rem;
+  }
+  
+  .nav-links {
+    gap: 1rem;
+  }
+  
+  .movie-detail-header {
+    height: 500px;
+  }
+  
+  .movie-detail-poster {
+    width: 300px;
+    height: 450px;
+    margin-top: -100px; /* Poster rykkes højere op */
+  }
+  
+  .filter-container {
+    padding: 2rem;
+  }
+}
+
+/* Large Desktop (1280px+) */
+@media (min-width: 1280px) {
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+  
+  .movie-detail-title {
     font-size: 3rem;
-    }
-    
-    .not-found-subtitle {
-    font-size: 1.5rem;
-    }
+  }
 }

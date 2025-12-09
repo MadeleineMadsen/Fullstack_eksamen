@@ -1,12 +1,12 @@
 // frontend/src/pages/HomePage.tsx
 import React, { useEffect, useState } from "react";
+import ErrorMessage from '../components/ErrorMessage';
 import GenreList from "../components/GenreList";
 import MovieGrid from "../components/MovieGrid";
 import SearchInput from "../components/SearchInput";
 import SortSelector from "../components/SortSelector";
-import ErrorMessage from '../components/ErrorMessage';
-import '../style/kamilla.css';
 import '../style/app.css';
+import '../style/kamilla.css';
 
 export interface Movie {
     id: number;
@@ -89,20 +89,30 @@ const HomePage = () => {
     const handleGenre = (genreId: number) => setSelectedGenre(genreId);
     const handleSort = (sort: string) => setSortOrder(sort);
 
-    return React.createElement(
+return React.createElement(
+    "div",
+    null,
+    React.createElement(
         "div",
-        null,
+        { className: "filter-container" },
         React.createElement(
             "div",
-            { className: "filter-container" },
-            React.createElement(SearchInput, { onSearch: handleSearch }),
+            { className: "filters-grid" },
+            // Search i venstre side
             React.createElement(
                 "div",
-                { className: "filters-right" },
+                { className: "search-wrapper" },
+                React.createElement(SearchInput, { onSearch: handleSearch })
+            ),
+            // Genre og Sort i højre side
+            React.createElement(
+                "div",
+                { className: "filters-wrapper" },
                 React.createElement(GenreList, { onSelectGenre: handleGenre }),
                 React.createElement(SortSelector, { onSelectSort: handleSort })
             )
-        ),
+        )
+    ),
         React.createElement(
             "div",
             { style: { padding: "20px" } },
