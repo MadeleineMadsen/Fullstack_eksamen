@@ -174,3 +174,27 @@ ALTER TABLE ONLY "public"."movies_has_streaming_platforms" ADD CONSTRAINT "FK_41
 ALTER TABLE ONLY "public"."movies_has_streaming_platforms" ADD CONSTRAINT "FK_781a23a8098e1639fb2ae32e728" FOREIGN KEY (streaming_platforms_id) REFERENCES streaming_platforms(id) NOT DEFERRABLE;
 
 ALTER TABLE ONLY "public"."trailers" ADD CONSTRAINT "FK_00e72f453c7bab48f3cb0cadf5a" FOREIGN KEY ("movieId") REFERENCES movies(id) ON DELETE CASCADE NOT DEFERRABLE;
+
+
+-- ======================
+-- SIMPLE PRIVILEGES SEPARATION
+-- ======================
+
+-- Create application user with limited privileges
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'movie_app') THEN
+        CREATE USER movie_app WITH PASSWORD 'movie_app_password';
+        RAISE NOTICE 'Application user created: movie_app';
+    END IF;
+END $$;
+
+-- Grant ONLY necessary privileges
+GRANT CONNECT ON DATABASE movie_db TO movie_app;
+GRANT USAGE ON SCHEMA public TO movie_app;
+
+-- Grant access to tables (but NOT structure changes)
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO movie_app;
+
+-- Grant access to sequences (for auto-increment IDs)
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO movie_app;

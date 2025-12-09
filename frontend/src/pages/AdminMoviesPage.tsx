@@ -1,7 +1,7 @@
 // frontend/src/pages/AdminMoviesPage.tsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Layout from "./Layout";
+import Layout from "../components/Layout";
 import { useAuth } from "../hooks/useAuth";
 
 const API_BASE_URL =

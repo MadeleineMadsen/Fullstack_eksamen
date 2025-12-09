@@ -14,6 +14,7 @@ export function authMiddleware(
     res: Response,
     next: NextFunction
 ) {
+    console.log('🔍 authMiddleware called');
     const token = req.cookies?.auth_token;
 
     if (!token) {
