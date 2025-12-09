@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '../components/Layout';
 import { useAuth } from '../hooks/useAuth';
+import '../style/app.css';
 import '../style/kamilla.css';
 
 const ProfilePage: React.FC = () => {
