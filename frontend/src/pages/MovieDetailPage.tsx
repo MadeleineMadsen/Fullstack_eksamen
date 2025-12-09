@@ -1,7 +1,7 @@
 // frontend/src/pages/MovieDetailPage.tsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import MovieDetailPageComponent, { Movie, } from "../components/MovieDetailPage";
+import MovieDetailPageComponents, { Movie, } from "../components/MovieDetailComponent";
 import ErrorMessage from '../components/ErrorMessage';
 
 // Brug miljøvariabel
