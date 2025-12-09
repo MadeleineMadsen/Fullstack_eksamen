@@ -1,17 +1,16 @@
 // Login-side: håndterer login, fejl og redirect til /profile
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
 import { useAuth } from '../hooks/useAuth';
-import { Link } from 'react-router-dom';
 
 const LoginPage: React.FC = () => {
-    // Lokal form-state
+  // Lokal form-state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Auth-funktioner fra Zustand
   const { login, error: authError, clearError } = useAuth();
   const navigate = useNavigate();
@@ -28,16 +27,16 @@ const LoginPage: React.FC = () => {
       setLocalError('Email og password er påkrævet');
       return;
     }
-    
+
     setIsLoading(true);
 
     try {
       // Forsøg login → backend sætter JWT-cookie
       await login(email, password);
-       // Login ok → send bruger til profil
+      // Login ok → send bruger til profil
       navigate('/profile');
     } catch (err: any) {
-       // Hvis login-fejl returneres
+      // Hvis login-fejl returneres
       setLocalError(err?.message || 'Login fejlede');
     } finally {
       setIsLoading(false);
@@ -54,8 +53,8 @@ const LoginPage: React.FC = () => {
         if (clearError) clearError();
       }
     }),
-    
-     // Login-form
+
+    // Login-form
     React.createElement('form', { onSubmit: handleSubmit },
       React.createElement('div', { className: 'form-group' },
         // Email
@@ -70,7 +69,7 @@ const LoginPage: React.FC = () => {
           disabled: isLoading
         })
       ),
-       // Password
+      // Password
       React.createElement('div', { className: 'form-group' },
         React.createElement('label', { htmlFor: 'password' }, 'Password:'),
         React.createElement('input', {
