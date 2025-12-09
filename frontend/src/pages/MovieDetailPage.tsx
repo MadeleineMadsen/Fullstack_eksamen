@@ -34,7 +34,7 @@ const MovieDetailPage = () => {
                 // NY: Kald DIN BACKEND i stedet for TMDB direkte
                 const url = `${API_BASE_URL}/api/movies/${id}`;
                 const res = await fetch(url);
-                
+
                 if (!res.ok) {
                     throw new Error(`Kunne ikke hente film (status: ${res.status})`);
                 }
@@ -44,18 +44,42 @@ const MovieDetailPage = () => {
                 // Map data fra din backend til din Movie type
                 const mapped: Movie = {
                     id: data.id,
-                    title: data.title,
-                    overview: data.overview,
-                    released: data.release_date,
-                    runtime: data.runtime,
-                    rating: data.vote_average,
-                    poster_image: data.poster_path
-                        ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
-                        : undefined,
-                    background_image: data.backdrop_path
-                        ? `https://image.tmdb.org/t/p/w500${data.backdrop_path}`
-                        : undefined,
+                    title: data.title ?? data.original_title,
+
+                    // beskrivelse kan hedde overview (TMDB) eller plot (egne film)
+                    overview: data.overview ?? data.plot,
+
+                    // dato kan hedde released (DB) eller release_date (TMDB)
+                    released: data.released ?? data.release_date,
+
+                    // runtime kan være det samme i begge tilfælde
+                    runtime: data.runtime ?? null,
+
+                    // rating kan være rating (DB) eller vote_average (TMDB)
+                    rating:
+                        typeof data.rating === "number"
+                            ? data.rating
+                            : typeof data.vote_average === "number"
+                                ? data.vote_average
+                                : undefined,
+
+                    // ✅ plakat: brug DB-felt hvis det findes, ellers TMDB-path
+                    poster_image: data.poster_image
+                        ? data.poster_image
+                        : data.poster_path
+                            ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
+                            : undefined,
+
+                    // ✅ baggrund: samme logik
+                    background_image: data.background_image
+                        ? data.background_image
+                        : data.backdrop_path
+                            ? `https://image.tmdb.org/t/p/w780${data.backdrop_path}`
+                            : undefined,
                 };
+
+                setMovie(mapped);
+
 
                 setMovie(mapped);
             } catch (err: any) {
@@ -70,7 +94,7 @@ const MovieDetailPage = () => {
     }, [id]);
     // Bestem indhold baseret på state
     let content;
-    
+
     if (isLoading) {
         content = React.createElement("p", null, "Henter film...");
     } else if (error) {
@@ -82,7 +106,7 @@ const MovieDetailPage = () => {
     }
 
     // Wrap med Layout komponent
-    return React.createElement(Layout, {children: content});
+    return React.createElement(Layout, { children: content });
 };
 
 export default MovieDetailPage;

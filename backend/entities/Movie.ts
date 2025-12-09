@@ -4,7 +4,7 @@ import {
     JoinTable,
     ManyToMany,
     OneToMany,
-    PrimaryColumn,
+    PrimaryGeneratedColumn,
 } from "typeorm";
 import { Actor } from "./Actor";
 import { Genre } from "./Genre";
@@ -13,7 +13,7 @@ import { Trailer } from "./Trailer";
 
 @Entity("movies")
 export class Movie {
-    @PrimaryColumn({ type: "int", name: "id" })
+    @PrimaryGeneratedColumn({ type: "int", name: "id" })
     id: number;
 
     @Column("varchar", { name: "title", length: 255 })
@@ -48,6 +48,9 @@ export class Movie {
     @Column("varchar", { name: "director", nullable: true, length: 255 })
     director?: string;
 
+    @Column({ type: "boolean", name: "is_admin", default: false })
+    isAdmin!: boolean;
+    
     @ManyToMany(() => Genre, (genre) => genre.movies)
     @JoinTable({
         name: "movies_has_genres",
@@ -55,6 +58,16 @@ export class Movie {
         inverseJoinColumns: [{ name: "genres_id", referencedColumnName: "id" }],
     })
     genres: Genre[];
+
+
+    @ManyToMany(() => Genre, (genre) => genre.movies)
+    @JoinTable({
+        name: "movies_has_genres",
+        joinColumns: [{ name: "movies_id", referencedColumnName: "id" }],
+        inverseJoinColumns: [{ name: "genres_id", referencedColumnName: "id" }],
+    })
+    genres: Genre[];
+
 
     @ManyToMany(() => Actor, (actor) => actor.movies)
     @JoinTable({
