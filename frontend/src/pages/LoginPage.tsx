@@ -1,9 +1,9 @@
 // Login-side: håndterer login, fejl og redirect til /profile
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
-import { useAuth } from '../hooks/useAuth';
 import Layout from '../components/Layout'; // Tilføj denne import
+import { useAuth } from '../hooks/useAuth';
 
 const LoginPage: React.FC = () => {
   // Lokal form-state
@@ -92,9 +92,11 @@ const LoginPage: React.FC = () => {
     // Link til signup
     React.createElement('p', null,
       'Har du ikke en konto? ',
-      React.createElement(Link, { to: '/signup' }, 'Opret dig her')
-    )
-  );
+      React.createElement('button', {
+        className: 'link-button',
+        onClick: () => navigate('/signup')  // Brug navigate i stedet for Link
+      }, 'Opret dig her'),
+    ));
 
   // Indpak i Layout komponenten (samme som SignupPage)
   return React.createElement(
