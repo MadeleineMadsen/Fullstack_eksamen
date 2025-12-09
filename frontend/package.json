@@ -27,5 +27,8 @@
         "typescript": "^5.0.0",
         "vite": "^4.0.0",
         "vitest": "^4.0.15"
+    },
+    "overrides": {
+        "whatwg-url": "14.0.0"
     }
 }
