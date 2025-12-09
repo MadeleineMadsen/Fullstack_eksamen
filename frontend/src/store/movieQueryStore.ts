@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type Genre from "../entities/Genre";
 import type StreamingPlatform from "../entities/StreamingPlatform";
 
+// Et MovieQuery-objekt repræsenterer ALLE filtre brugeren kan vælge
 export interface MovieQuery {
     genre?: Genre;
     streamingPlatform?: StreamingPlatform;
@@ -16,7 +17,7 @@ export interface MovieQuery {
 }
 
 interface MovieQueryStore {
-    movieQuery: MovieQuery;
+    movieQuery: MovieQuery;  // Alle aktuelle filtre
     setGenre: (genre?: Genre) => void;
     setStreamingPlatform: (platform?: StreamingPlatform) => void;
     setYear: (year?: number) => void;
@@ -28,50 +29,52 @@ interface MovieQueryStore {
     setDirector: (director?: string) => void;
     setActor: (actor?: string) => void;
     reset: () => void;
-    getQueryParams: () => Record<string, any>;
+    getQueryParams: () => Record<string, any>;// Konverterer filters → URL params
 }
 
 const useMovieQueryStore = create<MovieQueryStore>((set, get) => ({
+    // Standard query (starter på side 1)
     movieQuery: {
         page: 1,
     },
-
+     // Opdater genre + reset pagination
     setGenre: (genre) =>
         set((state) => ({
             movieQuery: { ...state.movieQuery, genre, page: 1 },
         })),
-
+    // Opdater streaming platform + reset pagination
     setStreamingPlatform: (streamingPlatform) =>
         set((state) => ({
             movieQuery: { ...state.movieQuery, streamingPlatform, page: 1 },
         })),
-
+    // Opdater år
     setYear: (year) =>
         set((state) => ({
             movieQuery: { ...state.movieQuery, year, page: 1 },
         })),
-
+        
+    // Minimum rating filter    
     setMinRating: (minRating) =>
         set((state) => ({
             movieQuery: { ...state.movieQuery, minRating, page: 1 },
         })),
-
+    // Minimum rating filter    
     setMinMetacritic: (minMetacritic) =>
         set((state) => ({
             movieQuery: { ...state.movieQuery, minMetacritic, page: 1 },
         })),
-
+    // Sortering
     setSortOrder: (sortOrder) =>
         set((state) => ({
             movieQuery: { ...state.movieQuery, sortOrder, page: 1 },
         })),
-
+    // Søgetekst → nulstil alle andre filtre    
     setSearchText: (searchText) =>
         set(() => ({
             movieQuery: {
                 searchText,
                 page: 1,
-                // Reset andre filtre ved søgning
+                // Når vi søger, nulstilles alle filtre
                 genre: undefined,
                 streamingPlatform: undefined,
                 year: undefined,

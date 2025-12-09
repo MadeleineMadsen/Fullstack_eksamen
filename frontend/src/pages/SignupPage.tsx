@@ -1,3 +1,4 @@
+// Side hvor brugere kan oprette en konto via backend-auth
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
@@ -20,6 +21,7 @@ const SignupPage: React.FC = () => {
   const { signup, error: authError, clearError } = useAuth();
   const navigate = useNavigate();
 
+  // Opdater inputfelter
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -28,6 +30,7 @@ const SignupPage: React.FC = () => {
     }));
   };
 
+   // Håndter signup-submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -35,7 +38,7 @@ const SignupPage: React.FC = () => {
     setSuccessMessage("");
     if (clearError) clearError();
 
-    // 🔐 XSS-beskyttelse for navn (bloker < og >)
+    //  XSS-beskyttelse for navn (bloker < og >)
     if (
       formData.name &&
       (formData.name.includes("<") || formData.name.includes(">"))

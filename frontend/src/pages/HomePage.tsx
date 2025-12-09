@@ -18,10 +18,11 @@ export interface Movie {
     background_image?: string;
 }
 
-// Brug miljøvariabel eller fallback til din backend
+// Base-URL til backend (env eller fallback)
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://fullstack-eksamen-backend.onrender.com";
 
 const HomePage = () => {
+    //UI-state til filtre og film
     const [searchText, setSearchText] = useState("");
     const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
     const [sortOrder, setSortOrder] = useState("");
@@ -29,16 +30,17 @@ const HomePage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Hent film når søgning, genre eller sortering ændrer sig
     useEffect(() => {
         const fetchMovies = async () => {
             try {
                 setIsLoading(true);
                 setError(null);
 
-                // NY: Kald DIN BACKEND i stedet for TMDB direkte
+                // Kald backend, som igen taler med TMDB
                 const url = new URL(`${API_BASE_URL}/api/tmdb/movies`);
                 
-                // Send parametrene - din backend håndterer dem
+                // Tilføj query params baseret på filtre
                 if (sortOrder) {
                     url.searchParams.set("sort_by", sortOrder);
                 }
@@ -58,7 +60,7 @@ const HomePage = () => {
 
                 const data = await res.json();
 
-                // Din backend returnerer data i samme format som TMDB
+                // Map TMDB-respons til vores Movie-interface
                 const mapped: Movie[] = (data.results ?? []).map((m: any) => ({
                     id: m.id,
                     title: m.title,
@@ -85,6 +87,7 @@ const HomePage = () => {
         fetchMovies();
     }, [searchText, selectedGenre, sortOrder]);
 
+    // Callbacks til child-komponenter
     const handleSearch = (text: string) => setSearchText(text);
     const handleGenre = (genreId: number) => setSelectedGenre(genreId);
     const handleSort = (sort: string) => setSortOrder(sort);
@@ -92,6 +95,7 @@ const HomePage = () => {
     return React.createElement(
         "div",
         null,
+        // Filtersektion: søgning, genre og sortering
         React.createElement(
             "div",
             { className: "filter-container" },
@@ -103,6 +107,7 @@ const HomePage = () => {
                 React.createElement(SortSelector, { onSelectSort: handleSort })
             )
         ),
+         // Indhold: loader, fejl eller filmgrid
         React.createElement(
             "div",
             { style: { padding: "20px" } },
