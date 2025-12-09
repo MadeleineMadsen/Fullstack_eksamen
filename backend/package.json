@@ -9,7 +9,7 @@
         "build": "npm install && tsc",
         "test": "vitest",
         "test:watch": "vitest",
-        "start": "nodemon --legacy-watch --exec ts-node --transpile-only index.ts",
+        "start": "nodemon --watch . --ext ts,json --exec ts-node --transpile-only index.ts",
         "start-prod": "node dist/index.js"
     },
     "dependencies": {

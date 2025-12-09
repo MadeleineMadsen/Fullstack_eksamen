@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
+import Layout from '../components/Layout';
 import { useAuth } from '../hooks/useAuth';
-import Layout from '../pages/Layout';
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
