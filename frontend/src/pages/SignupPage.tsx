@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ErrorMessage from '../components/ErrorMessage';
 import { useAuth } from '../hooks/useAuth';
 import Layout from '../pages/Layout';
-import ErrorMessage from '../components/ErrorMessage';
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -16,7 +16,7 @@ const SignupPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { signup, error: authError, clearError } = useAuth();
   const navigate = useNavigate();
 
@@ -72,19 +72,19 @@ const SignupPage: React.FC = () => {
 
       if (result.success) {
         // Success - vis besked og redirect til login
-        setErrorMessage(`${result.message} Du vil blive viderestillet til login...`);
-        
+        setSuccessMessage(`${result.message} Du vil blive viderestillet til login...`);
+
         // Vent 3 sekunder og redirect til login
         setTimeout(() => {
           navigate('/login');
         }, 3000);
       } else {
         // Error - vis besked
-        setErrorMessage(`${result.message}`);
+        setErrorMessage(result.message);
       }
 
     } catch (err: any) {
-      setErrorMessage(`${err.message || 'Registrering fejlede'}`);
+      setErrorMessage(err.message || 'Registrering fejlede');
     } finally {
       setIsLoading(false);
     }
@@ -104,14 +104,14 @@ const SignupPage: React.FC = () => {
 
     // SUCCESS: vises separat med success-css
     successMessage &&
-      React.createElement(
-        'div',
-        { className: 'success-message' },
-        successMessage
-      ),
+    React.createElement(
+      'div',
+      { className: 'success-message' },
+      successMessage
+    ),
 
     React.createElement('form', { onSubmit: handleSubmit, className: 'signup-form' },
-      
+
       // Navn (valgfrit)
       React.createElement('div', { className: 'form-group' },
         React.createElement('label', { htmlFor: 'name' }, 'Fulde navn:'),
