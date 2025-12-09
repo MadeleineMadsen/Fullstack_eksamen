@@ -16,9 +16,27 @@ const app = express();
 
 // ====== MIDDLEWARE ======
 
+// Opret logs mappen hvis den ikke findes
+const logDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+}
 
 // HTTP logging af alle requests (metode, URL, statuskode, svartid osv.)
-app.use(morgan("combined"));  
+// Logger til FIL
+const accessLogStream = fs.createWriteStream(
+    path.join(logDir, 'access.log'),
+    { flags: 'a' }
+);
+
+app.use(morgan('combined', {
+    stream: accessLogStream
+}));
+
+// Også log til console (valgfrit)
+app.use(morgan('dev'));
+
+console.log(`📝 Morgan logging enabled. Logs will be written to: ${logDir}/access.log`);
 
 // Gør så Express kan læse JSON-body på requests
 app.use(express.json());
@@ -59,7 +77,7 @@ app.post('/api/log-error', (req, res) => {
     try {
         const logEntry = req.body;
         const timestamp = new Date().toISOString();
-         // Loglinje format til fil
+        // Loglinje format til fil
         const logLine = `[${timestamp}] [FRONTEND] ${logEntry.message} - ${logEntry.error || 'No error'} (${logEntry.url})\n`;
 
         console.log(`📱 Frontend error logged: ${logEntry.message}`);
@@ -97,7 +115,7 @@ app.get('/api/logs', (req, res) => {
         let filename: string;
         let description: string;
 
-         // Vælg hvilken log-fil der skal læses
+        // Vælg hvilken log-fil der skal læses
         switch (type) {
             case 'frontend':
                 filename = path.join(logDir, "frontend-errors.log");
@@ -114,7 +132,7 @@ app.get('/api/logs', (req, res) => {
                 break;
         }
 
-         // Hvis filen ikke findes endnu → svar pænt
+        // Hvis filen ikke findes endnu → svar pænt
         if (!fs.existsSync(filename)) {
             return res.json({
                 success: true,
@@ -127,7 +145,7 @@ app.get('/api/logs', (req, res) => {
             });
         }
 
-         // Læs hele filen
+        // Læs hele filen
         const content = fs.readFileSync(filename, 'utf-8');
         const logs = content.split('\n').filter(line => line.trim());
 
@@ -236,7 +254,7 @@ app.get("/test-error", (req, res, next) => {
     const error = new Error("Test error for logging system");
     const timestamp = new Date().toISOString();
 
-     // Log til konsollen
+    // Log til konsollen
     console.error(` Test error triggered at ${timestamp}: ${error.message}`);
 
     // Skriv fejlen i backend-errors.log
@@ -313,7 +331,7 @@ ${err.stack}
 app.use((req, res) => {
     const timestamp = new Date().toISOString();
 
-     // Log 404 til konsol
+    // Log 404 til konsol
     console.log(`[${timestamp}] [404] ${req.method} ${req.url}`);
 
     // Skriv 404 til access.log
