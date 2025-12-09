@@ -1,7 +1,6 @@
 // frontend/src/components/Layout.tsx
 import React from 'react';
 import '../style/app.css';
-import '../style/kamilla.css';
 import NavBar from './NavBar';
 
 // Props-type:
