@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 const NavBar: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, isAdmin  } = useAuth();
   const navigate = useNavigate();
 
   const handleNavigation = (path: string) => {
@@ -15,6 +15,17 @@ const NavBar: React.FC = () => {
       onClick: () => handleNavigation('/'),
       className: 'nav-link'
     }, '🎬 Film'),
+
+     // Admin-knap (kun hvis admin)
+    isAdmin &&
+      React.createElement(
+        'button',
+        {
+          onClick: () => handleNavigation('/admin/movies/new'),
+          className: 'nav-link'
+        },
+        '➕ Opret film'
+      ),
     
     React.createElement('div', { className: 'nav-right' },
       isAuthenticated 

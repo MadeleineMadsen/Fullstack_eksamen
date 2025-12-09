@@ -1,4 +1,5 @@
 import { Request, Router } from "express";
+import { authMiddleware } from "../middleware/authMiddleware";
 //import { Movie } from "../entities/Movie";
 import {
     createMovie,
@@ -7,6 +8,8 @@ import {
     getMovies,
     MovieFilters,
     PaginationOptions,
+    getAdminMoviesFromDb,
+
 } from "../services/movieService";
 
 export const DEFAULT_PAGE_SIZE = 20;
@@ -23,19 +26,15 @@ interface MoviesResponse {
 const movieRouter = Router();
 
 const buildMoviesResponse = (
-    movies: Movie[],
+    movies: any[],
     total: number,
     req: Request
 ): MoviesResponse => {
     const page = req.query.page ? Number(req.query.page) : START_PAGE;
 
-    let pageSize = req.query.page_size
-    ? Number(req.query.page_size)
-    : DEFAULT_PAGE_SIZE;
-
-    if (pageSize > MAX_PAGE_SIZE) {
-    pageSize = MAX_PAGE_SIZE;
-    }
+    const pageSize = req.query.page_size
+        ? Number(req.query.page_size)
+        : DEFAULT_PAGE_SIZE;
 
     const totalPages = Math.ceil(total / pageSize);
     const baseUrl = process.env.SERVER_URL ?? "http://localhost:5001";
@@ -49,6 +48,9 @@ const buildMoviesResponse = (
     results: movies,
     };
 };
+
+
+
 
 // GET /api/movies – liste af film
 movieRouter.get("/", async (req, res, next) => {
@@ -80,6 +82,22 @@ movieRouter.get("/", async (req, res, next) => {
     }
 });
 
+// GET /api/movies/admin – kun film oprettet af admin i DB
+movieRouter.get("/admin", authMiddleware, async (req, res, next) => {
+    try {
+        const role = (req as any).userRole;
+
+        if (role !== "admin") {
+            return res.status(403).json({ message: "Forbidden: admin only" });
+        }
+
+        const movies = await getAdminMoviesFromDb();
+        res.json(movies);
+    } catch (error) {
+        next(error);
+    }
+});
+
 // GET /api/movies/:id – én film
 movieRouter.get("/:id", async (req, res, next) => {
     const movieId = Number(req.params.id);
@@ -96,6 +114,7 @@ movieRouter.get("/:id", async (req, res, next) => {
     next(error);
     }
 });
+
 
 // !!! Trailers-route fjernet for nu, da getMovieTrailers ikke findes i service
 // Når I har en TMDB-service, kan I tilføje den igen.

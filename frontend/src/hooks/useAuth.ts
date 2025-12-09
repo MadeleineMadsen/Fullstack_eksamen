@@ -31,5 +31,7 @@ export const useAuth = () => {
         // Convenience getters
         isLoggedIn: isAuthenticated && !!user,
         userName: user?.name || user?.email?.split('@')[0] || 'Gæst',
+
+        isAdmin: user?.role === "admin",
     };
 };

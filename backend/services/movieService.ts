@@ -63,25 +63,47 @@ export const getMovies = async (
 };
 
 export const getMovie = async (id: number): Promise<any> => {
-    if (!TMDB_API_KEY) {
-        throw new Error('TMDB_API_KEY is not configured');
+    const movieRepo = AppDataSource.getRepository(Movie);
+
+    // 1️⃣ Først: prøv at hente filmen i Postgres
+    const localMovie = await movieRepo.findOne({
+        where: { id },
+        relations: ["genres", "actors", "streaming_platforms", "trailers"],
+    });
+
+    if (localMovie) {
+        console.log(`🎬 Found movie ${id} in local database`);
+        return localMovie; // DONE ✔
     }
 
-    try {
-        console.log(`🎬 Fetching movie details for ID: ${id}`);
+    // 2️⃣ Hvis ikke fundet → prøv TMDB
+    if (!TMDB_API_KEY) {
+        console.error("TMDB_API_KEY is missing");
+        throw new Error("Movie not found");
+    }
 
+    console.log(`🌍 Fetching movie ${id} from TMDB...`);
+
+    try {
         const response = await fetch(
             `${TMDB_BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}`
         );
 
         if (!response.ok) {
-            throw new Error(`TMDB API error: ${response.status}`);
+            throw new Error(`TMDB API returned ${response.status}`);
         }
 
-        return await response.json();
+        const data = await response.json();
+
+        // 3️⃣ Returnér TMDB-dataen direkte til frontend
+        return data;
+
+        // 4️⃣ (BONUS - valgfrit)
+        // Du kan gemme TMDB-filmen i databasen og bygge egne relationer senere
+
     } catch (error) {
-        console.error(`Error fetching movie with ID ${id}:`, error);
-        throw new Error("Failed to fetch movie");
+        console.error("❌ Error fetching TMDB movie:", error);
+        throw new Error("Movie not found");
     }
 };
 
@@ -100,10 +122,10 @@ export const deleteMovieById = async (id: number): Promise<boolean> => {
 };
 
 // OPRET film i databasen
+// OPRET film i databasen
 export const createMovie = async (movieData: any): Promise<Movie> => {
     const movieRepo = AppDataSource.getRepository(Movie);
 
-    // Lav en ny Movie-entity ud fra request body
     const movie = movieRepo.create({
         title: movieData.title,
         overview: movieData.overview ?? null,
@@ -115,9 +137,25 @@ export const createMovie = async (movieData: any): Promise<Movie> => {
         poster_image: movieData.poster_image ?? null,
         plot: movieData.plot ?? null,
         director: movieData.director ?? null,
-    } as Partial<Movie>); //  cast så TypeScript slapper af
+        // VIGTIGT: marker som oprettet af admin
+        isAdmin: true,
+    } as Partial<Movie>);
 
-    // Gem i databasen (id bliver sat automatisk)
     const savedMovie = await movieRepo.save(movie as Movie);
     return savedMovie as Movie;
 };
+
+
+// HENT kun film oprettet af admin fra databasen
+export const getAdminMoviesFromDb = async (): Promise<Movie[]> => {
+    const movieRepo = AppDataSource.getRepository(Movie);
+
+    const movies = await movieRepo.find({
+        where: { isAdmin: true },
+        order: { id: "DESC" },
+        select: ["id", "title", "released"],
+    });
+
+    return movies;
+};
+

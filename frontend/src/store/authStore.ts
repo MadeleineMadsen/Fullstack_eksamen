@@ -6,6 +6,7 @@ export interface User {
     email: string;
     name?: string;
     username?: string; // Tilføj username
+    role?: string;
 }
 
 interface AuthState {
