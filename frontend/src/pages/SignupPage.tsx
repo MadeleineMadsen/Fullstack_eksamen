@@ -40,7 +40,7 @@ const SignupPage: React.FC = () => {
       formData.name &&
       (formData.name.includes("<") || formData.name.includes(">"))
     ) {
-      setMessage("❌ Navn må ikke indeholde < eller >");
+      setErrorMessage("Navn må ikke indeholde < eller >");
       return;
     }
 
@@ -72,7 +72,7 @@ const SignupPage: React.FC = () => {
 
       if (result.success) {
         // Success - vis besked og redirect til login
-        setMessage(`✅ ${result.message} Du vil blive viderestillet til login...`);
+        setErrorMessage(`${result.message} Du vil blive viderestillet til login...`);
         
         // Vent 3 sekunder og redirect til login
         setTimeout(() => {
