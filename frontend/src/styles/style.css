@@ -1,0 +1,14 @@
+/* Først variabler */
+@import './variables.css';
+
+/* Global styling */
+@import './main.css';
+
+/* Layout (strukturer) */
+@import './layout.css';
+
+/* Forms */
+@import './forms.css';
+
+/* Pages – movie cards, detail, admin, profile m.m. */
+@import './pages.css';

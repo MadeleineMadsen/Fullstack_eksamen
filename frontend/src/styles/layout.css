@@ -1,0 +1,43 @@
+/* ================================================
+    LAYOUT.CSS – STRUKTUR & CONTAINERS
+    (Ingen komponent-specifik styling)
+================================================ */
+
+/* ------------------------------
+    1. APP RAMME
+------------------------------ */
+
+.app-container {
+    min-height: 100vh;
+    background-color: var(--bg-body);
+}
+
+.layout-main {
+    padding-top: 100px; /* plads til fixed navbar */
+    min-height: calc(100vh - 70px);
+}
+
+/* ------------------------------
+    2. PAGE CONTAINER
+------------------------------ */
+
+.page-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* Hvis du bruger en ekstra wrapper til forsiden */
+.home-content {
+    padding: 20px;
+}
+
+/* ------------------------------
+    3. RESPONSIVE LAYOUT
+------------------------------ */
+
+@media (min-width: 768px) {
+    .page-container {
+    padding: 2rem;
+    }
+}

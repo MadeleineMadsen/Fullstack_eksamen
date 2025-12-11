@@ -1,6 +1,6 @@
 // frontend/src/components/Layout.tsx
 import React from 'react';
-import '../style/app.css';
+import '../styles/style.css';
 import NavBar from './NavBar';
 
 // Props-type:

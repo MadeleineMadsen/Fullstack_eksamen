@@ -1,0 +1,88 @@
+/* ================================================
+    MAIN.CSS – GLOBAL STYLING & TYPOGRAFI
+    (Ingen layout, ingen komponenter, ingen pages)
+================================================ */
+
+/* ------------------------------
+    1. GLOBAL BODY STYLING
+------------------------------ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, sans-serif;
+    line-height: 1.6;
+    color: var(--text-white);
+    background-color: var(--bg-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ------------------------------
+    2. TYPOGRAFI
+------------------------------ */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text-white);
+    margin-bottom: 0.5em;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+
+@media (min-width: 768px) {
+    h1 { font-size: 2.5rem; }
+    h2 { font-size: 2rem; }
+    h3 { font-size: 1.75rem; }
+}
+
+/* ------------------------------
+    3. UTILITY CLASSES
+------------------------------ */
+.text-center { text-align: center; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+/* ------------------------------
+    4. LOADING INDICATORS
+------------------------------ */
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid var(--nuance-200);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 3rem auto;
+}
+
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+/* ------------------------------
+    5. ANIMATIONS
+------------------------------ */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

@@ -1,0 +1,209 @@
+/* ================================================
+    FORMS.CSS – FORMULARER, INPUTS & BESKEDER
+================================================ */
+
+/* ------------------------------
+    1. FORM CONTAINERS
+------------------------------ */
+
+.form-container,
+.signup-container,
+.login-container,
+.admin-create-page .page-container {
+    max-width: 500px;
+    margin: 3rem 1rem;
+    padding: 2.5rem;
+    background-color: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--nuance-200);
+}
+
+.form-container .form-title,
+.signup-container h1,
+.login-container h1,
+.admin-create-page .page-container h1,
+.admin-create-page .page-container h2 {
+    text-align: center;
+    color: var(--text-white);
+    margin-bottom: 2rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* ------------------------------
+    2. FORM GROUPS
+------------------------------ */
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label,
+.form-group .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-white);
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ------------------------------
+    3. INPUTS, SELECTS, TEXTAREAS
+------------------------------ */
+
+input[type="text"],
+input[type="name"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select,
+.form-input,
+.search-input,
+.genre-select,
+.sort-select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 1.5px solid var(--nuance-300);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-body);
+    color: var(--text-white);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all var(--transition-fast);
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.form-input:focus,
+.search-input:focus,
+.genre-select:focus,
+.sort-select:focus {
+    outline: none;
+    border-color: var(--hover-color);
+    box-shadow: 0 0 0 3px var(--hover-color-light);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-white);
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+/* ------------------------------
+    4. FORM ACTIONS
+------------------------------ */
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Mobil: Form actions står under hinanden (default) */
+.form-actions:not(.admin-create-page .form-actions) {
+    flex-direction: column;
+}
+
+/* Admin create page: knapper ved siden af hinanden */
+.admin-create-page .form-actions {
+    flex-direction: row;
+}
+
+.admin-create-page .form-actions .submit-button,
+.admin-create-page .form-actions .secondary-button {
+    width: auto;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    justify-content: center;
+}
+
+/* ------------------------------
+    5. ERROR & SUCCESS MESSAGES
+------------------------------ */
+
+.error-message,
+.success-message,
+.admin-create-page .error-message,
+.admin-create-page .success-message {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+/* Error */
+.error-message {
+    background-color: var(--bg-body);
+    color: var(--error);
+    border: 1px solid #fecaca;
+}
+
+/* Success */
+.success-message {
+    background-color: var(--white);
+    color: var(--success);
+    border: 1px solid #bbf7d0;
+}
+
+/* Close button (X) */
+.error-close-button {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 1.25rem;
+    line-height: 1;
+    opacity: 0.7;
+    padding: 0.25rem;
+    border-radius: var(--radius-sm);
+}
+
+.error-close-button:hover {
+    opacity: 1;
+    background-color: var(--bg-body);
+}
+
+/* ------------------------------
+    6. RESPONSIVE
+------------------------------ */
+
+@media (min-width: 768px) {
+    .form-container,
+    .signup-container,
+    .login-container,
+    .admin-create-page .page-container {
+    margin: 3rem auto;
+    }
+
+    .form-actions:not(.admin-create-page .form-actions) {
+    flex-direction: row;
+    }
+}
+
+@media (max-width: 767px) {
+    .admin-create-page .form-actions {
+        flex-wrap: wrap;
+
+        .submit-button,
+        .secondary-button {
+            flex: 1 1 calc(50% - 0.5rem);
+            min-width: 0;
+        }
+    }
+}
+

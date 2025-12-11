@@ -5,7 +5,7 @@ import GenreList from "../components/GenreList";
 import MovieGrid from "../components/MovieGrid";
 import SearchInput from "../components/SearchInput";
 import SortSelector from "../components/SortSelector";
-import '../style/app.css';
+import '../styles/style.css';
 
 export interface Movie {
     id: number;

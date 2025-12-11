@@ -1,0 +1,837 @@
+/* ================================================
+    PAGES.CSS – NAV, KOMPONENTER & SIDESPECIFIKT
+================================================ */
+
+/* ------------------------------
+    1. NAVIGATION
+------------------------------ */
+
+.main-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-body);
+    backdrop-filter: blur(10px);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    z-index: 1000;
+    border-bottom: 1px solid var(--nuance-200);
+
+    .nav-brand {
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        font-weight: 700;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-full);
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all var(--transition-fast);
+
+        &:hover {
+            background-color: var(--nuance-100);
+        }
+    }
+
+    button {
+    &.nav-link {
+        color: var(--text-white);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-full);
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all var(--transition-fast);
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: inherit;
+
+        &:hover {
+            transform: scale(1.1);
+        }
+
+        &.admin-link {
+            background-color: var(--hover-color);
+            color: var(--white);
+            padding: 0.5rem 1.25rem;
+            font-weight: 600;
+
+            &:hover {
+                background-color: var(--hover-color-dark);
+            }
+        }
+    }
+
+    &.logout-button {
+        background-color: transparent;
+        color: var(--text-white);
+        border: 1px solid var(--primary-color);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-full);
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all var(--transition-fast);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: inherit;
+
+        &:hover {
+            background-color: var(--hover-color-light);
+            border-color: var(--hover-color);
+            color: var(--hover-color-dark);
+        }
+    }
+}
+
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+}
+
+/* ------------------------------
+    2. KNAPPER & LINK-BUTTONS
+------------------------------ */
+
+button,
+.button-like {
+    &.back-button {
+        background-color: var(--nuance-100);
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 10;
+    }
+
+    &.secondary-button,
+    &.admin-list-button {
+        background-color: var(--primary-color) !important;
+        color: var(--white) !important;
+        border: 1px solid var(--nuance-300);
+        margin-bottom: 1rem !important;
+    }
+
+    &.submit-button,
+    &.admin-delete-button,
+    &.not-found-link {
+        background-color: var(--hover-color) !important;
+        color: var(--white) !important;
+        padding: 0.5rem 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem !important;
+    }
+
+     /* Fælles button styling */
+    &:is(
+        .back-button,
+        .secondary-button,
+        .submit-button,
+        .admin-delete-button,
+        .not-found-link,
+        .nav-link:not(.admin-link)
+        ) {
+            color: var(--text-white);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+            background: var(--nuance-50);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: inherit;
+
+        &:hover:not(.admin-link) {
+            background-color: var(--hover-color-light);
+            border-color: var(--hover-color);
+            color: var(--hover-color);
+        }
+
+        &:is(.submit-button, .admin-delete-button, .not-found-link, .admin-link):hover {
+            background-color: var(--hover-color-dark);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+    }
+}
+
+/* Link-button (ser ud som en knap, men er et link) */
+.link-button {
+    background: none;
+    border: none;
+    color: var(--text-white);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--hover-color);
+    margin-top: 1rem;
+
+    &:hover {
+        color: var(--hover-color);
+        background-color: var(--hover-color-light);
+        text-decoration: none;
+    }
+}
+
+/* ------------------------------
+    3. MOVIE GRID & CARDS
+------------------------------ */
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.movie-card {
+    background-color: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+    border: 1px solid var(--nuance-200);
+    height: 100%;
+    display: flex;
+    cursor: pointer;
+    flex-direction: column;
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--hover-color);
+
+        .movie-card-image {
+            transform: scale(1.05);
+        }
+
+        .movie-card-title {
+            color: var(--hover-color-dark);
+        }
+    }
+
+    .movie-card-image {
+        width: 100%;
+        height: 320px;
+        object-fit: cover;
+        transition: transform var(--transition-normal);
+    }
+
+    .movie-card-content {
+        padding: 1.25rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+
+        .movie-card-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+            transition: color var(--transition-fast);
+        }
+
+        .movie-card-meta {
+            color: var(--text-white);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .movie-card-rating {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--warning);
+            font-weight: 600;
+            margin-top: auto;
+            padding: 0.375rem 0.75rem;
+            background-color: rgba(245, 158, 11, 0.1);
+            border-radius: var(--radius-full);
+            align-self: flex-start;
+
+            &:hover {
+                background-color: var(--hover-color-light);
+                color: var(--hover-color-dark);
+            }
+        }
+
+        .movie-card-year {
+            color: var(--text-white);
+            font-weight: 500;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+    }
+}
+
+/* ------------------------------
+    4. MOVIE DETAIL PAGE
+------------------------------ */
+
+.movie-detail {
+    background-color: var(--bg-body);
+    min-height: 100vh;
+
+    .movie-detail-header {
+        position: relative;
+        height: 400px;
+        overflow: hidden;
+
+    .movie-detail-background {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.4);
+        }
+    }
+
+    .movie-detail-content {
+        max-width: 1200px;
+        margin: -100px auto 0;
+        padding: 2rem;
+        position: relative;
+        gap: 2rem;
+        text-align: center;
+
+        .movie-detail-poster {
+            width: 100%;
+            max-width: 300px;
+            height: 450px;
+            object-fit: cover;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 3px solid var(--white);
+        }
+
+            .movie-detail-info {
+                color: var(--text-white);
+
+                .movie-detail-title {
+                font-size: 2.5rem;
+                font-weight: 800;
+                color: var(--text-white);
+                margin-bottom: 1rem;
+                line-height: 1.2;
+            }
+
+            .movie-detail-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.5rem;
+                margin-bottom: 1.5rem;
+                color: var(--text-white);
+            }
+
+            .movie-detail-rating {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: var(--warning);
+                background-color: rgba(245, 158, 11, 0.1);
+                padding: 0.5rem 1rem;
+                margin-bottom: 1rem;
+                border-radius: var(--radius-full);
+            }
+
+            .movie-detail-overview {
+                font-size: 1.125rem;
+                line-height: 1.7;
+                color: var(--text-white);
+                margin-top: 1.5rem;
+            }
+        }
+    }
+}
+
+/* ------------------------------
+    5. FILTERS & SEARCH
+------------------------------ */
+
+.filter-container {
+    background-color: var(--bg-body);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+
+    .filters-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+
+        .search-wrapper {
+            
+            .search-input {
+                width: 100%;
+                padding: 0.875rem 1rem;
+                padding-left: 3rem;
+                border: 1.5px solid var(--nuance-200);
+                border-radius: var(--radius-md);
+                background-color: var(--bg-elevated);
+                color: var(--text-white);
+                font-size: 1rem;
+                font-family: inherit;
+                transition: all var(--transition-fast);
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'%3E%3C/path%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: 1rem center;
+                background-size: 1.25rem;
+
+                &:focus {
+                    outline: none;
+                    border-color: var(--hover-color);
+                    box-shadow: 0 0 0 3px var(--hover-color-light);
+                }
+            }
+        }
+
+        .filters-wrapper {
+        
+            .genre-select,
+            .sort-select {
+                width: 100%;
+                padding: 0.875rem 1rem;
+                border: 1.5px solid var(--nuance-200);
+                border-radius: var(--radius-md);
+                background-color: var(--bg-elevated);
+                color: var(--text-white);
+                font-size: 1rem;
+                font-family: inherit;
+                transition: all var(--transition-fast);
+                cursor: pointer;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 1rem center;
+                background-size: 1rem;
+                padding-right: 2.5rem;
+                margin-bottom: 1rem;
+
+                &:focus {
+                    outline: none;
+                    border-color: var(--hover-color);
+                    box-shadow: 0 0 0 3px var(--hover-color-light);
+                }
+            }
+        }
+    }
+}
+
+/* ------------------------------
+    6. ADMIN SECTION
+------------------------------ */
+
+.admin-movies-page {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 2rem;
+
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+
+        .admin-page-title {
+            font-size: 1.75rem;
+            color: var(--text-white);
+            font-weight: 700;
+        }
+    }
+
+    .admin-movie-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        .admin-movie-item {
+            background-color: var(--bg-elevated);
+            border: 1px solid var(--nuance-200);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: all var(--transition-fast);
+
+            &:hover {
+                border-color: var(--primary-color);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .admin-movie-info {
+                flex: 1;
+
+                .admin-movie-title {
+                font-weight: 600;
+                color: var(--text-white);
+                font-size: 1.125rem;
+                margin-bottom: 0.25rem;
+                }
+
+                .admin-movie-released {
+                color: var(--text-white);
+                font-size: 0.875rem;
+                }
+            }
+
+            .admin-movie-actions {
+                display: flex;
+                gap: 0.75rem;
+                flex-wrap: wrap;
+            }
+        }
+    }
+}
+
+/* ------------------------------
+    7. PROFILE PAGE
+------------------------------ */
+
+.profile-container {
+    max-width: 600px;
+    margin: 3rem 1rem;
+    padding: 2.5rem;
+    background-color: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--nuance-200);
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .profile-title {
+            color: var(--text-white);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    .profile-info-grid {
+        display: grid;
+        gap: 1.5rem;
+
+        .profile-info-item {
+            padding: 1.25rem;
+            background-color: var(--nuance-50);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--nuance-200);
+
+            .profile-info-label {
+                color: var(--text-white);
+                font-size: 0.875rem;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.5rem;
+            }
+
+            .profile-info-value {
+                color: var(--text-white);
+                font-size: 1.125rem;
+                font-weight: 600;
+            }
+        }
+    }
+}
+
+/* ------------------------------
+    8. NOT FOUND PAGE
+------------------------------ */
+
+.not-found-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+
+    .not-found-content {
+        max-width: 500px;
+
+        .not-found-emoji {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        }
+
+        .not-found-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-white);
+            margin-bottom: 1rem;
+            line-height: 1;
+        }
+
+        .not-found-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-white);
+            margin-bottom: 1.5rem;
+        }
+
+        .not-found-message {
+            color: var(--text-white);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+    }
+}
+
+/* ------------------------------
+    9. RESPONSIVE – MOBIL
+------------------------------ */
+
+@media (max-width: 767px) {
+    .back-button {
+        top: 15px;
+        left: 15px;
+        padding: 0.5rem 0.875rem;
+        font-size: 0.875rem;
+    }
+
+    :is(
+    .nav-link,
+    .secondary-button,
+    .submit-button,
+    .admin-delete-button,
+    .link-button
+    ) {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* ------------------------------
+    10. RESPONSIVE – TABLET (768px+)
+------------------------------ */
+
+@media (min-width: 768px) {
+    .main-nav {
+        padding: 1rem 2rem;
+    }
+
+    .nav-right {
+        gap: 1rem;
+    }
+
+    :is(.nav-link, .logout-button) {
+        font-size: 1rem;
+    }
+
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+    }
+
+    .movie-detail-content {
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+        margin-top: 0;
+        text-align: left !important;
+
+        .movie-detail-poster {
+            margin-top: -80px;
+            align-self: flex-start;
+        }
+
+        .movie-detail-info {
+            padding-top: 6rem;
+
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+    }
+
+    .filter-container {
+        padding: 1.75rem 2rem;
+
+        .filters-grid {
+            grid-template-columns: 1fr auto;
+            gap: 3rem;
+            align-items: center;
+
+            .search-wrapper {
+                flex: 1;
+                min-width: 300px;
+                max-width: 500px;
+
+            .search-input {
+                width: 100%;
+                margin: 0;
+            }
+        }
+
+        .filters-wrapper {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: nowrap;
+            justify-content: flex-end;
+            min-width: 350px;
+
+            .genre-select,
+            .sort-select {
+                width: 160px;
+                min-width: 160px;
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
+    .admin-movie-item {
+        flex-direction: row;
+    }
+
+    .profile-container {
+        margin: 3rem auto;
+    }
+
+    .link-button {
+        margin-left: 1rem;
+    }
+}
+
+/* ------------------------------
+    11. RESPONSIVE – DESKTOP (1024px+)
+------------------------------ */
+
+@media (min-width: 1024px) {
+    .movie-detail-header {
+        height: 500px;
+    }
+
+    .movie-detail-content {
+        text-align: left !important;
+
+        .movie-detail-poster {
+            width: 300px;
+            height: 450px;
+            margin-top: -100px;
+        }
+    }
+
+    .filter-container {
+        padding: 2rem 2.5rem;
+
+        .filters-grid {
+            gap: 4rem;
+
+            .search-wrapper {
+                min-width: 400px;
+                max-width: 600px;
+            }
+
+            .filters-wrapper {
+                gap: 1.5rem;
+                min-width: 380px;
+
+                .genre-select,
+                .sort-select {
+                    width: 180px;
+                    min-width: 180px;
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
+
+    .link-button {
+        margin-left: 1rem;
+    }
+}
+
+/* ------------------------------
+    12. RESPONSIVE – LARGE DESKTOP (1280px+)
+------------------------------ */
+
+@media (min-width: 1280px) {
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+
+    .movie-detail-title {
+        font-size: 3rem;
+    }
+
+    .filter-container {
+        .filters-grid {
+            gap: 5rem;
+
+            .search-wrapper {
+                max-width: 700px;
+            }
+
+            .filters-wrapper {
+
+                .genre-select,
+                .sort-select {
+                    width: 200px;
+                    min-width: 200px;
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
+
+    .link-button {
+        margin-left: 1rem;
+    }
+}

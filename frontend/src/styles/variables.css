@@ -1,0 +1,62 @@
+/* ================================================
+    VARIABLER & RESET
+================================================ */
+
+:root {
+  /* Primære farver - konsolideret */
+  --primary-color: #0095c2;       
+  --primary-light: #5ec7ea;       
+  --primary-dark: #0f5476;        
+  --secondary-color: #8b5cf6;     
+
+  /* Hover farver - samme som primary */
+    --hover-color: var(--primary-color);
+    --hover-color-light: var(var(--nuance-50))
+    --hover-color-dark: var(--primary-dark);
+
+  /* Neutrale farver */
+    --white: #ffffff;
+  
+  /* Baggrunde / surfaces */
+    --bg-body: #000000;             
+    --bg-elevated: #161616;         /* hævede paneler (forms, filtre) */
+  
+  /* Tekst */
+    --text-black :#000000;
+    --text-white: #ffffff;
+  
+  /* Nuancer (Sort og hvid)*/
+    --nuance-50:  #000000;            
+    --nuance-100: #121212;
+    --nuance-200: #2b2b2b;
+    --nuance-300: #2a2a2a;
+    --nuance-400: #474747;
+    --nuance-500: #656565;
+    --nuance-600: #898989;
+    --nuance-700: #b9b9b9;
+    --nuance-800: #eaeaea;            
+    --nuance-900: #ffffff; 
+
+  /* Status farver */
+    --success: #10b981;
+    --error: #ef4444;
+    --warning: #f59e0b;
+    
+  /* Skygger */
+    --shadow-sm: 0 1px 2px 0 rgba(255, 255, 255, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(255, 255, 255, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(255, 255, 255, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(255, 255, 255, 0.1);
+    
+  /* Border-radius */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+    
+  /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 350ms ease;
+}
