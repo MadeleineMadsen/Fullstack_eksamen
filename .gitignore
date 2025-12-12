@@ -15,3 +15,12 @@ logs/
 
 # Docker
 .docker/
+
+# IntelliJ / DataGrip
+.idea/
+*.meta
+*.zip
+dataSources.xml
+dataSources.local.xml
+sqldialects.xml
+workspace.xml
