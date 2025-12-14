@@ -1,5 +1,5 @@
-// frontend/src/components/MovieDetailPage.tsx
-import React from 'react';
+// frontend/src/components/MovieDetailComponent.tsx
+import React from "react";
 
 // Filminterface der matcher de data vi viser i detaljevisningen
 export interface Movie {
@@ -14,63 +14,102 @@ export interface Movie {
   director?: string;
 }
 
-// Props til komponenten: movie kan være undefined hvis data ikke er hentet endnu
+// Props til komponenten
 interface Props {
   movie?: Movie;
+  trailerKey?: string | null;
 }
 
 // Hvis ingen film-data er tilgængelig endnu → vis loading-tekst
-const MovieDetailPage = ({ movie }: Props) => {
-  // TJEK: Hvis movie er undefined, returnér loading
+const MovieDetailPage = ({ movie, trailerKey }: Props) => {
   if (!movie) {
-    return React.createElement('div', { className: 'movie-detail' },
-      React.createElement('div', null, 'Henter film...')
+    return React.createElement(
+      "div",
+      { className: "movie-detail" },
+      React.createElement("div", null, "Henter film...")
     );
   }
-// Simpel "tilbage" funktion der hopper til forrige side i browserhistorikke
+
+  // Simpel "tilbage" funktion der hopper til forrige side i browserhistorikken
   const handleBack = () => {
     window.history.back();
   };
 
-    // Hovedlayout for film-detail-siden
-  return React.createElement('div', { className: 'movie-detail' },
+  return React.createElement(
+    "div",
+    { className: "movie-detail" },
 
+    // --- HERO SEKTION MED BAGGRUNDSBILLEDE OG TILBAGE-KNAP ---
+    React.createElement(
+      "div",
+      { className: "movie-detail-header" },
 
-     // --- HERO SEKTION MED BAGGRUNDSBILLEDE OG TILBAGE-KNAP ---
-    React.createElement('div', { className: 'movie-detail-header' },
-
-      // Baggrundsbillede (stor banner)
-      React.createElement('img', { 
-        src: movie.background_image, 
+      React.createElement("img", {
+        src: movie.background_image,
         alt: movie.title,
-        className: 'movie-detail-background' 
+        className: "movie-detail-background",
       }),
-      // Tilbage-knap
-      React.createElement('button', {
-        className: 'back-button',
-        onClick: handleBack
-      }, '← Tilbage')
+
+      React.createElement(
+        "button",
+        {
+          className: "back-button",
+          onClick: handleBack,
+        },
+        "← Tilbage"
+      )
     ),
 
     // --- MAIN CONTENT: POSTER, INFORMATION, BESKRIVELSE ---
-    React.createElement('div', { className: 'movie-detail-content' },
-      // Filmens poster-billede
-      React.createElement('img', {
+    React.createElement(
+      "div",
+      { className: "movie-detail-content" },
+
+      React.createElement("img", {
         src: movie.poster_image,
         alt: movie.title,
-        className: 'movie-detail-poster'
+        className: "movie-detail-poster",
       }),
-      // Tekstinfo om filmen
-      React.createElement('div', { className: 'movie-detail-info' },
-        React.createElement('h1', null, movie.title),
-        // Rating
-        React.createElement('div', { className: 'movie-detail-rating' },
-          '⭐ ', movie.rating, '/10'
+
+      React.createElement(
+        "div",
+        { className: "movie-detail-info" },
+        React.createElement("h1", null, movie.title),
+
+        React.createElement(
+          "div",
+          { className: "movie-detail-rating" },
+          "⭐ ",
+          movie.rating,
+          "/10"
         ),
-        React.createElement('p', null, 'Udgivet: ', movie.released),
-        React.createElement('p', null, 'Varighed: ', movie.runtime, ' minutter'),
-        React.createElement('p', null, 'Instruktør: ', movie.director),
-        React.createElement('p', { className: 'movie-detail-overview' }, movie.overview)
+
+        React.createElement("p", null, "Udgivet: ", movie.released),
+        React.createElement("p", null, "Varighed: ", movie.runtime, " minutter"),
+        React.createElement("p", null, "Instruktør: ", movie.director),
+        React.createElement(
+          "p",
+          { className: "movie-detail-overview" },
+          movie.overview
+        ),
+
+        // --- TRAILER ---
+        trailerKey
+          ? React.createElement(
+              "div",
+              { className: "movie-detail-trailer" },
+              React.createElement("h2", null, "Trailer"),
+              React.createElement("iframe", {
+                width: "100%",
+                height: "400",
+                src: `https://www.youtube.com/embed/${trailerKey}`,
+                title: "Movie trailer",
+                allow:
+                  "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+                allowFullScreen: true,
+              })
+            )
+          : null
       )
     )
   );

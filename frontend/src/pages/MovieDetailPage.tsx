@@ -16,6 +16,7 @@ const MovieDetailPage = () => {
     const [movie, setMovie] = useState<Movie | null>(null);
     const [isLoading, setIsLoading] = useState(true); // Loader state
     const [error, setError] = useState<string | null>(null);
+    const [trailerKey, setTrailerKey] = useState<string | null>(null);
 
 
 
@@ -61,7 +62,7 @@ const MovieDetailPage = () => {
                                 ? data.vote_average
                                 : undefined,
 
-                     // Plakat-billede: brug DB først, ellers TMDB
+                    // Plakat-billede: brug DB først, ellers TMDB
                     poster_image: data.poster_image
                         ? data.poster_image
                         : data.poster_path
@@ -77,6 +78,19 @@ const MovieDetailPage = () => {
                 };
 
                 setMovie(mapped);
+
+                try {
+                    const trailerRes = await fetch(`${API_BASE_URL}/api/movies/${id}/trailer`);
+                    if (trailerRes.ok) {
+                        const trailerData = await trailerRes.json();
+                        setTrailerKey(trailerData?.key ?? null);
+                    } else {
+                        setTrailerKey(null);
+                    }
+                } catch {
+                    setTrailerKey(null);
+                }
+
 
             } catch (err: any) {
                 console.error("Fetch error:", err);
@@ -109,8 +123,9 @@ const MovieDetailPage = () => {
     if (!movie) {
         return React.createElement("p", null, "Film ikke fundet.");
     }
-     // Sender film-data videre til præsentations-komponenten
-    return React.createElement(MovieDetailPageComponents, { movie });
+    // Sender film-data videre til præsentations-komponenten
+    return React.createElement(MovieDetailPageComponents, { movie, trailerKey });
+
 };
 
 export default MovieDetailPage;

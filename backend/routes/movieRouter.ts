@@ -37,7 +37,7 @@ const buildMoviesResponse = (
     // Nuvarande side
     const page = req.query.page ? Number(req.query.page) : START_PAGE;
 
-      // Side-størrelse (antal film per side)
+    // Side-størrelse (antal film per side)
     const pageSize = req.query.page_size
         ? Number(req.query.page_size)
         : DEFAULT_PAGE_SIZE;
@@ -51,8 +51,8 @@ const buildMoviesResponse = (
         count: total,
         next:
             page < totalPages
-            ? `${baseUrl}/api/movies?page=${page + 1}&page_size=${pageSize}`
-            : null,
+                ? `${baseUrl}/api/movies?page=${page + 1}&page_size=${pageSize}`
+                : null,
         results: movies,
     };
 };
@@ -68,34 +68,34 @@ movieRouter.get("/test-auth", authMiddleware, (req, res) => {
 // GET /api/movies – liste af film (med filters + pagination)
 movieRouter.get("/", async (req, res, next) => {
     try {
-    // Byg filter-objekt ud fra query params
-    const filters: MovieFilters = {
-        title: req.query.title as string | undefined,
-        genre: req.query.genre ? Number(req.query.genre) : undefined,
-        minRating: req.query.minRating
-        ? Number(req.query.minRating)
-        : undefined,
-        maxRating: req.query.maxRating
-        ? Number(req.query.maxRating)
-        : undefined,
-        year: req.query.year ? Number(req.query.year) : undefined,
-    };
- // Pagination-opsætning baseret på query params
-    const pagination: PaginationOptions = {
-        page: req.query.page ? Number(req.query.page) : START_PAGE,
-        pageSize: req.query.page_size
-        ? Number(req.query.page_size)
-        : DEFAULT_PAGE_SIZE,
-    };
+        // Byg filter-objekt ud fra query params
+        const filters: MovieFilters = {
+            title: req.query.title as string | undefined,
+            genre: req.query.genre ? Number(req.query.genre) : undefined,
+            minRating: req.query.minRating
+                ? Number(req.query.minRating)
+                : undefined,
+            maxRating: req.query.maxRating
+                ? Number(req.query.maxRating)
+                : undefined,
+            year: req.query.year ? Number(req.query.year) : undefined,
+        };
+        // Pagination-opsætning baseret på query params
+        const pagination: PaginationOptions = {
+            page: req.query.page ? Number(req.query.page) : START_PAGE,
+            pageSize: req.query.page_size
+                ? Number(req.query.page_size)
+                : DEFAULT_PAGE_SIZE,
+        };
 
-     // Hent film fra service-laget
-    const { movies, total } = await getMovies(filters, pagination);
-    // Byg standardiseret response (count, next, results)
-    const response = buildMoviesResponse(movies, total, req);
-    res.send(response);
+        // Hent film fra service-laget
+        const { movies, total } = await getMovies(filters, pagination);
+        // Byg standardiseret response (count, next, results)
+        const response = buildMoviesResponse(movies, total, req);
+        res.send(response);
     } catch (error) {
-    // Send fejlen videre til global error handler
-    next(error);
+        // Send fejlen videre til global error handler
+        next(error);
     }
 });
 
@@ -133,9 +133,42 @@ movieRouter.get("/:id", async (req, res, next) => {
     }
 });
 
+// GET /api/movies/:id/trailer – hent trailer key (midlertidig)
+movieRouter.get("/:id/trailer", async (req, res, next) => {
+    try {
+        const id = Number(req.params.id);
+        const apiKey = process.env.TMDB_API_KEY;
 
-// !!! Trailers-route fjernet for nu, da getMovieTrailers ikke findes i service
-// Når iv har en TMDB-service, kan I tilføje den igen.
+        if (!apiKey) {
+            return res.status(500).json({ error: "TMDB_API_KEY missing" });
+        }
+
+        const tmdbUrl = `https://api.themoviedb.org/3/movie/${id}/videos?api_key=${apiKey}&language=en-US`;
+        const r = await fetch(tmdbUrl);
+
+        if (!r.ok) {
+            return res.status(r.status).json({ error: "Failed to fetch TMDB videos" });
+        }
+
+        const data: any = await r.json();
+
+        const trailer =
+            data?.results?.find(
+                (v: any) => v.site === "YouTube" && v.type === "Trailer"
+            ) ??
+            data?.results?.find(
+                (v: any) => v.site === "YouTube" && (v.type === "Teaser" || v.type === "Clip")
+            );
+
+        return res.json({ key: trailer?.key ?? null });
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+
+
 
 
 // POST /api/movies – opret en ny film
@@ -144,14 +177,14 @@ movieRouter.post("/", async (req, res, next) => {
     try {
         const data = req.body;
 
-    // Simpel validering: title er påkrævet
-    if (!data.title) {
-        return res.status(400).send({ error: "title is required" });
-    }
+        // Simpel validering: title er påkrævet
+        if (!data.title) {
+            return res.status(400).send({ error: "title is required" });
+        }
 
-    // Opret film via service-laget
-    const movie = await createMovie(data);
-    res.status(201).send(movie);
+        // Opret film via service-laget
+        const movie = await createMovie(data);
+        res.status(201).send(movie);
     } catch (error) {
         next(error);
     }
@@ -164,11 +197,11 @@ movieRouter.delete("/:id", async (req, res, next) => {
     try {
         const deleted = await deleteMovieById(movieId);
 
-    if (!deleted) {
-        return res.status(404).send({ error: "Movie not found." });
-    }
-    // 204 = No Content (ingen body, men succesfuld sletning)
-    res.status(204).send();
+        if (!deleted) {
+            return res.status(404).send({ error: "Movie not found." });
+        }
+        // 204 = No Content (ingen body, men succesfuld sletning)
+        res.status(204).send();
     } catch (error) {
         next(error);
     }
