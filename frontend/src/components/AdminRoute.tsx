@@ -1,12 +1,11 @@
-// frontend/src/components/AdminRoute.tsx
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
-
-// Denne komponent beskytter routes, så kun ADMIN-brugere kan tilgå dem.
+// Dette komponent beskytter routes, så kun ADMIN-brugere kan tilgå dem.
 // Den bruges i App.tsx som fx:
 // <Route element={<AdminRoute />}> ... admin sider ... </Route>
+
 const AdminRoute: React.FC = () => {
     // Henter auth-state fra vores useAuth-hook
     // isAuthenticated → om brugeren er logget ind

@@ -1,4 +1,3 @@
-// index.ts
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import "dotenv/config";
@@ -67,6 +66,7 @@ setupSwagger(app);
 
 // Vores egne API-routes: /api/movies og /api/auth
 setupRouters(app);
+
 // TMDB proxy-routes: /api/tmdb/...
 app.use('/api/tmdb', tmdbRoutes);
 
@@ -77,10 +77,12 @@ app.post('/api/log-error', (req, res) => {
     try {
         const logEntry = req.body;
         const timestamp = new Date().toISOString();
+        
         // Loglinje format til fil
         const logLine = `[${timestamp}] [FRONTEND] ${logEntry.message} - ${logEntry.error || 'No error'} (${logEntry.url})\n`;
 
         console.log(`📱 Frontend error logged: ${logEntry.message}`);
+        
         // Opret logs-mappe hvis den ikke findes
         const logDir = path.join(__dirname, 'logs');
         if (!fs.existsSync(logDir)) {
@@ -267,7 +269,7 @@ app.get("/test-error", (req, res, next) => {
         const errorLog = `[${timestamp}] ERROR: ${error.message}\nURL: GET /test-error\nIP: ${req.ip}\nUSER-AGENT: ${req.get('User-Agent')}\nSTACK: ${error.stack}\n---\n`;
         fs.appendFileSync(path.join(logDir, "backend-errors.log"), errorLog);
 
-        console.log(`✅ Test error written to backend-errors.log`);
+        console.log(`Test error written to backend-errors.log`);
     } catch (fileError: any) {
         console.error("Failed to write test error to file:", fileError.message);
     }
@@ -290,25 +292,25 @@ app.get("/test-success", (req, res) => {
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
     const timestamp = new Date().toISOString();
     const errorLog = `[${timestamp}]
-ERROR: ${err.message}
-URL: ${req.method} ${req.url}
-IP: ${req.ip}
-USER-AGENT: ${req.get('User-Agent')}
-STACK:
-${err.stack}
----
-`;
+        ERROR: ${err.message}
+        URL: ${req.method} ${req.url}
+        IP: ${req.ip}
+        USER-AGENT: ${req.get('User-Agent')}
+        STACK:
+        ${err.stack}
+        ---
+        `;
 
     // Log til konsollen
     console.error(" Server error:", err.message);
 
-    // Skriv til backend-errors.log
     try {
         const logDir = path.join(__dirname, 'logs');
         if (!fs.existsSync(logDir)) {
             fs.mkdirSync(logDir);
         }
 
+         // Skriv til backend-errors.log
         fs.appendFileSync(path.join(logDir, "backend-errors.log"), errorLog);
         console.log(` Error written to backend-errors.log`);
     } catch (fileError: any) {

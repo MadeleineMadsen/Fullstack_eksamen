@@ -1,4 +1,3 @@
-// frontend/src/components/SearchInput.tsx
 import React from 'react';
 
 // Props-type: komponenten modtager en callback-funktion,

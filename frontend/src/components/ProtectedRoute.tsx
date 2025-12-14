@@ -7,6 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 // Den fungerer som en "gatekeeper" i routing-systemet.
 
 const ProtectedRoute: React.FC = () => {
+
   // Henter authentication-status og loading fra vores useAuth-hook
   const { isAuthenticated, loading } = useAuth();
 
@@ -19,6 +20,7 @@ const ProtectedRoute: React.FC = () => {
   if (!isAuthenticated) {
     return React.createElement(Navigate, { to: '/login', replace: true });
   }
+  
 // Ellers må brugeren gerne se child routes
   return React.createElement(Outlet);
 };

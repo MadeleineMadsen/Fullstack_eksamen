@@ -5,10 +5,12 @@ const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
 console.log('TMDB_API_KEY configured:', !!TMDB_API_KEY);
+
 // -----------------------------------------
 // Interfaces til filtrering, pagination og svar
 // -----------------------------------------
 
+// Mulige filtre til film (bruges evt. fra frontend)
 export interface MovieFilters {
     title?: string;
     genre?: number;
@@ -17,11 +19,13 @@ export interface MovieFilters {
     year?: number;
 }
 
+// Pagination-indstillinger til listevisning
 export interface PaginationOptions {
     page: number;
-    pageSize: number;
+    pageSize: number;   // Antal elementer pr. side
 }
 
+// Standard response-format til frontend
 export interface MovieResponse {
     movies: any[];
     total: number;
@@ -38,6 +42,8 @@ export const getMovies = async (
     filters: MovieFilters = {},
     pagination: PaginationOptions = { page: 1, pageSize: 20 }
 ): Promise<MovieResponse> => {
+
+    // Stop hvis API key mangler
     if (!TMDB_API_KEY) {
         throw new Error('TMDB_API_KEY is not configured');
     }
@@ -45,10 +51,11 @@ export const getMovies = async (
     try {
         console.log(` Fetching movies from TMDB API, page: ${pagination.page}`);
 
-        // Simpel fetch til TMDB Popular API
+        // Kald TMDB "popular movies" endpoint
         const url = `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&page=${pagination.page}`;
         const response = await fetch(url);
 
+        // Hvis TMDB returnerer fejl (fx 401, 404, 500)
         if (!response.ok) {
             throw new Error(`TMDB API error: ${response.status}`);
         }
@@ -56,6 +63,7 @@ export const getMovies = async (
         const data = await response.json();
 
         // Transformér TMDB respons til vores interne frontend-format
+        // vote_average → rating (afrundet til 1 decimal)
         return {
             movies: (data.results || []).map((movie: any) => ({
                 ...movie,
@@ -78,10 +86,15 @@ export const getMovies = async (
 // GET ONE MOVIE — Hent film fra DB først, hvis ikke, hent fra TMDB
 // ============================================================================
 
-export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<any> => {
+export const getMovie = async (
+    id: number, 
+    countryCode: string = 'DK'  // Bruges til streaming providers (fx DK/US)
+): Promise<any> => {
+
+    // Repository til Movie-entity
     const movieRepo = AppDataSource.getRepository(Movie);
 
-    // 1. Tjek om filmen er i din egen database
+    // Tjek om filmen er i din egen database
     const localMovie = await movieRepo.findOne({
         where: { id },
         relations: ["genres", "streaming_platforms", "trailers"],
@@ -92,8 +105,11 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
 
         // Hvis runtime eller director mangler → hent fra TMDB
         if (!localMovie.runtime || !localMovie.director) {
+
+            // Brug tmdb_id hvis den findes, ellers fallback til id
             const tmdbId = (localMovie as any).tmdb_id ?? id;
 
+            // Hent filmdata og credits samtidig (hurtigere)
             const [movieRes, creditsRes] = await Promise.all([
                 fetch(`${TMDB_BASE_URL}/movie/${tmdbId}?api_key=${TMDB_API_KEY}`),
                 fetch(`${TMDB_BASE_URL}/movie/${tmdbId}/credits?api_key=${TMDB_API_KEY}`)
@@ -103,11 +119,12 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
                 const movieData = await movieRes.json();
                 const credits = await creditsRes.json();
 
+                // Find instruktøren i crew-listen
                 const director = credits.crew?.find(
                     (person: any) => person.job === "Director"
                 );
 
-                // NYT: Hent også streaming data
+                // Hent også streaming data
                 let streamingPlatforms = [];
                 try {
                     const providersResponse = await fetch(
@@ -116,8 +133,11 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
 
                     if (providersResponse.ok) {
                         const providersData = await providersResponse.json();
+
+                        // Brug countryCode (fx DK), fallback til US
                         const countryData = providersData.results?.[countryCode] || providersData.results?.US;
 
+                        // flatrate = streaming-abonnementer
                         if (countryData?.flatrate) {
                             streamingPlatforms = countryData.flatrate.map((provider: any) => ({
                                 id: provider.provider_id,
@@ -133,6 +153,7 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
                     console.log("Could not load streaming data for local movie");
                 }
 
+                // Returnér lokal film + ekstra data fra TMDB
                 return {
                     ...localMovie,
                     runtime: movieData.runtime ?? localMovie.runtime,
@@ -140,7 +161,7 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
                     rating: Number(
                         (localMovie.rating ?? movieData.vote_average)?.toFixed(1)
                     ),
-                    // NYT: Tilføj streaming data
+                    // Tilføj streaming data
                     streaming_platforms: streamingPlatforms,
                     has_streaming_info: streamingPlatforms.length > 0
                 };
@@ -176,6 +197,7 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
         const data = await movieRes.json();
         const credits = await creditsRes.json();
 
+        // Find instruktør
         const director = credits.crew?.find(
             (person: any) => person.job === "Director"
         );
@@ -216,9 +238,11 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
                 ? `https://image.tmdb.org/t/p/original${data.backdrop_path}`
                 : null,
             director: director?.name ?? null,
+            
             // Streaming data
             streaming_platforms: streamingPlatforms,
             has_streaming_info: has_streaming_info,
+            
             // Ekstra felter
             genres: data.genres || [],
             original_language: data.original_language,
@@ -240,6 +264,7 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
 export const deleteMovieById = async (id: number): Promise<boolean> => {
     const movieRepo = AppDataSource.getRepository(Movie);
 
+    // Forsøg at slette film med givet ID
     const result = await movieRepo.delete({ id });
 
     // result.affected = antal rækker slettet
@@ -265,7 +290,8 @@ export const createMovie = async (movieData: any): Promise<Movie> => {
         poster_image: movieData.poster_image ?? null,
         plot: movieData.plot ?? null,
         director: movieData.director ?? null,
-        // Flag der markerer filmen som oprettet af en admin (lokal film)
+        
+        // Marker filmen som admin-oprettet (lokal film)
         isAdmin: true,
     } as Partial<Movie>);
 
@@ -282,9 +308,10 @@ export const createMovie = async (movieData: any): Promise<Movie> => {
 export const getAdminMoviesFromDb = async (): Promise<Movie[]> => {
     const movieRepo = AppDataSource.getRepository(Movie);
 
+    // Hent kun film hvor isAdmin = true
     const movies = await movieRepo.find({
         where: { isAdmin: true },
-        order: { id: "DESC" },   // Senest tilføjede film først
+        order: { id: "DESC" },   // Nyeste film først
         select: ["id", "title", "released"],// Kun disse felter returneres
     });
 

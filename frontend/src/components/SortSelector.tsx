@@ -1,6 +1,4 @@
-// frontend/src/components/SortSelector.tsx
 import React from 'react';
-
 
 // Props: parent-komponenten giver SortSelector en callback,
 // som bliver kaldt når brugeren vælger en sorteringsmulighed.
@@ -17,14 +15,15 @@ const SortSelector = ({ onSelectSort }: Props) => {
   ];
 
   return React.createElement('select', {
-     // Når brugeren vælger en sortering → send value tilbage til parent
+    
+    // Når brugeren vælger en sortering → send value tilbage til parent
     onChange: (e: any) => onSelectSort(e.target.value),
     className: 'sort-select'
   },
   // Map over sorteringsmuligheder og lav én <option> per element
     sortOrders.map(order => 
       React.createElement('option', { key: order.value, value: order.value }, 
-        order.label)// Den tekst som brugeren ser
+        order.label)  // Den tekst som brugeren ser
     )
   );
 };

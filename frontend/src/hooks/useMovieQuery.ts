@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useMovies, useMovie } from './useMovies'; // Dine eksisterende hooks
+import { useMovies, useMovie } from './useMovie'; // Dine eksisterende hooks
 import useMovieQueryStore from '../store/movieQueryStore';
 import useMovieStore from '../store/movieStore';
 
@@ -15,6 +15,7 @@ export const useMovieQuery = () => {
     // Action: Fetch movies med nuværende query
     const fetchMovies = useCallback(() => {
         const params = movieQueryStore.getQueryParams();
+        
         // Denne vil automatisk trigge useMovies hook
         return params;
     }, [movieQueryStore]);
@@ -24,6 +25,7 @@ export const useMovieQuery = () => {
         movieStore.setSelectedMovie(
             movieStore.movies.find(m => m.id === movieId) || null
         );
+
         // React Query vil automatisk fetche via useMovie hook
     }, [movieStore]);
 
@@ -43,6 +45,7 @@ export const useMovieQuery = () => {
 
     // Action: Update query og fetch
     const updateQueryAndFetch = useCallback((updates: Partial<typeof movieQueryStore.movieQuery>) => {
+        
         // Update query state
         if (updates.genre !== undefined) movieQueryStore.setGenre(updates.genre);
         if (updates.streamingPlatform !== undefined) movieQueryStore.setStreamingPlatform(updates.streamingPlatform);
@@ -71,10 +74,12 @@ export const useMovieQuery = () => {
 
     // Når moviesQuery data ændres, opdater movieStore
     if (moviesQuery.data && !movieStore.isFetchingMore) {
+        
         // Hvis det er første side, erstat listen
         if (movieQueryStore.movieQuery.page === 1) {
             movieStore.setMovies(moviesQuery.data);
         } else {
+            
             // Hvis det er pagination, tilføj til listen
             movieStore.addMovies(moviesQuery.data);
         }

@@ -1,5 +1,7 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+// Pages & route guards
 import App from "./App";
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
@@ -11,6 +13,7 @@ import CreateMoviePage from "./pages/CreateMoviePage";
 import AdminMoviesPage from "./pages/AdminMoviesPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
+// Router-konfiguration
 const router = createBrowserRouter([
   {
     path: "/",
@@ -29,7 +32,7 @@ const router = createBrowserRouter([
     element: React.createElement(SignupPage),
   },
   {
-    path: "/profile",
+    path: "/profile",   // Beskyttet profil-side
     element: React.createElement(ProtectedRoute),
     children: [
       {
@@ -38,7 +41,8 @@ const router = createBrowserRouter([
       },
     ],
   },
-  // ADMIN-DEL
+
+  // Admin routes (kun admin-brugere)
   {
     path: "/admin",
     element: React.createElement(AdminRoute),
@@ -53,6 +57,7 @@ const router = createBrowserRouter([
       },
     ],
   },
+
   // 404-route
   {
     path: "*",
@@ -60,6 +65,7 @@ const router = createBrowserRouter([
   },
 ]);
 
+// Wrapper-komponent
 const AppRoutes = () => {
   return React.createElement(RouterProvider, { router });
 };

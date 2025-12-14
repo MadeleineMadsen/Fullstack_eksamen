@@ -1,9 +1,10 @@
-// Login-side: håndterer login, fejl og redirect til /profile
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
 import Layout from '../components/Layout'; // Tilføj denne import
 import { useAuth } from '../hooks/useAuth';
+
+// Login-side: håndterer login, fejl og redirect til /profile
 
 const LoginPage: React.FC = () => {
   // Lokal form-state
@@ -47,6 +48,7 @@ const LoginPage: React.FC = () => {
   // Opret login-indhold
   const loginContent = React.createElement('div', { className: 'login-container' },
     React.createElement('h2', null, 'Log ind'),
+    
     // Viser auth-fejl eller lokale fejl
     React.createElement(ErrorMessage, {
       message: localError || authError || '',
@@ -59,6 +61,7 @@ const LoginPage: React.FC = () => {
     // Login-form
     React.createElement('form', { onSubmit: handleSubmit },
       React.createElement('div', { className: 'form-group' },
+        
         // Email
         React.createElement('label', { htmlFor: 'email' }, 'Email:'),
         React.createElement('input', {
@@ -70,6 +73,7 @@ const LoginPage: React.FC = () => {
           disabled: isLoading
         })
       ),
+      
       // Password
       React.createElement('div', { className: 'form-group' },
         React.createElement('label', { htmlFor: 'password' }, 'Password:'),
@@ -82,6 +86,7 @@ const LoginPage: React.FC = () => {
           disabled: isLoading
         })
       ),
+      
       // Login-knappen
       React.createElement('button', {
         type: 'submit',
@@ -89,6 +94,7 @@ const LoginPage: React.FC = () => {
         className: 'submit-button'
       }, isLoading ? 'Logger ind...' : 'Log ind')
     ),
+    
     // Link til signup
     React.createElement('p', null,
       'Har du ikke en konto? ',

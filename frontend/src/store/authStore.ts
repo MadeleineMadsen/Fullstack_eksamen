@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
-// Bruger-typen (frontend)
+// User-interface (frontend-version)
+// Matcher typisk backend-brugeren, men kun felter der bruges i frontend
 export interface User {
     id: number;
     email: string;
@@ -9,11 +10,12 @@ export interface User {
     role?: string;
 }
 
-// Zustand state + actions
+// AuthState:
+// Definerer både state (data) og actions (funktioner)
 interface AuthState {
     user: User | null;
     isAuthenticated: boolean;
-    loading: boolean;
+    loading: boolean;       // Global loading-state for auth
     error: string | null;
 
 // Auth funktioner
@@ -27,6 +29,8 @@ interface AuthState {
 // Backend base URL
 const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
 
+// Zustand store
+// create() opretter global state som kan bruges i hele appen
 const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set'
     // Initial state
     user: null,
@@ -37,21 +41,25 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
    // ---------------------- LOGIN ----------------------
 
     login: async (email: string, password: string) => {
+
+        // Sætter loading og rydder tidligere fejl
         set({ loading: true, error: null });
 
         try {
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
-                credentials: "include",// Sender cookie med
+                credentials: "include",     // Sender cookies (session/JWT-cookie)
                 body: JSON.stringify({ email, password }),
                 headers: { "Content-Type": "application/json" },
             });
 
+            // Hvis login fejler
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || "Login fejlede");
             }
 
+            // Backend returnerer brugerdata
             const userData = await response.json();
             // Gem bruger i Zustand
             set({ 
@@ -60,14 +68,17 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
                 loading: false 
             });
 
+            
         } catch (error: any) {
+
+            // Gem bruger i Zustand state
             set({
                 error: error.message || "Login fejlede",
                 loading: false,
                 isAuthenticated: false,
                 user: null
             });
-            throw error;// Sender fejl tilbage til LoginPage
+            throw error;    // Sender fejlen videre til LoginPage
         }
     },
 
@@ -82,6 +93,8 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
                 body: JSON.stringify({ 
                     email, 
                     password, 
+
+                    // Hvis navn ikke findes → brug del af email som username
                     username: name || email.split('@')[0] 
                 }),
                 headers: { "Content-Type": "application/json" },
@@ -92,7 +105,7 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
                 throw new Error(errorData.message || "Signup fejlede");
             }
 
-             // Koden logger IKKE automatisk brugeren ind
+            // Signup logger IKKE automatisk brugeren ind
             set({ loading: false });
             
             return { 
@@ -119,12 +132,13 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
         set({ loading: true });
 
         try {
+            // Kalder backend logout (hvis endpoint findes)
             await fetch(`${API_BASE_URL}/auth/logout`, {
                 method: "POST",
                 credentials: "include",
             }).catch(() => {}); // Ignorer fejl hvis endpoint ikke findes
 
-            // Ryd frontend state
+            // Rydder auth-state i frontend
             set({
                 user: null,
                 isAuthenticated: false,
@@ -145,6 +159,8 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
         set({ loading: true });
 
         try {
+
+            // Henter nuværende bruger baseret på cookie/session
             const response = await fetch(`${API_BASE_URL}/auth/profile`, {
                 method: "GET",
                 credentials: "include",
@@ -152,13 +168,16 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
 
             if (response.ok) {
                 const userData = await response.json();
+                
+                // Bruger er authenticated
                 set({ 
                     user: userData, 
                     isAuthenticated: true, 
                     loading: false 
                 });
             } else {
-                // Ikke authenticated
+
+                // Bruger er kke logget ind
                 set({ 
                     user: null, 
                     isAuthenticated: false, 
@@ -177,7 +196,11 @@ const useAuthStore = create<AuthState>((set) => ({ // Fjern 'get', brug kun 'set
     },
 
      // ---------------------- CLEAR ERROR ----------------------
+
+    // Bruges fx når en fejl-luk-knap trykkes
     clearError: () => set({ error: null }),
 }));
 
+// Eksporter Zustand hook
+// Bruges fx: const { user, login } = useAuthStore();
 export default useAuthStore;

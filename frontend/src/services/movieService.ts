@@ -1,9 +1,11 @@
-// Service der håndterer alle API-kald til backend for film, genre, skuespillereimport Movie from '../entities/Movie';
+// Import af entity-typer (bruges til typning af API-respons)
 import Movie from '../entities/Movie';
 import Genre from '../entities/Genre';
 import StreamingPlatform from '../entities/StreamingPlatform';
 import Trailer from '../entities/Trailer';
-// Filtre der kan sendes til backend
+
+// MovieFilters: interface der definerer hvilke filtre
+// der kan sendes med til backend som query parameters
 export interface MovieFilters {
     genre?: number;
     minRating?: number;
@@ -12,6 +14,7 @@ export interface MovieFilters {
     platform?: number;
 }
 
+// Service-klasse der samler alle API-kald relateret til film
 class MovieService {
      // Base URL til backend
     private baseUrl = '/api';
@@ -19,20 +22,26 @@ class MovieService {
     // GET alle film med filtre
     async getAllMovies(filters?: MovieFilters): Promise<Movie[]> {
         try {
+
+            // URLSearchParams bruges til at opbygge query string
             const queryParams = new URLSearchParams();
-            // Tilføj kun parametre der er angivet
+            
+            // Tilføj kun filtre hvis de er angivet
             if (filters?.genre) queryParams.append('genre', filters.genre.toString());
             if (filters?.minRating) queryParams.append('minRating', filters.minRating.toString());
             if (filters?.year) queryParams.append('year', filters.year.toString());
             if (filters?.search) queryParams.append('search', filters.search);
             if (filters?.platform) queryParams.append('platform', filters.platform.toString());
 
+            // Fetch alle film med query parameters
             const response = await fetch(`${this.baseUrl}/movies?${queryParams}`);
             
+            // Tjek om HTTP-responsen er OK
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
+            // Returner film som JSON (typed som Movie[])
             return await response.json();
         } catch (error) {
             console.error('Error fetching movies:', error);
@@ -49,6 +58,7 @@ class MovieService {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
+            // Returnerer én Movie
             return await response.json();
         } catch (error) {
             console.error(`Error fetching movie ${id}:`, error);
@@ -65,6 +75,7 @@ class MovieService {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
+            // Returnerer liste af Genre
             return await response.json();
         } catch (error) {
             console.error('Error fetching genres:', error);
@@ -80,7 +91,8 @@ class MovieService {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
+            // Returnerer liste af StreamingPlatform
             return await response.json();
         } catch (error) {
             console.error('Error fetching streaming platforms:', error);
@@ -97,6 +109,7 @@ class MovieService {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
+            // Returnerer liste af Trailer
             return await response.json();
         } catch (error) {
             console.error(`Error fetching trailers for movie ${movieId}:`, error);
@@ -105,4 +118,6 @@ class MovieService {
     }
 }
 
+// Eksporterer én instans (Singleton-pattern)
+// så samme service bruges overalt i appen
 export const movieService = new MovieService();

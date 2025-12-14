@@ -13,7 +13,6 @@ import { Trailer } from "./Trailer";
 @Entity("movies")
 // Denne klasse repræsenterer "movies"-tabellen i databasen
 export class Movie {
-    // Denne klasse repræsenterer "movies"-tabellen i databasen
     @PrimaryGeneratedColumn({ type: "int", name: "id" })
     id: number;
 
@@ -41,7 +40,7 @@ export class Movie {
     @Column("float", { nullable: true })
     rating?: number;
 
-     // Filmlængde i minutter
+    // Filmlængde i minutter
     @Column("int", { nullable: true })
     runtime?: number;
 
@@ -60,7 +59,7 @@ export class Movie {
     // Flag – bruges hvis nogle film kun må ses af admin
     @Column({ type: "boolean", name: "is_admin", default: false })
     isAdmin!: boolean;
-    
+
 
 
     // ----------- RELATIONER -----------
@@ -75,8 +74,8 @@ export class Movie {
     })
     genres: Genre[];
 
-     // Many-to-many relation til streamingplatforme.
-    // En film kan findes på flere platforme (Netflix, HBO, osv.)
+    // Many-to-many relation til streamingplatforme.
+    // En film kan findes på flere platforme, og en platform kan tilhøre flere film (Netflix, HBO, osv.)
     @ManyToMany(() => StreamingPlatform, (platform) => platform.movies)
     @JoinTable({
         name: "movies_has_streaming_platforms",

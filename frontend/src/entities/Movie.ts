@@ -2,6 +2,8 @@ import type Genre from "./Genre";
 import type StreamingPlatform from "./StreamingPlatform";
 import type Trailer from "./Trailer";
 
+// Movie-interface
+// Bruges som fælles datamodel for film i frontend
 export default interface Movie {
     id: number;
     title: string;

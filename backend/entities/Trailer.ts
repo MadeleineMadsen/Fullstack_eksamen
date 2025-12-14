@@ -4,7 +4,7 @@ import { Movie } from "./Movie";
 // Denne klasse repræsenterer "trailers"-tabellen i databasen
 @Entity("trailers")
 export class Trailer {
-    // Primærnøgle for trailer (AUTO_INCREMENT)
+    // Primærnøgle for trailer (AUTO_INCREMENT) Unikt ID for hver trailer
     @PrimaryGeneratedColumn({ type: "int", name: "id" })
     id: number;
 
@@ -25,7 +25,7 @@ export class Trailer {
     dataMax: string;
 
     
-    // Relation: Mange trailers hører til én film.
+    // Many to One Relation: Mange trailers hører til én film.
     // onDelete: "CASCADE" betyder:
     // Hvis filmen slettes, slettes alle dens trailers automatisk.
     @ManyToOne(() => Movie, (movie) => movie.trailers, { onDelete: "CASCADE" })

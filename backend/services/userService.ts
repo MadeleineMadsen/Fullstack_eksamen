@@ -37,7 +37,8 @@ export async function comparePassword(
 
 export async function createUser(input: CreateUserInput): Promise<User> {
     const user = new User();
-     // Brugerdetaljer
+    
+    // Brugerdetaljer
     user.username = input.username;
     user.email = input.email;
 
@@ -46,6 +47,7 @@ export async function createUser(input: CreateUserInput): Promise<User> {
 
      // Standardrolle = "user", eller brugerens valgte rolle
     user.role = input.role || 'user';
+    
     // created_at + default values håndteres af DB / entity
     return userRepository.save(user);
 }

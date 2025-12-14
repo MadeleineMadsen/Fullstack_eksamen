@@ -34,7 +34,7 @@ const buildMoviesResponse = (
     total: number,
     req: Request
 ): MoviesResponse => {
-    // Nuvarande side
+    // Nuværende side
     const page = req.query.page ? Number(req.query.page) : START_PAGE;
 
     // Side-størrelse (antal film per side)
@@ -90,10 +90,12 @@ movieRouter.get("/", async (req, res, next) => {
 
         // Hent film fra service-laget
         const { movies, total } = await getMovies(filters, pagination);
+        
         // Byg standardiseret response (count, next, results)
         const response = buildMoviesResponse(movies, total, req);
         res.send(response);
     } catch (error) {
+        
         // Send fejlen videre til global error handler
         next(error);
     }
@@ -166,13 +168,7 @@ movieRouter.get("/:id/trailer", async (req, res, next) => {
     }
 });
 
-
-
-
-
-
 // POST /api/movies – opret en ny film
-// (pt. uden auth, så alle kan oprette – kan senere begrænses til admin)
 movieRouter.post("/", async (req, res, next) => {
     try {
         const data = req.body;

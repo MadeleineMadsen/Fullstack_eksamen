@@ -1,11 +1,18 @@
-// Side hvor brugere kan oprette en konto via backend-auth
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
 import Layout from '../components/Layout';
 import { useAuth } from '../hooks/useAuth';
 
+// SignupPage: side til oprettelse af ny bruger via backend-auth
+
+// useState bruges til formular-data, fejl/succes-beskeder og loading-state
+// useNavigate bruges til redirect efter succesfuld signup
+// useAuth er et custom hook til authentication (signup, fejl-håndtering)
+
 const SignupPage: React.FC = () => {
+
+  // Formularens inputfelter samles i ét state-objekt
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -13,15 +20,20 @@ const SignupPage: React.FC = () => {
     name: ''
   });
 
-  // Adskil fejl- og succes-beskeder
+  // errorMessage: lokale validerings- og submit-fejl
+  // successMessage: vises kun ved succes
+  // isLoading: bruges til at disable inputs og vise loading-tekst
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // signup: funktion der kalder backend
+  // authError: fejl fra auth-store
+  // clearError: nulstiller auth-fejl
   const { signup, error: authError, clearError } = useAuth();
   const navigate = useNavigate();
 
-  // Opdater inputfelter
+  // Opdaterer formData dynamisk baseret på input name-attribut
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -34,6 +46,7 @@ const SignupPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Ryd tidligere fejl og succesbeskeder
     setErrorMessage('');
     setSuccessMessage("");
     if (clearError) clearError();
@@ -47,7 +60,7 @@ const SignupPage: React.FC = () => {
       return;
     }
 
-    // Validering
+    // Frontend-validering
     if (!formData.email || !formData.password) {
       setErrorMessage('Email og password er påkrævet');
       return;
@@ -68,12 +81,14 @@ const SignupPage: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
+    setIsLoading(true);   // aktiver loading-state
     try {
+
       // Kalder signup som returnerer { success, message }
       const result = await signup(formData.email, formData.password, formData.name);
 
       if (result.success) {
+
         // Success - vis besked og redirect til login
         setSuccessMessage(`${result.message} Du vil blive viderestillet til login...`);
 
@@ -82,13 +97,16 @@ const SignupPage: React.FC = () => {
           navigate('/login');
         }, 3000);
       } else {
+
         // Error - vis besked
         setErrorMessage(result.message);
       }
 
     } catch (err: any) {
+      // Fallback-fejl hvis noget uventet går galt
       setErrorMessage(err.message || 'Registrering fejlede');
     } finally {
+      // Slå loading fra uanset udfald
       setIsLoading(false);
     }
   };
@@ -201,4 +219,5 @@ const SignupPage: React.FC = () => {
   );
 };
 
+// Komponenten eksporteres så den kan bruges i routeren
 export default SignupPage;

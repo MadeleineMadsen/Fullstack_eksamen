@@ -43,7 +43,6 @@ describe('MovieService Filter Logic', () => {
     // Formål: Sikre at et tomt filterobjekt indeholder 0 keys
     // ------------------------------------------------------------------------
 
-
     it('should handle empty filters', () => {
         const filters: MovieFilters = {};
 
@@ -57,7 +56,6 @@ describe('MovieService Filter Logic', () => {
     // (dette er ikke database- eller API-validering, kun type/logic test)
     // ------------------------------------------------------------------------
 
-
     it('should validate rating range', () => {
         const filters: MovieFilters = {
             minRating: 7.0,
@@ -66,8 +64,10 @@ describe('MovieService Filter Logic', () => {
 
         // Min rating må ikke være under 0
         expect(filters.minRating).toBeGreaterThanOrEqual(0);
+
          // Max rating må ikke være over 10
         expect(filters.maxRating).toBeLessThanOrEqual(10);
+        
         // Hvis begge værdier findes, skal min ≤ max
         if (filters.minRating !== undefined && filters.maxRating !== undefined) {
             expect(filters.minRating).toBeLessThanOrEqual(filters.maxRating);

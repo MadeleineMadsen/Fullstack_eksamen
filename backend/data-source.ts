@@ -12,14 +12,17 @@ import { User } from "./entities/User";
 // Den bruges til at oprette forbindelse til Postgres og registrere alle entities.
 // Når AppDataSource.initialize() kaldes i server.ts, oprettes forbindelsen.
 // 
+
 export const AppDataSource = new DataSource({
-     // Database-type
+    
+    // Database-type
     type: "postgres",
-     // Forbinder til databasen via DATABASE_URL i .env
+    
+    // Forbinder til databasen via DATABASE_URL i .env
     // Format: postgres://user:password@host:port/database
     url: process.env.DATABASE_URL,
 
-     // Alle entities (tabeller) der skal være en del af ORM-modellen
+    // Alle entities (tabeller) der skal være en del af ORM-modellen
     entities: [Movie, StreamingPlatform, Genre, Trailer, User],
 
     // synchronize = false betyder:

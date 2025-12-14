@@ -30,6 +30,7 @@ export function authMiddleware(
     try {
          // Verificerer token og dekoder payload
         const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+        
         // Gemmer brugerdata på request-objektet så controllerne kan bruge det
         (req as any).userId = decoded.userId;
         (req as any).userEmail = decoded.email;

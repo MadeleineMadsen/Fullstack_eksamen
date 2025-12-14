@@ -13,45 +13,53 @@ export interface SignupData {
     password: string;
 }
 
+// UserService samler al auth-relateret kommunikation med backend
 class UserService {
     private baseUrl = '/api'; // Base URL for backend auth-routes
 
-    // Login → sender email + password til backend
+    // Login → sender email + password til backend → Returnerer bruger + JWT token
     async login(loginData: LoginData): Promise<{ user: User; token: string }> {
         const response = await fetch(`${this.baseUrl}/auth/login`, {
-            method: 'POST',
+            method: 'POST',     // HTTP POST request
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json',     // Sender JSON
             },
-            body: JSON.stringify(loginData),
+            body: JSON.stringify(loginData),    // Konverter data til JSON
         });
         
+        // Hvis login fejler (fx forkert login)
         if (!response.ok) throw new Error('Login failed');
+        
+        // Returnerer JSON som { user, token }
         return response.json();
     }
 
-    // Signup → opretter ny bruge
+    // Signup → opretter ny bruge og eturnerer bruger + JWT token
     async signup(signupData: SignupData): Promise<{ user: User; token: string }> {
         const response = await fetch(`${this.baseUrl}/auth/signup`, {
-            method: 'POST',
+            method: 'POST',     // HTTP POST request
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(signupData),
         });
         
+        // Fejl hvis brugeren ikke kunne oprettes
         if (!response.ok) throw new Error('Signup failed');
         return response.json();
     }
 
-     // Hent den nuværende bruger (bruger token)
+     // Henter den aktuelt loggede bruger (Kræver JWT token i Authorization-header)
     async getCurrentUser(token: string): Promise<User> {
         const response = await fetch(`${this.baseUrl}/auth/me`, {
             headers: {
+
+                // Bearer token bruges til beskyttede routes
                 'Authorization': `Bearer ${token}`,
             },
         });
         
+        // Fejl hvis token er ugyldigt/udløbet
         if (!response.ok) throw new Error('Failed to get user data');
         return response.json();
     }
@@ -84,4 +92,6 @@ class UserService {
     }
 }
 
+// Eksporterer én instans af UserService
+// Bruges som singleton i hele appen
 export const userService = new UserService();

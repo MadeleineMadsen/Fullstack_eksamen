@@ -52,11 +52,12 @@ router.post("/signup", async (req: Request, res: Response) => {
 
         // Opret bruger (createUser hasher password og sætter default role)
         const newUser = await createUser({ username, email, password });
+        
         // Lav JWT-token og sæt cookie
         const token = signToken(newUser.id, newUser.email, newUser.role);
         setAuthCookie(res, token);
 
-         // Returnér brugerinfo (uden password)
+        // Returnér brugerinfo (uden password)
         return res.status(201).json({
             id: newUser.id,
             username: newUser.username,

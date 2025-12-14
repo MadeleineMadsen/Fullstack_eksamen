@@ -1,5 +1,5 @@
-// frontend/src/components/MovieCard.test.tsx
 import React from "react";
+
 //  Importerer nødvendige testværktøjer
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
@@ -23,6 +23,7 @@ describe("MovieCard", () => {
       poster_image:
         "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
     };
+    
   // Renderer komponenten i et MemoryRouter (kræves pga. <Link>)
     render(
       <MemoryRouter>

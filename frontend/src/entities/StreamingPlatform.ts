@@ -1,3 +1,5 @@
+// StreamingPlatform-interface
+// Beskriver en streamingtjeneste (fx Netflix, HBO, Disney+)
 export default interface StreamingPlatform {
     id: number;
     name: string;

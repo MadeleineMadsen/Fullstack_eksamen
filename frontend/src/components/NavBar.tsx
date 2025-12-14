@@ -2,12 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
-
 // NavBar-komponenten viser navigationen øverst på siden.
 // Den ændrer sig dynamisk baseret på:
 // - om brugeren er logget ind
 // - om brugeren er admin
+
 const NavBar: React.FC = () => {
+
   // Henter autentifikationsstatus og logout-funktion fra useAuth-hooket
   const { isAuthenticated, logout, isAdmin } = useAuth();
 
@@ -19,7 +20,8 @@ const NavBar: React.FC = () => {
     navigate(path);
   };
 
-  return React.createElement('nav', { className: 'main-nav' },// Hoved-navigation med CSS stylin
+  return React.createElement('nav', { className: 'main-nav' },    // Hoved-navigation med CSS styling
+    
     // Link til forsiden (film-listen)
     React.createElement(
       'button',
@@ -44,6 +46,7 @@ const NavBar: React.FC = () => {
       },
       ' Opret film'
     ),
+    
     // Højre side af navbaren (login/profil/logout)
     React.createElement('div', { className: 'nav-right' },
 
@@ -62,6 +65,7 @@ const NavBar: React.FC = () => {
             className: 'logout-button'
           }, ' Log ud')
         )
+        
         // Hvis IKKE logget ind → vis login og signup
         : React.createElement(React.Fragment, null,
           React.createElement('button', {

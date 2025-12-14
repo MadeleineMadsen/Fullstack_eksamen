@@ -1,8 +1,6 @@
-// frontend/src/components/MovieCard.tsx
 import React from "react";
 import { Link } from "react-router-dom";
 import PLACEHOLDER_POSTER from "../assets/placeholder.png";
-
 
 // Movie-interfacet beskriver de data, som et filmkort skal kunne vise
 interface Movie {
@@ -20,12 +18,13 @@ interface MovieCardProps {
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   return React.createElement(
+
     // Wrapper som Link → klik på kortet navigerer til filmens detail-side
     Link,
     {
-      to: `/movies/${movie.id}`// Dynamisk route baseret på filmens ID
-      , className: "movie-card-link"
-    },// CSS-klasse til styling
+      to: `/movies/${movie.id}`   // Dynamisk route baseret på filmens ID
+      , className: "movie-card-link"    // CSS-klasse til styling
+    },
 
     // Filmkortets container
     React.createElement(
@@ -33,16 +32,18 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       {
         className: "movie-card",
       },
+
       // Billede af filmen
       React.createElement("img", {
         src: movie.poster_image ?? PLACEHOLDER_POSTER,
         alt: movie.title,
-        className: "movie-card-image",// CSS-styling
+        className: "movie-card-image",    // CSS-styling
         onError: (e: any) => {
           e.target.onerror = null;
           e.target.src = PLACEHOLDER_POSTER;
         },
       }),
+      
       // Tekstindhold: titel, rating og årstal
       React.createElement(
         "div",

@@ -14,12 +14,15 @@ import Movie from '../entities/Movie';
 // - Automatisk gen-fetching når filters ændrer sig
 // - Fejlhåndtering i UI
 // --------------------------------------------------------------
+
 export const useMovies = (filters?: MovieFilters) => {
     return useQuery<Movie[], Error>({
         queryKey: ['movies', filters],
-          // queryKey bestemmer caching — skifter når filters ændres
+
+        // queryKey bestemmer caching — skifter når filters ændres
         queryFn: () => movieService.getAllMovies(filters),
-         // Funktion der kalder vores movieService for at hente data
+        
+        // Funktion der kalder vores movieService for at hente data
         staleTime: 5 * 60 * 1000,
 
         // Data regnes som “frisk” i 5 min (ingen refetch på fokus)
@@ -40,6 +43,7 @@ export const useMovies = (filters?: MovieFilters) => {
 //
 // React Query caches film per ID, så samme film ikke hentes igen.
 // --------------------------------------------------------------
+
 export const useMovie = (id: number) => {
     return useQuery<Movie, Error>({
         queryKey: ['movie', id],

@@ -6,6 +6,7 @@ import '../styles/style.css';
 // Side der viser brugerens profiloplysninger fra auth-store
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
+  
   // UI for profiloplysninger
   const profileContent = React.createElement('div', { className: 'profile-container' },
     React.createElement('h2', { className: 'profile-title' }, ' Profil'),

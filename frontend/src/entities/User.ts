@@ -1,3 +1,5 @@
+// User-interface
+// Beskriver en bruger i systemet
 export default interface User {
     id: number;
     username: string;

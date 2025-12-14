@@ -50,6 +50,7 @@ router.get('/movies', async (req, res) => {
         console.log('Fetching from TMDB:', tmdbUrl);
         const response = await fetch(tmdbUrl);
         const data = await response.json();
+        
         // Send data videre til frontend
         res.json(data);
     } catch (error) {

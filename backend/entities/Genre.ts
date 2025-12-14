@@ -1,7 +1,8 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Movie } from "./Movie";
-// Denne klasse repræsenterer "genres"-tabellen i databasen
 
+//Genre-entiteten repræsenterer tabellen "genres" i databasen.
+//Bruges til at kategorisere film (fx Action, Comedy, Drama).
 @Entity("genres")
 export class Genre {
     // Primærnøgle (AUTO_INCREMENT). Unikt ID for hver genre

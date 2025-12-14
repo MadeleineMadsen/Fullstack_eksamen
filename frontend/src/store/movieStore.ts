@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type Movie from "../entities/Movie";
 
+// Global store for film-data og UI-state
 interface MovieStoreState {
     // Movies data
     movies: Movie[];
@@ -42,6 +43,7 @@ interface MovieStoreState {
     reset: () => void;
 }
 
+// Zustand store
 const useMovieStore = create<MovieStoreState>((set) => ({
     // Initial state
     movies: [],
@@ -119,6 +121,7 @@ const useMovieStore = create<MovieStoreState>((set) => ({
     clearError: () =>
         set({ error: null }),
 
+    // Fuld reset (bruges fx ved logout)
     reset: () =>
         set({
             movies: [],

@@ -1,8 +1,8 @@
-// frontend/src/components/MovieDetailComponent.tsx
 import React from "react";
 import PLACEHOLDER_POSTER from "../assets/placeholder.png";
 
-// Opdater filminterface til at inkludere streaming platforms
+// Type til en film (det data vi forventer fra backend/TMDB)
+// Mange felter er optional fordi de ikke altid findes på alle film
 export interface Movie {
   id: number;
   title: string;
@@ -25,13 +25,15 @@ interface StreamingPlatform {
   logo_url?: string;
 }
 
-// Props til komponenten
+// Props til MovieDetailPage
 interface Props {
-  movie?: Movie;
-  trailerKey?: string | null;
+  movie?: Movie;                  // movie kan være undefined mens der loades
+  trailerKey?: string | null;     // YouTube key (null hvis der ikke er trailer)
 }
 
 const MovieDetailPage = ({ movie, trailerKey }: Props) => {
+  
+  // Loading state: hvis movie ikke er klar endnu
   if (!movie) {
     return React.createElement(
       "div",
@@ -40,13 +42,15 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
     );
   }
 
-  // Simpel "tilbage" funktion
+  // Simpel tilbage-funktion (browser history)
   const handleBack = () => {
     window.history.back();
   };
 
-  // Funktion til at generere streaming-sektionen
+  // Genererer streaming-sektionen (enten "ingen info" eller grid med platforme)
   const renderStreamingSection = () => {
+
+    // Hvis der ikke findes streaming data
     if (!movie.streaming_platforms || movie.streaming_platforms.length === 0) {
       return React.createElement('div', { className: 'streaming-section' },
         React.createElement('h2', null, 'Tilgængelig på'),
@@ -61,20 +65,27 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
     // Hvis vi har streaming platforms, vis dem
     return React.createElement('div', { className: 'streaming-section' },
       React.createElement('h2', null, 'Tilgængelig på'),
+
+      // Grid container til alle streaming services
       React.createElement('div', { className: 'platforms-grid' },
-        // Map over hver platform og vis logo/ikon
+        
+        // Loop over alle platforme og lav et "kort" pr. platform
         movie.streaming_platforms.map(platform =>
           React.createElement('div', {
-            key: platform.id,
+            key: platform.id,   // unik key for React
             className: 'platform-item',
             title: `Tilgængelig på ${platform.name}`
           },
+
+            // Hvis platformen har logo_url → vis billede
             platform.logo_url
               ? React.createElement('img', {
                 src: platform.logo_url,
                 alt: platform.name,
                 className: 'platform-logo'
               })
+
+              // Ellers vis navnet som fallback
               : React.createElement('div', { className: 'platform-name' },
                 platform.name
               )
@@ -105,10 +116,14 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
         alt: movie.title,
         className: 'movie-detail-background',
         onError: (e: any) => {
+
+          // Forhindrer uendeligt loop hvis placeholder også fejler
           e.target.onerror = null;
           e.target.src = PLACEHOLDER_POSTER;
         },
       }),
+
+      // Tilbage-knap
       React.createElement('button', {
         className: 'back-button',
         onClick: handleBack
@@ -117,7 +132,8 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
 
     // --- MAIN CONTENT ---
     React.createElement('div', { className: 'movie-detail-content' },
-      // Venstre side: Poster
+      
+      // Venstre side: Poster. Fallback til placeholder hvis mangler/fejler
       React.createElement('img', {
         src: movie.poster_image ?? PLACEHOLDER_POSTER,
         alt: movie.title,
@@ -132,14 +148,17 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
       React.createElement('div', { className: 'movie-detail-info' },
         React.createElement('h1', null, movie.title),
 
-        // Rating
+        // Rating vises som stjerner + tal (1 decimal)
         React.createElement('div', { className: 'movie-detail-rating' },
           '⭐ ', movie.rating?.toFixed(1)
         ),
 
+         // Basis-info (udgivelse, varighed, instruktør)
         React.createElement("p", null, "Udgivet: ", movie.released),
         React.createElement("p", null, "Varighed: ", movie.runtime, " minutter"),
         React.createElement("p", null, "Instruktør: ", movie.director),
+        
+        // Beskrivelse / overview
         React.createElement(
           "p",
           { className: "movie-detail-overview" },
@@ -155,6 +174,8 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
             React.createElement("iframe", {
               width: "100%",
               height: "400",
+
+              // Trailer embed via YouTube
               src: `https://www.youtube.com/embed/${trailerKey}`,
               title: "Movie trailer",
               allow:
@@ -164,7 +185,7 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
           )
           : null,
 
-        // --- NYT: STREAMING SEKTION ---
+        // STREAMING: viser platforme eller "ingen info"
         renderStreamingSection()
       )
     )

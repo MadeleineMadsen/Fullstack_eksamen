@@ -7,7 +7,6 @@ import authRouter from "../routes/authRouter";
 
 export function setupRouters(app: Express) {
     
-
     // Router til alt der handler om film
     // Eksempler:
     // GET    /api/movies

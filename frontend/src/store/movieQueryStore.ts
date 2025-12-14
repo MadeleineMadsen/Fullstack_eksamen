@@ -15,6 +15,7 @@ export interface MovieQuery {
     director?: string;
 }
 
+// Zustand store-interface
 interface MovieQueryStore {
     movieQuery: MovieQuery;  // Alle aktuelle filtre
     setGenre: (genre?: Genre) => void;
@@ -27,25 +28,32 @@ interface MovieQueryStore {
     setPage: (page: number) => void;
     setDirector: (director?: string) => void;
     reset: () => void;
-    getQueryParams: () => Record<string, any>;// Konverterer filters → URL params
+
+    // Konverterer MovieQuery → backend query parameters
+    getQueryParams: () => Record<string, any>;
 }
 
+// Zustand store
 const useMovieQueryStore = create<MovieQueryStore>((set, get) => ({
+    
     // Standard query (starter på side 1)
     movieQuery: {
         page: 1,
     },
+
      // Opdater genre + reset pagination
     setGenre: (genre) =>
         set((state) => ({
             movieQuery: { ...state.movieQuery, genre, page: 1 },
         })),
-    // Opdater streaming platform + reset pagination
+    
+        // Opdater streaming platform + reset pagination
     setStreamingPlatform: (streamingPlatform) =>
         set((state) => ({
             movieQuery: { ...state.movieQuery, streamingPlatform, page: 1 },
         })),
-    // Opdater år
+    
+        // Opdater år
     setYear: (year) =>
         set((state) => ({
             movieQuery: { ...state.movieQuery, year, page: 1 },
@@ -56,22 +64,26 @@ const useMovieQueryStore = create<MovieQueryStore>((set, get) => ({
         set((state) => ({
             movieQuery: { ...state.movieQuery, minRating, page: 1 },
         })),
-    // Minimum rating filter    
+    
+        // Minimum rating filter    
     setMinMetacritic: (minMetacritic) =>
         set((state) => ({
             movieQuery: { ...state.movieQuery, minMetacritic, page: 1 },
         })),
-    // Sortering
+    
+        // Sortering
     setSortOrder: (sortOrder) =>
         set((state) => ({
             movieQuery: { ...state.movieQuery, sortOrder, page: 1 },
         })),
-    // Søgetekst → nulstil alle andre filtre    
+    
+        // Søgetekst → nulstil alle andre filtre    
     setSearchText: (searchText) =>
         set(() => ({
             movieQuery: {
                 searchText,
                 page: 1,
+                
                 // Når vi søger, nulstilles alle filtre
                 genre: undefined,
                 streamingPlatform: undefined,
@@ -93,11 +105,13 @@ const useMovieQueryStore = create<MovieQueryStore>((set, get) => ({
             movieQuery: { ...state.movieQuery, director, page: 1 },
         })),
 
+    // Nulstil alle filtre
     reset: () =>
         set(() => ({
             movieQuery: { page: 1 },
         })),
 
+    // Konverterer state til backend-venlige query params
     getQueryParams: () => {
         const query = get().movieQuery;
         const params: Record<string, any> = {};
