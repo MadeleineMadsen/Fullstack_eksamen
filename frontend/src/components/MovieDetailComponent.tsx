@@ -1,5 +1,6 @@
 // frontend/src/components/MovieDetailComponent.tsx
 import React from "react";
+import PLACEHOLDER_POSTER from "../assets/placeholder.png";
 
 // Opdater filminterface til at inkludere streaming platforms
 export interface Movie {
@@ -100,9 +101,13 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
     // --- HERO SEKTION MED BAGGRUNDSBILLEDE OG TILBAGE-KNAP ---
     React.createElement('div', { className: 'movie-detail-header' },
       React.createElement('img', {
-        src: movie.background_image,
+        src: movie.background_image ?? PLACEHOLDER_POSTER,
         alt: movie.title,
-        className: 'movie-detail-background'
+        className: 'movie-detail-background',
+        onError: (e: any) => {
+          e.target.onerror = null;
+          e.target.src = PLACEHOLDER_POSTER;
+        },
       }),
       React.createElement('button', {
         className: 'back-button',
@@ -114,9 +119,13 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
     React.createElement('div', { className: 'movie-detail-content' },
       // Venstre side: Poster
       React.createElement('img', {
-        src: movie.poster_image,
+        src: movie.poster_image ?? PLACEHOLDER_POSTER,
         alt: movie.title,
         className: "movie-detail-poster",
+        onError: (e: any) => {
+          e.target.onerror = null;
+          e.target.src = PLACEHOLDER_POSTER;
+        },
       }),
 
       // Højre side: Film info
