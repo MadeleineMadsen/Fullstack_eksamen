@@ -354,8 +354,8 @@ button,
                     color: var(--text-white);
                 }
 
-                .movie-detail-rating {
-                    display: inline-flex;
+                .movie-detail-rating-row {
+                    /* display: inline-flex;
                     align-items: center;
                     gap: 0.5rem;
                     font-size: 1.25rem;
@@ -364,7 +364,31 @@ button,
                     background-color: rgba(245, 158, 11, 0.1);
                     padding: 0.5rem 1rem;
                     margin-bottom: 1rem;
-                    border-radius: var(--radius-full);
+                    border-radius: var(--radius-full); */
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    margin: 12px 0;
+
+                    .rating-main {
+                        font-size: 1.2rem;
+                        font-weight: 600;
+                        color: var(--warning);
+                        background-color: rgba(245, 158, 11, 0.1);
+                        padding: 0.5rem 1rem;
+                        margin-bottom: 1rem;
+                        border-radius: var(--radius-full);
+                    }
+
+                    .rating-metacritic {
+                        font-size: 1.2rem;
+                        font-weight: 600;
+                        color: var(--warning);
+                        background-color: rgba(245, 158, 11, 0.1);
+                        padding: 0.5rem 1rem;
+                        margin-bottom: 1rem;
+                        border-radius: var(--radius-full);
+                    }
                 }
 
                 .movie-detail-overview {
