@@ -81,56 +81,92 @@ export const getMovies = async (
 export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<any> => {
     const movieRepo = AppDataSource.getRepository(Movie);
 
-    // 1. Tjek om filmen er i din egen database (valgfrit)
+    // 1. Tjek om filmen er i din egen database
     const localMovie = await movieRepo.findOne({
         where: { id },
         relations: ["genres", "actors", "streaming_platforms", "trailers"],
     });
 
-if (localMovie) {
-    console.log(` Found movie ${id} in local database`);
+    if (localMovie) {
+        console.log(` Found movie ${id} in local database`);
 
-    // Hvis runtime eller director mangler → hent fra TMDB
-    if (!localMovie.runtime || !localMovie.director) {
-        const tmdbId = (localMovie as any).tmdb_id ?? id;
+        // Hvis runtime eller director mangler → hent fra TMDB
+        if (!localMovie.runtime || !localMovie.director) {
+            const tmdbId = (localMovie as any).tmdb_id ?? id;
 
-        const [movieRes, creditsRes] = await Promise.all([
-            fetch(`${TMDB_BASE_URL}/movie/${tmdbId}?api_key=${TMDB_API_KEY}`),
-            fetch(`${TMDB_BASE_URL}/movie/${tmdbId}/credits?api_key=${TMDB_API_KEY}`)
-        ]);
+            const [movieRes, creditsRes] = await Promise.all([
+                fetch(`${TMDB_BASE_URL}/movie/${tmdbId}?api_key=${TMDB_API_KEY}`),
+                fetch(`${TMDB_BASE_URL}/movie/${tmdbId}/credits?api_key=${TMDB_API_KEY}`)
+            ]);
 
-        if (movieRes.ok && creditsRes.ok) {
-            const movieData = await movieRes.json();
-            const credits = await creditsRes.json();
+            if (movieRes.ok && creditsRes.ok) {
+                const movieData = await movieRes.json();
+                const credits = await creditsRes.json();
 
-            const director = credits.crew?.find(
-                (person: any) => person.job === "Director"
-            );
+                const director = credits.crew?.find(
+                    (person: any) => person.job === "Director"
+                );
 
-            return {
-                ...localMovie,
-                runtime: movieData.runtime ?? localMovie.runtime,
-                director: director?.name ?? localMovie.director,
-                rating: Number(
-                    (localMovie.rating ?? movieData.vote_average)?.toFixed(1)
-                )
-            };
+                // NYT: Hent også streaming data
+                let streamingPlatforms = [];
+                try {
+                    const providersResponse = await fetch(
+                        `${TMDB_BASE_URL}/movie/${tmdbId}/watch/providers?api_key=${TMDB_API_KEY}`
+                    );
+
+                    if (providersResponse.ok) {
+                        const providersData = await providersResponse.json();
+                        const countryData = providersData.results?.[countryCode] || providersData.results?.US;
+
+                        if (countryData?.flatrate) {
+                            streamingPlatforms = countryData.flatrate.map(provider => ({
+                                id: provider.provider_id,
+                                name: provider.provider_name,
+                                logo_path: provider.logo_path,
+                                logo_url: provider.logo_path
+                                    ? `https://image.tmdb.org/t/p/w200${provider.logo_path}`
+                                    : null
+                            }));
+                        }
+                    }
+                } catch (streamingError) {
+                    console.log("Could not load streaming data for local movie");
+                }
+
+                return {
+                    ...localMovie,
+                    runtime: movieData.runtime ?? localMovie.runtime,
+                    director: director?.name ?? localMovie.director,
+                    rating: Number(
+                        (localMovie.rating ?? movieData.vote_average)?.toFixed(1)
+                    ),
+                    // NYT: Tilføj streaming data
+                    streaming_platforms: streamingPlatforms,
+                    has_streaming_info: streamingPlatforms.length > 0
+                };
+            }
         }
+
+        // Returnér localMovie med eventuel streaming data fra databasen
+        return {
+            ...localMovie,
+            has_streaming_info: localMovie.streaming_platforms?.length > 0
+        };
     }
 
-    return localMovie;
-}
     // Hvis filmen ikke findes lokalt → hent fra TMDB
     if (!TMDB_API_KEY) {
         throw new Error("TMDB_API_KEY is missing");
     }
 
-        console.log(`Fetching movie ${id} from TMDB...`);
+    console.log(`Fetching movie ${id} from TMDB...`);
 
     try {
-        const [movieRes, creditsRes] = await Promise.all([
+        // Hent filmdata, credits OG streaming data samtidig
+        const [movieRes, creditsRes, providersRes] = await Promise.all([
             fetch(`${TMDB_BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}`),
-            fetch(`${TMDB_BASE_URL}/movie/${id}/credits?api_key=${TMDB_API_KEY}`)
+            fetch(`${TMDB_BASE_URL}/movie/${id}/credits?api_key=${TMDB_API_KEY}`),
+            fetch(`${TMDB_BASE_URL}/movie/${id}/watch/providers?api_key=${TMDB_API_KEY}`)
         ]);
 
         if (!movieRes.ok || !creditsRes.ok) {
@@ -144,13 +180,51 @@ if (localMovie) {
             (person: any) => person.job === "Director"
         );
 
-        return {
-            ...data,
-            rating: Number(data.vote_average?.toFixed(1)),
-            director: director?.name ?? null
-        };
+        // Behandling af streaming data
+        let streamingPlatforms = [];
+        let has_streaming_info = false;
 
-        // gem film i database så den findes lokalt næste gang
+        if (providersRes.ok) {
+            const providersData = await providersRes.json();
+            const countryData = providersData.results?.[countryCode] || providersData.results?.US;
+
+            if (countryData?.flatrate) {
+                streamingPlatforms = countryData.flatrate.map(provider => ({
+                    id: provider.provider_id,
+                    name: provider.provider_name,
+                    logo_path: provider.logo_path,
+                    logo_url: provider.logo_path
+                        ? `https://image.tmdb.org/t/p/w200${provider.logo_path}`
+                        : null
+                }));
+                has_streaming_info = streamingPlatforms.length > 0;
+            }
+        }
+
+        // Returnér komplet filmdata med streaming
+        return {
+            id: data.id,
+            title: data.title,
+            overview: data.overview,
+            released: data.release_date,
+            runtime: data.runtime,
+            rating: Number(data.vote_average?.toFixed(1)),
+            poster_image: data.poster_path
+                ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
+                : null,
+            background_image: data.backdrop_path
+                ? `https://image.tmdb.org/t/p/original${data.backdrop_path}`
+                : null,
+            director: director?.name ?? null,
+            // Streaming data
+            streaming_platforms: streamingPlatforms,
+            has_streaming_info: has_streaming_info,
+            // Ekstra felter
+            genres: data.genres || [],
+            original_language: data.original_language,
+            popularity: data.popularity,
+            vote_count: data.vote_count
+        };
 
     } catch (error) {
         console.error("Error fetching TMDB movie:", error);

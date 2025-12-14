@@ -12,8 +12,6 @@ export interface Movie {
   poster_image?: string;
   background_image?: string;
   director?: string;
-
-  // Nye felter til streaming
   streaming_platforms?: StreamingPlatform[];
   has_streaming_info?: boolean;
 }
@@ -27,13 +25,11 @@ interface StreamingPlatform {
 }
 
 // Props til komponenten
-// Props til komponenten
 interface Props {
   movie?: Movie;
   trailerKey?: string | null;
 }
 
-// Hvis ingen film-data er tilgængelig endnu → vis loading-tekst
 const MovieDetailPage = ({ movie, trailerKey }: Props) => {
   if (!movie) {
     return React.createElement(
@@ -43,7 +39,7 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
     );
   }
 
-  // Simpel "tilbage" funktion der hopper til forrige side i browserhistorikken
+  // Simpel "tilbage" funktion
   const handleBack = () => {
     window.history.back();
   };
@@ -144,20 +140,23 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
         // --- TRAILER ---
         trailerKey
           ? React.createElement(
-              "div",
-              { className: "movie-detail-trailer" },
-              React.createElement("h2", null, "Trailer"),
-              React.createElement("iframe", {
-                width: "100%",
-                height: "400",
-                src: `https://www.youtube.com/embed/${trailerKey}`,
-                title: "Movie trailer",
-                allow:
-                  "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
-                allowFullScreen: true,
-              })
-            )
-          : null
+            "div",
+            { className: "movie-detail-trailer" },
+            React.createElement("h2", null, "Trailer"),
+            React.createElement("iframe", {
+              width: "100%",
+              height: "400",
+              src: `https://www.youtube.com/embed/${trailerKey}`,
+              title: "Movie trailer",
+              allow:
+                "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+              allowFullScreen: true,
+            })
+          )
+          : null,
+
+        // --- NYT: STREAMING SEKTION ---
+        renderStreamingSection()
       )
     )
   );
