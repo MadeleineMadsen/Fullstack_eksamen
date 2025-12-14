@@ -75,47 +75,102 @@ export const getMovies = async (
 // GET ONE MOVIE — Hent film fra DB først, hvis ikke, hent fra TMDB
 // ============================================================================
 
-export const getMovie = async (id: number): Promise<any> => {
+export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<any> => {
     const movieRepo = AppDataSource.getRepository(Movie);
 
-    // Forsøg først at hente filmen lokalt i database
+    // 1. Tjek om filmen er i din egen database (valgfrit)
     const localMovie = await movieRepo.findOne({
         where: { id },
         relations: ["genres", "actors", "streaming_platforms", "trailers"],
     });
 
     if (localMovie) {
-        console.log(` Found movie ${id} in local database`);
-        return localMovie; // DONE ✔
+        console.log(`Found movie ${id} in local database`);
+        // Hvis du har streaming data i din egen database, returnér det
+        return localMovie;
     }
 
-    // Hvis filmen ikke findes lokalt → hent fra TMDB
+    // 2. Hent fra TMDB
     if (!TMDB_API_KEY) {
-        console.error("TMDB_API_KEY is missing");
-        throw new Error("Movie not found");
+        throw new Error("TMDB_API_KEY is missing");
     }
-
-    console.log(` Fetching movie ${id} from TMDB...`);
 
     try {
-        const response = await fetch(
-            `${TMDB_BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}`
+        console.log(`Fetching movie ${id} from TMDB...`);
+
+        // 2A. HENT FILMDATA
+        const movieResponse = await fetch(
+            `${TMDB_BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}&language=en-US`
         );
 
-        if (!response.ok) {
-            throw new Error(`TMDB API returned ${response.status}`);
+        if (!movieResponse.ok) {
+            throw new Error(`TMDB API returned ${movieResponse.status}`);
         }
 
-        const data = await response.json();
+        const movieData = await movieResponse.json();
 
-        // Returnér TMDB-data direkte til frontend
-        return data;
+        // 2B. HENT STREAMING-DATA
+        let streamingPlatforms = [];
+        try {
+            const providersResponse = await fetch(
+                `${TMDB_BASE_URL}/movie/${id}/watch/providers?api_key=${TMDB_API_KEY}`
+            );
 
-        
-        // gem film i database så den findes lokalt næste gang
+            if (providersResponse.ok) {
+                const providersData = await providersResponse.json();
+                const countryData = providersData.results?.[countryCode] || providersData.results?.US;
+
+                if (countryData?.flatrate) {
+                    // Formatér streamingdata til dit interne format
+                    streamingPlatforms = countryData.flatrate.map(provider => ({
+                        id: provider.provider_id,
+                        name: provider.provider_name,
+                        logo_path: provider.logo_path,
+                        logo_url: provider.logo_path
+                            ? `https://image.tmdb.org/t/p/w200${provider.logo_path}`
+                            : null
+                    }));
+                }
+            }
+        } catch (streamingError) {
+            console.log("Could not load streaming data, continuing without it");
+            // Fortsæt uden streaming data - ikke fatal fejl
+        }
+
+        // 2C. KOMBINER DATA
+        const enhancedMovie = {
+            // Filmens basisdata fra TMDB
+            id: movieData.id,
+            title: movieData.title,
+            overview: movieData.overview,
+            released: movieData.release_date,
+            rating: movieData.vote_average,
+            runtime: movieData.runtime,
+            poster_image: movieData.poster_path
+                ? `https://image.tmdb.org/t/p/w500${movieData.poster_path}`
+                : null,
+            backdrop_image: movieData.backdrop_path
+                ? `https://image.tmdb.org/t/p/original${movieData.backdrop_path}`
+                : null,
+
+            // Streaming data vi lige har hentet
+            streaming_platforms: streamingPlatforms,
+
+            // Info om kilden til data
+            data_source: "tmdb",
+            has_streaming_info: streamingPlatforms.length > 0
+        };
+
+        // 3. (VALGFRIT) Gem filmen i din egen database til næste gang
+        if (!localMovie && streamingPlatforms.length > 0) {
+            // Her kunne du gemme filmen i din database
+            // sammen med streaming platform info
+        }
+
+        return enhancedMovie;
 
     } catch (error) {
-        console.error(" Error fetching TMDB movie:", error);
+        console.error("Error fetching TMDB movie:", error);
         throw new Error("Movie not found");
     }
 };
@@ -157,7 +212,7 @@ export const createMovie = async (movieData: any): Promise<Movie> => {
         isAdmin: true,
     } as Partial<Movie>);
 
-     // Gem filmen i Postgres
+    // Gem filmen i Postgres
     const savedMovie = await movieRepo.save(movie as Movie);
     return savedMovie as Movie;
 };

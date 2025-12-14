@@ -3,4 +3,5 @@ export default interface StreamingPlatform {
     name: string;
     logo?: string;
     website?: string;
+    logo_url?: string;
 }
