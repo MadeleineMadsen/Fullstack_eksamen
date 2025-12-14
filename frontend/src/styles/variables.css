@@ -26,7 +26,8 @@
     --text-white: #ffffff;
   
   /* Nuancer (Sort og hvid)*/
-    --nuance-50:  #000000;            
+    --nuance-50:  #000000;   
+    --nuance-75:  #0a0a0a;     
     --nuance-100: #121212;
     --nuance-200: #2b2b2b;
     --nuance-300: #2a2a2a;

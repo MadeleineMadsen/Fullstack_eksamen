@@ -155,7 +155,7 @@ textarea {
 
 /* Success */
 .success-message {
-    background-color: var(--white);
+    background-color: var(--bg-body);
     color: var(--success);
     border: 1px solid #bbf7d0;
 }

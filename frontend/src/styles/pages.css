@@ -310,11 +310,11 @@ button,
         height: 400px;
         overflow: hidden;
 
-    .movie-detail-background {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        filter: brightness(0.4);
+        .movie-detail-background {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.4);
         }
     }
 
@@ -337,44 +337,148 @@ button,
         }
 
             .movie-detail-info {
-                color: var(--text-white);
 
                 .movie-detail-title {
-                font-size: 2.5rem;
-                font-weight: 800;
-                color: var(--text-white);
-                margin-bottom: 1rem;
-                line-height: 1.2;
-            }
+                    font-size: 2.5rem;
+                    font-weight: 800;
+                    color: var(--text-white);
+                    margin-bottom: 1rem;
+                    line-height: 1.2;
+                }
+            
+                .movie-detail-meta {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 1.5rem;
+                    margin-bottom: 1.5rem;
+                    color: var(--text-white);
+                }
 
-            .movie-detail-meta {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 1.5rem;
-                margin-bottom: 1.5rem;
-                color: var(--text-white);
-            }
+                .movie-detail-rating {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    font-size: 1.25rem;
+                    font-weight: 700;
+                    color: var(--warning);
+                    background-color: rgba(245, 158, 11, 0.1);
+                    padding: 0.5rem 1rem;
+                    margin-bottom: 1rem;
+                    border-radius: var(--radius-full);
+                }
 
-            .movie-detail-rating {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                font-size: 1.25rem;
-                font-weight: 700;
-                color: var(--warning);
-                background-color: rgba(245, 158, 11, 0.1);
-                padding: 0.5rem 1rem;
-                margin-bottom: 1rem;
-                border-radius: var(--radius-full);
-            }
+                .movie-detail-overview {
+                    font-size: 1.125rem;
+                    line-height: 1.7;
+                    color: var(--text-white);
+                    margin-top: 1.5rem;
+                }
 
-            .movie-detail-overview {
-                font-size: 1.125rem;
-                line-height: 1.7;
-                color: var(--text-white);
-                margin-top: 1.5rem;
+                .movie-detail-trailer {
+                    margin-top: 2.25rem;
+                    padding-top: 1.5rem;
+                    border-top: 1px solid var(--nuance-200);
+
+                    h2 {
+                        font-size: 1.5rem;
+                        margin-bottom: 1rem;
+                        color: var(--text-white);
+                    }
+
+                    iframe {
+                        width: 100%;
+                        aspect-ratio: 16 / 9;
+                        border: 0;
+                        border-radius: 14px;
+                        background: var(--bg-body);
+                        box-shadow: var(--shadow-lg);
+                    }
+                }
+
+                .streaming-section {
+                    margin-top: 2.25rem;
+                    margin-bottom: 2.25rem;
+                    padding: 1.5rem;
+                    border-radius: 14px;
+                    background: var(--nuance-75);
+                    border: 1px solid var(--nuance-200);
+                    box-shadow: var(--shadow-lg);
+
+                    h2 {
+                        font-size: 1.35rem;
+                        margin-bottom: 1rem;
+                        color: var(--text-white);
+                    }
+
+                    .platforms-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+                        gap: 1rem;
+                    }
+
+                    .platform-item {
+                        display: grid;
+                        place-items: center;
+                        min-height: 76px;
+                        padding: 0.85rem;
+                        border-radius: 12px;
+                        background: var(--bg-elevated);
+                        border: 1px solid var(--nuance-100);
+                        transition: transform 0.2s ease, background 0.2s ease;
+
+                        &:hover {
+                            transform: translateY(-4px);
+                            background: var(--nuance-200);
+                        }
+                    }
+
+                    .platform-logo {
+                        max-width: 92px;
+                        max-height: 34px;
+                        object-fit: contain;
+                    }
+
+                    .platform-name {
+                        font-size: 0.9rem;
+                        font-weight: 500;
+                        text-align: center;
+                        color: var(--text-white);
+                    }
+
+                    .no-streaming-info {
+                        background: var(--nuance-75);
+                        border-radius: 12px;
+                        padding: 1.25rem;
+
+                        p {
+                            margin: 0.3rem 0;
+                            color: var(--text-white);
+                        }
+
+                        .help-text {
+                            font-size: 0.9rem;
+                            color: var(--nuance-500);
+                            font-style: italic;
+                        }
+                    }
+
+                    .attribution {
+                        margin-top: 1rem;
+                        font-size: 0.8rem;
+                        color: var(--text-white);
+
+                        a {
+                            color: var(--text-white);
+                            text-decoration: none;
+
+                            &:hover {
+                                color: var(--text-white);
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+                }
             }
-        }
     }
 }
 
@@ -594,40 +698,36 @@ button,
 ------------------------------ */
 
 .not-found-container {
-    min-height: 80vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: center; /* lodret */
+    align-items: center; 
+    min-height: 80vh;
     padding: 2rem;
     text-align: center;
 
-    .not-found-content {
-        max-width: 500px;
+    .not-found-title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--text-white);
+        line-height: 1;
+        margin-right: 1rem;
+    }
 
-        .not-found-emoji {
-        font-size: 5rem;
-        margin-bottom: 1.5rem;
-        }
+    .not-found-subtitle {
+        font-size: 2rem;
+        color: var(--text-white);
+        margin-right: 1rem;
+    }
 
-        .not-found-title {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--text-white);
-            margin-bottom: 1rem;
-            line-height: 1;
-        }
+    .not-found-message {
+        color: var(--text-white);
+        line-height: 1.6;
+    }
 
-        .not-found-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-white);
-            margin-bottom: 1.5rem;
-        }
-
-        .not-found-message {
-            color: var(--text-white);
-            line-height: 1.6;
-            margin-bottom: 2rem;
-        }
+    .not-found-link {
+        color: var(--primary-color);
+        margin-top: 1rem;
     }
 }
 
@@ -652,6 +752,13 @@ button,
     ) {
         padding: 0.5rem 0.875rem;
         font-size: 0.875rem;
+    }
+
+    .streaming-section {
+    
+        .platforms-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
 }
 
@@ -835,3 +942,4 @@ button,
         margin-left: 1rem;
     }
 }
+
