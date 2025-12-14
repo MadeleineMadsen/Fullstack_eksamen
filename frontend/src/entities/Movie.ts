@@ -16,6 +16,8 @@ export default interface Movie {
     isAdmin: boolean;
     genres: Genre[];
     actors: Actor[];
-    streaming_platforms: StreamingPlatform[];
+    streaming_platforms?: StreamingPlatform[];
+    has_streaming_info?: boolean;
+    data_source?: string;
     trailers: Trailer[];
 }

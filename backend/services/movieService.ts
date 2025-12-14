@@ -78,10 +78,10 @@ export const getMovies = async (
 // GET ONE MOVIE — Hent film fra DB først, hvis ikke, hent fra TMDB
 // ============================================================================
 
-export const getMovie = async (id: number): Promise<any> => {
+export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<any> => {
     const movieRepo = AppDataSource.getRepository(Movie);
 
-    // Forsøg først at hente filmen lokalt i database
+    // 1. Tjek om filmen er i din egen database (valgfrit)
     const localMovie = await movieRepo.findOne({
         where: { id },
         relations: ["genres", "actors", "streaming_platforms", "trailers"],
@@ -122,11 +122,11 @@ if (localMovie) {
 }
     // Hvis filmen ikke findes lokalt → hent fra TMDB
     if (!TMDB_API_KEY) {
-        console.error("TMDB_API_KEY is missing");
-        throw new Error("Movie not found");
+        throw new Error("TMDB_API_KEY is missing");
     }
 
-    console.log(` Fetching movie ${id} from TMDB...`);
+    try {
+        console.log(`Fetching movie ${id} from TMDB...`);
 
     try {
         const [movieRes, creditsRes] = await Promise.all([
@@ -154,7 +154,7 @@ if (localMovie) {
         // gem film i database så den findes lokalt næste gang
 
     } catch (error) {
-        console.error(" Error fetching TMDB movie:", error);
+        console.error("Error fetching TMDB movie:", error);
         throw new Error("Movie not found");
     }
 };
@@ -196,7 +196,7 @@ export const createMovie = async (movieData: any): Promise<Movie> => {
         isAdmin: true,
     } as Partial<Movie>);
 
-     // Gem filmen i Postgres
+    // Gem filmen i Postgres
     const savedMovie = await movieRepo.save(movie as Movie);
     return savedMovie as Movie;
 };
