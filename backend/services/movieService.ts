@@ -125,7 +125,6 @@ if (localMovie) {
         throw new Error("TMDB_API_KEY is missing");
     }
 
-    try {
         console.log(`Fetching movie ${id} from TMDB...`);
 
     try {
