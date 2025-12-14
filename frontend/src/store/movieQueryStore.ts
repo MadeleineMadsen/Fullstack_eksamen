@@ -13,7 +13,6 @@ export interface MovieQuery {
     searchText?: string;
     page?: number;
     director?: string;
-    actor?: string;
 }
 
 interface MovieQueryStore {
@@ -27,7 +26,6 @@ interface MovieQueryStore {
     setSearchText: (searchText?: string) => void;
     setPage: (page: number) => void;
     setDirector: (director?: string) => void;
-    setActor: (actor?: string) => void;
     reset: () => void;
     getQueryParams: () => Record<string, any>;// Konverterer filters → URL params
 }
@@ -82,7 +80,6 @@ const useMovieQueryStore = create<MovieQueryStore>((set, get) => ({
                 minMetacritic: undefined,
                 sortOrder: undefined,
                 director: undefined,
-                actor: undefined,
             },
         })),
 
@@ -94,11 +91,6 @@ const useMovieQueryStore = create<MovieQueryStore>((set, get) => ({
     setDirector: (director) =>
         set((state) => ({
             movieQuery: { ...state.movieQuery, director, page: 1 },
-        })),
-
-    setActor: (actor) =>
-        set((state) => ({
-            movieQuery: { ...state.movieQuery, actor, page: 1 },
         })),
 
     reset: () =>
@@ -124,7 +116,6 @@ const useMovieQueryStore = create<MovieQueryStore>((set, get) => ({
             if (query.minRating) params.minRating = query.minRating;
             if (query.minMetacritic) params.minMetacritic = query.minMetacritic;
             if (query.director) params.director = query.director;
-            if (query.actor) params.actor = query.actor;
         }
 
         // Tilføj sortering

@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { DataSource } from "typeorm";
-import { Actor } from "./entities/Actor";
 import { Genre } from "./entities/Genre";
 import { Movie } from "./entities/Movie";
 import { StreamingPlatform } from "./entities/StreamingPlatform";
@@ -21,7 +20,7 @@ export const AppDataSource = new DataSource({
     url: process.env.DATABASE_URL,
 
      // Alle entities (tabeller) der skal være en del af ORM-modellen
-    entities: [Movie, Actor, StreamingPlatform, Genre, Trailer, User],
+    entities: [Movie, StreamingPlatform, Genre, Trailer, User],
 
     // synchronize = false betyder:
     // TypeORM ændrer IKKE tabeller automatisk.

@@ -84,7 +84,7 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
     // 1. Tjek om filmen er i din egen database
     const localMovie = await movieRepo.findOne({
         where: { id },
-        relations: ["genres", "actors", "streaming_platforms", "trailers"],
+        relations: ["genres", "streaming_platforms", "trailers"],
     });
 
     if (localMovie) {

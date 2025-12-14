@@ -1,7 +1,6 @@
 // Service der håndterer alle API-kald til backend for film, genre, skuespillereimport Movie from '../entities/Movie';
 import Movie from '../entities/Movie';
 import Genre from '../entities/Genre';
-import Actor from '../entities/Actor';
 import StreamingPlatform from '../entities/StreamingPlatform';
 import Trailer from '../entities/Trailer';
 // Filtre der kan sendes til backend
@@ -69,22 +68,6 @@ class MovieService {
             return await response.json();
         } catch (error) {
             console.error('Error fetching genres:', error);
-            throw error;
-        }
-    }
-
-    // henter alle skuespillere
-    async getActors(): Promise<Actor[]> {
-        try {
-            const response = await fetch(`${this.baseUrl}/actors`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching actors:', error);
             throw error;
         }
     }

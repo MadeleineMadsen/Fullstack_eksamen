@@ -1,6 +1,5 @@
 import type Genre from "./Genre";
 import type StreamingPlatform from "./StreamingPlatform";
-import type Actor from "./Actor";
 import type Trailer from "./Trailer";
 
 export default interface Movie {
@@ -15,7 +14,6 @@ export default interface Movie {
     director?: string;
     isAdmin: boolean;
     genres: Genre[];
-    actors: Actor[];
     streaming_platforms?: StreamingPlatform[];
     has_streaming_info?: boolean;
     data_source?: string;
