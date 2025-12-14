@@ -162,20 +162,6 @@ INSERT INTO "users" ("id", "email", "username", "password", "role", "created_at"
 (1003,	'n@n.com',	'Naomi',	'$2b$10$UbAuEOZCCvVIRinEhO1.FeETyWRjBA9J5.tOOXO2e5lkzuayKEYGG',	'user',	'2025-12-09 11:01:31.582729',	NULL,	'true');
 
 
-DROP TABLE IF EXISTS "users_favorite_movies";
-CREATE TABLE "public"."users_favorite_movies" (
-    "user_id" integer NOT NULL,
-    "movie_id" integer NOT NULL,
-    "created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "PK_users_favorite_movies" PRIMARY KEY ("user_id", "movie_id")
-)
-WITH (oids = false);
-
-
-CREATE INDEX "idx_users_favorite_movies_user_id" ON public.users_favorite_movies USING btree (user_id);
-CREATE INDEX "idx_users_favorite_movies_movie_id" ON public.users_favorite_movies USING btree (movie_id);
-
-
 
 ALTER TABLE ONLY "public"."movies_has_actors" ADD CONSTRAINT "FK_3f39529b356a56aaa0cd9af2ec6" FOREIGN KEY (movies_id) REFERENCES movies(id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."movies_has_actors" ADD CONSTRAINT "FK_a215c23d127a28f730debd54b2d" FOREIGN KEY (actors_id) REFERENCES actors(id) NOT DEFERRABLE;
@@ -187,9 +173,6 @@ ALTER TABLE ONLY "public"."movies_has_streaming_platforms" ADD CONSTRAINT "FK_41
 ALTER TABLE ONLY "public"."movies_has_streaming_platforms" ADD CONSTRAINT "FK_781a23a8098e1639fb2ae32e728" FOREIGN KEY (streaming_platforms_id) REFERENCES streaming_platforms(id) NOT DEFERRABLE;
 
 ALTER TABLE ONLY "public"."trailers" ADD CONSTRAINT "FK_00e72f453c7bab48f3cb0cadf5a" FOREIGN KEY ("movieId") REFERENCES movies(id) ON DELETE CASCADE NOT DEFERRABLE;
-
-ALTER TABLE ONLY "public"."users_favorite_movies" ADD CONSTRAINT "FK_users_favorite_movies_user_id" FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
-ALTER TABLE ONLY "public"."users_favorite_movies" ADD CONSTRAINT "FK_users_favorite_movies_movie_id" FOREIGN KEY (movie_id) REFERENCES movies(id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
 
 
 -- ======================

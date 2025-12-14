@@ -74,6 +74,8 @@ const MovieDetailPage = () => {
                         : data.backdrop_path
                             ? `https://image.tmdb.org/t/p/w780${data.backdrop_path}`
                             : undefined,
+
+                    director: data.director ?? undefined
                 };
 
                 setMovie(mapped);

@@ -65,7 +65,7 @@ const MovieDetailPage = ({ movie }: Props) => {
         React.createElement('h1', null, movie.title),
         // Rating
         React.createElement('div', { className: 'movie-detail-rating' },
-          '⭐ ', movie.rating, '/10'
+          '⭐ ', movie.rating?.toFixed(1)
         ),
         React.createElement('p', null, 'Udgivet: ', movie.released),
         React.createElement('p', null, 'Varighed: ', movie.runtime, ' minutter'),
