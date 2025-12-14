@@ -12,7 +12,7 @@ export interface Movie {
   poster_image?: string;
   background_image?: string;
   director?: string;
-  streaming_platforms?: StreamingPlatform[];
+  streaming_platforms?: any[];
   has_streaming_info?: boolean;
 }
 

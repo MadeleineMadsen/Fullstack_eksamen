@@ -21,6 +21,7 @@ const MovieDetailPage = () => {
 
 
     console.log(' MovieDetailPage render - movie:', movie, 'isLoading:', isLoading, 'error:', error)
+    console.log("MOVIE DETAIL:", movie);
 
     useEffect(() => {
         if (!id) return;
@@ -76,7 +77,9 @@ const MovieDetailPage = () => {
                             ? `https://image.tmdb.org/t/p/w780${data.backdrop_path}`
                             : undefined,
 
-                    director: data.director ?? undefined
+                    director: data.director ?? undefined,
+                    streaming_platforms: data.streaming_platforms ?? [],
+                    has_streaming_info: data.has_streaming_info ?? false,
                 };
 
                 setMovie(mapped);
