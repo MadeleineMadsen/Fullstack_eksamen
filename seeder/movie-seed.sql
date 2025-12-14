@@ -1,18 +1,3 @@
-DROP TABLE IF EXISTS "actors";
-DROP SEQUENCE IF EXISTS actors_id_seq;
-CREATE SEQUENCE actors_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
-
-CREATE TABLE "public"."actors" (
-    "id" integer DEFAULT nextval('actors_id_seq') NOT NULL,
-    "name" character varying(255) NOT NULL,
-    "profile_image" character varying(255),
-    "birth_date" date,
-    "nationality" character varying(255),
-    CONSTRAINT "PK_d8608598c2c4f907a78de2ae461" PRIMARY KEY ("id")
-)
-WITH (oids = false);
-
-
 DROP TABLE IF EXISTS "genres";
 DROP SEQUENCE IF EXISTS genres_id_seq;
 CREATE SEQUENCE genres_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
@@ -51,19 +36,6 @@ CREATE TABLE "public"."movies" (
     CONSTRAINT "movies_metacritic_check" CHECK (metacritic >= 0 AND metacritic <= 100)
 )
 WITH (oids = false);
-
-
-DROP TABLE IF EXISTS "movies_has_actors";
-CREATE TABLE "public"."movies_has_actors" (
-    "movies_id" integer NOT NULL,
-    "actors_id" integer NOT NULL,
-    CONSTRAINT "PK_17d7f9f02e4c653c7e2b637772e" PRIMARY KEY ("movies_id", "actors_id")
-)
-WITH (oids = false);
-
-CREATE INDEX "IDX_3f39529b356a56aaa0cd9af2ec" ON public.movies_has_actors USING btree (movies_id);
-
-CREATE INDEX "IDX_a215c23d127a28f730debd54b2" ON public.movies_has_actors USING btree (actors_id);
 
 
 DROP TABLE IF EXISTS "movies_has_genres";
@@ -161,10 +133,6 @@ INSERT INTO "users" ("id", "email", "username", "password", "role", "created_at"
 (1002,	'm@m.com',	'Madeleine',	'$2b$10$aKoEvrv1yomXr0jFBbJMSuZ7rGuAtnVFl/PoicDKGbrpgacq/ZTOq',	'user',	'2025-12-09 11:01:31.582729',	NULL,	'true'),
 (1003,	'n@n.com',	'Naomi',	'$2b$10$UbAuEOZCCvVIRinEhO1.FeETyWRjBA9J5.tOOXO2e5lkzuayKEYGG',	'user',	'2025-12-09 11:01:31.582729',	NULL,	'true');
 
-
-
-ALTER TABLE ONLY "public"."movies_has_actors" ADD CONSTRAINT "FK_3f39529b356a56aaa0cd9af2ec6" FOREIGN KEY (movies_id) REFERENCES movies(id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
-ALTER TABLE ONLY "public"."movies_has_actors" ADD CONSTRAINT "FK_a215c23d127a28f730debd54b2d" FOREIGN KEY (actors_id) REFERENCES actors(id) NOT DEFERRABLE;
 
 ALTER TABLE ONLY "public"."movies_has_genres" ADD CONSTRAINT "FK_3bbac904fed4f7d8a346eb9cdf1" FOREIGN KEY (genres_id) REFERENCES genres(id) NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."movies_has_genres" ADD CONSTRAINT "FK_45af8c327cec3645e862498894c" FOREIGN KEY (movies_id) REFERENCES movies(id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
