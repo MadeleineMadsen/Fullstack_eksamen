@@ -6,7 +6,6 @@ import {
     OneToMany,
     PrimaryGeneratedColumn,
 } from "typeorm";
-import { Actor } from "./Actor";
 import { Genre } from "./Genre";
 import { StreamingPlatform } from "./StreamingPlatform";
 import { Trailer } from "./Trailer";
@@ -75,19 +74,6 @@ export class Movie {
         inverseJoinColumns: [{ name: "genres_id", referencedColumnName: "id" }],
     })
     genres: Genre[];
-
-
-   // Many-to-many relation til skuespillere.
-   // Join-tabel binder film og actors sammen.
-    // Join-tabel binder film og actors sammen.
-    @ManyToMany(() => Actor, (actor) => actor.movies)
-    @JoinTable({
-        name: "movies_has_actors",
-        joinColumns: [{ name: "movies_id", referencedColumnName: "id" }],
-        inverseJoinColumns: [{ name: "actors_id", referencedColumnName: "id" }],
-    })
-    actors: Actor[];
-
 
      // Many-to-many relation til streamingplatforme.
     // En film kan findes på flere platforme (Netflix, HBO, osv.)

@@ -52,7 +52,6 @@ export const useMovieQuery = () => {
         if (updates.sortOrder !== undefined) movieQueryStore.setSortOrder(updates.sortOrder);
         if (updates.searchText !== undefined) movieQueryStore.setSearchText(updates.searchText);
         if (updates.director !== undefined) movieQueryStore.setDirector(updates.director);
-        if (updates.actor !== undefined) movieQueryStore.setActor(updates.actor);
 
         // Reset pagination ved nye filtre (undtagen page)
         if (Object.keys(updates).some(key => key !== 'page')) {
@@ -119,7 +118,6 @@ export const useMovieQuery = () => {
         setSearchText: movieQueryStore.setSearchText,
         setPage: movieQueryStore.setPage,
         setDirector: movieQueryStore.setDirector,
-        setActor: movieQueryStore.setActor,
         resetQuery: movieQueryStore.reset,
 
         // Movie actions
