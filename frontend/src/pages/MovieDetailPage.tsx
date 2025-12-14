@@ -72,6 +72,11 @@ const MovieDetailPage = () => {
                                 ? data.vote_average
                                 : undefined,
 
+                    metacritic:
+                        typeof data.metacritic === "number"
+                        ? data.metacritic
+                        : undefined,
+                        
                     // Plakat-billede: brug DB først, ellers TMDB
                     poster_image: data.poster_image
                         ? data.poster_image

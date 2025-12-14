@@ -10,6 +10,7 @@ export interface Movie {
   released?: string;
   runtime?: number;
   rating?: number;
+  metacritic?: number;
   poster_image?: string;
   background_image?: string;
   director?: string;
@@ -148,9 +149,27 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
       React.createElement('div', { className: 'movie-detail-info' },
         React.createElement('h1', null, movie.title),
 
-        // Rating vises som stjerner + tal (1 decimal)
-        React.createElement('div', { className: 'movie-detail-rating' },
-          '⭐ ', movie.rating?.toFixed(1)
+        // Rating + metacritic
+        React.createElement('div', { className: 'movie-detail-rating-row' },
+          [
+            // TMDB rating - altid vist
+            React.createElement('span', {
+              key: 'tmdb-rating',
+              className: 'rating-main'
+            },
+              '⭐ ',
+              movie.rating != null ? `${movie.rating.toFixed(1)} / 10` : '—'
+            ),
+
+            // Metacritic - kun hvis den findes
+            movie.metacritic != null &&
+            React.createElement('span', {
+              key: 'metacritic-rating',
+              className: 'rating-metacritic'
+            },
+              'Metacritic: ', `${movie.metacritic} / 100`
+            )
+          ].filter(Boolean) // Fjerner false værdier
         ),
 
          // Basis-info (udgivelse, varighed, instruktør)

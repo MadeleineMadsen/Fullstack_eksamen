@@ -67,7 +67,8 @@ export const getMovies = async (
         return {
             movies: (data.results || []).map((movie: any) => ({
                 ...movie,
-                rating: Number(movie.vote_average?.toFixed(1))
+                rating: Number(movie.vote_average?.toFixed(1)),
+                metacritic: null,
             })),
             total: data.total_results || 0,
             page: data.page || 1,
@@ -156,6 +157,7 @@ export const getMovie = async (
                 // Returnér lokal film + ekstra data fra TMDB
                 return {
                     ...localMovie,
+                    metacritic: localMovie.metacritic ?? null,
                     runtime: movieData.runtime ?? localMovie.runtime,
                     director: director?.name ?? localMovie.director,
                     rating: Number(
@@ -171,6 +173,7 @@ export const getMovie = async (
         // Returnér localMovie med eventuel streaming data fra databasen
         return {
             ...localMovie,
+            metacritic: localMovie.metacritic ?? null,
             has_streaming_info: localMovie.streaming_platforms?.length > 0
         };
     }
@@ -231,6 +234,7 @@ export const getMovie = async (
             released: data.release_date,
             runtime: data.runtime,
             rating: Number(data.vote_average?.toFixed(1)),
+            metacritic: null,
             poster_image: data.poster_path
                 ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
                 : null,
@@ -312,7 +316,7 @@ export const getAdminMoviesFromDb = async (): Promise<Movie[]> => {
     const movies = await movieRepo.find({
         where: { isAdmin: true },
         order: { id: "DESC" },   // Nyeste film først
-        select: ["id", "title", "released"],// Kun disse felter returneres
+        select: ["id", "title", "released", "metacritic"],// Kun disse felter returneres
     });
 
     return movies;
