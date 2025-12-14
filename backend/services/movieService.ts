@@ -119,7 +119,7 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
                         const countryData = providersData.results?.[countryCode] || providersData.results?.US;
 
                         if (countryData?.flatrate) {
-                            streamingPlatforms = countryData.flatrate.map(provider => ({
+                            streamingPlatforms = countryData.flatrate.map((provider: any) => ({
                                 id: provider.provider_id,
                                 name: provider.provider_name,
                                 logo_path: provider.logo_path,
@@ -189,7 +189,7 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
             const countryData = providersData.results?.[countryCode] || providersData.results?.US;
 
             if (countryData?.flatrate) {
-                streamingPlatforms = countryData.flatrate.map(provider => ({
+                streamingPlatforms = countryData.flatrate.map((provider: any) => ({
                     id: provider.provider_id,
                     name: provider.provider_name,
                     logo_path: provider.logo_path,
