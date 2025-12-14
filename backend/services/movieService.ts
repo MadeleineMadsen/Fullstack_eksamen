@@ -57,7 +57,10 @@ export const getMovies = async (
 
         // Transformér TMDB respons til vores interne frontend-format
         return {
-            movies: data.results || [],
+            movies: (data.results || []).map((movie: any) => ({
+                ...movie,
+                rating: Number(movie.vote_average?.toFixed(1))
+            })),
             total: data.total_results || 0,
             page: data.page || 1,
             pageSize: pagination.pageSize,
@@ -84,11 +87,39 @@ export const getMovie = async (id: number): Promise<any> => {
         relations: ["genres", "actors", "streaming_platforms", "trailers"],
     });
 
-    if (localMovie) {
-        console.log(` Found movie ${id} in local database`);
-        return localMovie; // DONE ✔
+if (localMovie) {
+    console.log(` Found movie ${id} in local database`);
+
+    // Hvis runtime eller director mangler → hent fra TMDB
+    if (!localMovie.runtime || !localMovie.director) {
+        const tmdbId = (localMovie as any).tmdb_id ?? id;
+
+        const [movieRes, creditsRes] = await Promise.all([
+            fetch(`${TMDB_BASE_URL}/movie/${tmdbId}?api_key=${TMDB_API_KEY}`),
+            fetch(`${TMDB_BASE_URL}/movie/${tmdbId}/credits?api_key=${TMDB_API_KEY}`)
+        ]);
+
+        if (movieRes.ok && creditsRes.ok) {
+            const movieData = await movieRes.json();
+            const credits = await creditsRes.json();
+
+            const director = credits.crew?.find(
+                (person: any) => person.job === "Director"
+            );
+
+            return {
+                ...localMovie,
+                runtime: movieData.runtime ?? localMovie.runtime,
+                director: director?.name ?? localMovie.director,
+                rating: Number(
+                    (localMovie.rating ?? movieData.vote_average)?.toFixed(1)
+                )
+            };
+        }
     }
 
+    return localMovie;
+}
     // Hvis filmen ikke findes lokalt → hent fra TMDB
     if (!TMDB_API_KEY) {
         console.error("TMDB_API_KEY is missing");
@@ -98,20 +129,28 @@ export const getMovie = async (id: number): Promise<any> => {
     console.log(` Fetching movie ${id} from TMDB...`);
 
     try {
-        const response = await fetch(
-            `${TMDB_BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}`
-        );
+        const [movieRes, creditsRes] = await Promise.all([
+            fetch(`${TMDB_BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}`),
+            fetch(`${TMDB_BASE_URL}/movie/${id}/credits?api_key=${TMDB_API_KEY}`)
+        ]);
 
-        if (!response.ok) {
-            throw new Error(`TMDB API returned ${response.status}`);
+        if (!movieRes.ok || !creditsRes.ok) {
+            throw new Error("TMDB API returned error");
         }
 
-        const data = await response.json();
+        const data = await movieRes.json();
+        const credits = await creditsRes.json();
 
-        // Returnér TMDB-data direkte til frontend
-        return data;
+        const director = credits.crew?.find(
+            (person: any) => person.job === "Director"
+        );
 
-        
+        return {
+            ...data,
+            rating: Number(data.vote_average?.toFixed(1)),
+            director: director?.name ?? null
+        };
+
         // gem film i database så den findes lokalt næste gang
 
     } catch (error) {

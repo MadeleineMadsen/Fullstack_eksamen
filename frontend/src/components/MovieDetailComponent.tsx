@@ -70,18 +70,12 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
         alt: movie.title,
         className: "movie-detail-poster",
       }),
-
-      React.createElement(
-        "div",
-        { className: "movie-detail-info" },
-        React.createElement("h1", null, movie.title),
-
-        React.createElement(
-          "div",
-          { className: "movie-detail-rating" },
-          "⭐ ",
-          movie.rating,
-          "/10"
+      // Tekstinfo om filmen
+      React.createElement('div', { className: 'movie-detail-info' },
+        React.createElement('h1', null, movie.title),
+        // Rating
+        React.createElement('div', { className: 'movie-detail-rating' },
+          '⭐ ', movie.rating?.toFixed(1)
         ),
 
         React.createElement("p", null, "Udgivet: ", movie.released),

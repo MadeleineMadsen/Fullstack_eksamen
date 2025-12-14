@@ -42,7 +42,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         "div",
         { className: "movie-card-content" },
         React.createElement("h3", { className: "movie-card-title" }, movie.title),
-        React.createElement("div", { className: "movie-card-rating" }, "⭐ ", movie.rating),
+        React.createElement("div", { className: "movie-card-rating" }, "⭐ ", movie.rating?.toFixed(1)),
         React.createElement(
           "p",
           { className: "movie-card-year" },
