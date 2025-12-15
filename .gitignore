@@ -16,7 +16,7 @@ logs/
 # Docker
 .docker/
 
-# IntelliJ / DataGrip
+# IntelliJ / DataGrip 
 .idea/
 *.meta
 *.zip
