@@ -63,6 +63,7 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
     return React.createElement('div', { className: 'streaming-section' },
       React.createElement('h2', null, 'Tilgængelig på'),
       React.createElement('div', { className: 'platforms-grid' },
+        
         // Map over hver platform og vis logo/ikon
         movie.streaming_platforms.map(platform =>
           React.createElement('div', {
@@ -118,6 +119,7 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
 
     // --- MAIN CONTENT ---
     React.createElement('div', { className: 'movie-detail-content' },
+      
       // Venstre side: Poster
       React.createElement('img', {
         src: movie.poster_image ?? PLACEHOLDER_POSTER,
