@@ -1,5 +1,4 @@
 import { Request, Router } from "express";
-import { adminMiddleware } from "../middleware/adminMiddleware"; // TILFØJ denne import
 import { authMiddleware } from "../middleware/authMiddleware";
 
 import {
@@ -133,10 +132,17 @@ movieRouter.get("/:id", async (req, res, next) => {
     }
 });
 
-// GET /api/movies/:id/trailer – hent trailer key (midlertidig)
+// GET /api/movies/:id/trailer – hent trailer key 
 movieRouter.get("/:id/trailer", async (req, res, next) => {
     try {
         const id = Number(req.params.id);
+        const movie = await getMovie(id);
+
+        // Ingen TMDB-id → ingen trailer
+        if (!movie?.tmdb_id) {
+            return res.json({ key: null });
+        }
+
         const apiKey = process.env.TMDB_API_KEY;
 
         if (!apiKey) {

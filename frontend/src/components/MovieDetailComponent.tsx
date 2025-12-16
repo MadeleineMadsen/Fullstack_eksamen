@@ -16,6 +16,7 @@ export interface Movie {
   director?: string;
   streaming_platforms?: any[];
   has_streaming_info?: boolean;
+  tmdb_id?: number | null;
 }
 
 // Interface for streaming platforme
@@ -144,7 +145,7 @@ const MovieDetailPage = ({ movie, trailerKey }: Props) => {
               className: 'rating-main'
             },
               '⭐ ',
-              movie.rating != null ? `${movie.rating.toFixed(1)} / 10` : '—'
+              movie.rating != null ? `${movie.rating.toFixed(1)}` : '—'
             ),
 
             // Metacritic - kun hvis den findes

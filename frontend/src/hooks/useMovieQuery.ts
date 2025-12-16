@@ -1,33 +1,77 @@
-import { useCallback } from 'react';
-import { useMovies, useMovie } from './useMovies'; // Dine eksisterende hooks
+import { useCallback, useEffect } from 'react';
 import useMovieQueryStore from '../store/movieQueryStore';
 import useMovieStore from '../store/movieStore';
+import { useMovie, useMovies } from './useMovies'; // Dine eksisterende hooks
 
 export const useMovieQuery = () => {
+    // --------------------------------------------------------------
     // Zustand stores
+    // --------------------------------------------------------------
     const movieQueryStore = useMovieQueryStore();
     const movieStore = useMovieStore();
 
+    // --------------------------------------------------------------
     // React Query hooks
+    // --------------------------------------------------------------
     const moviesQuery = useMovies(movieQueryStore.getQueryParams());
     const movieQuery = useMovie(movieStore.selectedMovie?.id || 0);
 
+    // --------------------------------------------------------------
+    // SIDE EFFECT:
+    // Når moviesQuery data ændres, opdater movieStore
+    // --------------------------------------------------------------
+    useEffect(() => {
+        if (!moviesQuery.data) return;
+
+        // Hvis det er første side, erstat listen
+        if (movieQueryStore.movieQuery.page === 1) {
+            movieStore.setMovies(moviesQuery.data);
+        } else {
+            // Hvis det er pagination, tilføj til listen
+            movieStore.addMovies(moviesQuery.data);
+        }
+
+        // Opdater pagination info
+        movieStore.setCurrentPage(movieQueryStore.movieQuery.page || 1);
+
+        // Stop "fetch more"-loading
+        movieStore.setIsFetchingMore(false);
+    }, [moviesQuery.data]);
+
+    // --------------------------------------------------------------
+    // SIDE EFFECT:
+    // Når movieQuery (single movie) ændres, opdater selectedMovie i store
+    // --------------------------------------------------------------
+    useEffect(() => {
+        if (!movieQuery.data) return;
+
+        if (movieQuery.data !== movieStore.selectedMovie) {
+            movieStore.setSelectedMovie(movieQuery.data);
+        }
+    }, [movieQuery.data]);
+
+    // --------------------------------------------------------------
     // Action: Fetch movies med nuværende query
+    // Denne returnerer params – React Query reagerer automatisk
+    // --------------------------------------------------------------
     const fetchMovies = useCallback(() => {
         const params = movieQueryStore.getQueryParams();
-        // Denne vil automatisk trigge useMovies hook
         return params;
     }, [movieQueryStore]);
 
+    // --------------------------------------------------------------
     // Action: Set og fetch movie details
+    // React Query vil automatisk fetche via useMovie hook
+    // --------------------------------------------------------------
     const fetchMovieDetails = useCallback((movieId: number) => {
         movieStore.setSelectedMovie(
             movieStore.movies.find(m => m.id === movieId) || null
         );
-        // React Query vil automatisk fetche via useMovie hook
     }, [movieStore]);
 
+    // --------------------------------------------------------------
     // Action: Load more (pagination)
+    // --------------------------------------------------------------
     const loadMore = useCallback(() => {
         if (movieStore.currentPage >= movieStore.totalPages) return;
 
@@ -37,59 +81,47 @@ export const useMovieQuery = () => {
         // Simuler loading state for pagination
         movieStore.setIsFetchingMore(true);
 
-        // Næste side vil blive fetchet automatisk via useMovies
-        // når movieQuery ændrer sig
+        // Næste side vil blive fetchet automatisk via useMovies når movieQuery ændrer sig
     }, [movieQueryStore, movieStore]);
 
+    // --------------------------------------------------------------
     // Action: Update query og fetch
-    const updateQueryAndFetch = useCallback((updates: Partial<typeof movieQueryStore.movieQuery>) => {
-        // Update query state
-        if (updates.genre !== undefined) movieQueryStore.setGenre(updates.genre);
-        if (updates.streamingPlatform !== undefined) movieQueryStore.setStreamingPlatform(updates.streamingPlatform);
-        if (updates.year !== undefined) movieQueryStore.setYear(updates.year);
-        if (updates.minRating !== undefined) movieQueryStore.setMinRating(updates.minRating);
-        if (updates.minMetacritic !== undefined) movieQueryStore.setMinMetacritic(updates.minMetacritic);
-        if (updates.sortOrder !== undefined) movieQueryStore.setSortOrder(updates.sortOrder);
-        if (updates.searchText !== undefined) movieQueryStore.setSearchText(updates.searchText);
-        if (updates.director !== undefined) movieQueryStore.setDirector(updates.director);
+    // --------------------------------------------------------------
+    const updateQueryAndFetch = useCallback(
+        (updates: Partial<typeof movieQueryStore.movieQuery>) => {
 
-        // Reset pagination ved nye filtre (undtagen page)
-        if (Object.keys(updates).some(key => key !== 'page')) {
-            movieStore.clearMovies();
-        }
+            // Update query state
+            if (updates.genre !== undefined) movieQueryStore.setGenre(updates.genre);
+            if (updates.streamingPlatform !== undefined) movieQueryStore.setStreamingPlatform(updates.streamingPlatform);
+            if (updates.year !== undefined) movieQueryStore.setYear(updates.year);
+            if (updates.minRating !== undefined) movieQueryStore.setMinRating(updates.minRating);
+            if (updates.minMetacritic !== undefined) movieQueryStore.setMinMetacritic(updates.minMetacritic);
+            if (updates.sortOrder !== undefined) movieQueryStore.setSortOrder(updates.sortOrder);
+            if (updates.searchText !== undefined) movieQueryStore.setSearchText(updates.searchText);
+            if (updates.director !== undefined) movieQueryStore.setDirector(updates.director);
 
-        // Fetch vil ske automatisk via React Query
-    }, [movieQueryStore, movieStore]);
+            // Reset pagination ved nye filtre (undtagen page)
+            if (Object.keys(updates).some(key => key !== 'page')) {
+                movieStore.clearMovies();
+            }
 
-    // Combine loading states
+            // Fetch vil ske automatisk via React Query
+        },
+        [movieQueryStore, movieStore]
+    );
+
+// Loading states
     const isLoading = moviesQuery.isLoading || movieStore.isLoading;
     const isFetchingMore = movieStore.isFetchingMore;
     const isLoadingDetails = movieQuery.isLoading || movieStore.isLoadingDetails;
 
-    // Combine errors
-    const error = moviesQuery.error?.message || movieQuery.error?.message || movieStore.error;
+// Errors
+    const error =
+        moviesQuery.error?.message ||
+        movieQuery.error?.message ||
+        movieStore.error;
 
-    // Når moviesQuery data ændres, opdater movieStore
-    if (moviesQuery.data && !movieStore.isFetchingMore) {
-        // Hvis det er første side, erstat listen
-        if (movieQueryStore.movieQuery.page === 1) {
-            movieStore.setMovies(moviesQuery.data);
-        } else {
-            // Hvis det er pagination, tilføj til listen
-            movieStore.addMovies(moviesQuery.data);
-        }
-
-        // Update pagination info (antag at API returnerer disse)
-        // NOTE: Du skal muligvis justere dette baseret på dit API response
-        movieStore.setCurrentPage(movieQueryStore.movieQuery.page || 1);
-        movieStore.setIsFetchingMore(false);
-    }
-
-    // Når movieQuery data ændres, opdater selectedMovie
-    if (movieQuery.data && movieQuery.data !== movieStore.selectedMovie) {
-        movieStore.setSelectedMovie(movieQuery.data);
-    }
-
+// Public API
     return {
         // State fra stores
         movieQuery: movieQueryStore.movieQuery,
@@ -135,14 +167,4 @@ export const useMovieQuery = () => {
         refetchMovies: moviesQuery.refetch,
         refetchMovieDetails: movieQuery.refetch,
     };
-};
-
-// Optional: Hook til at hente alle query params som URL query string
-export const useMovieQueryParams = () => {
-    const getQueryParams = useMovieQueryStore(state => state.getQueryParams);
-
-    return useCallback(() => {
-        const params = getQueryParams();
-        return new URLSearchParams(params as Record<string, string>).toString();
-    }, [getQueryParams]);
 };

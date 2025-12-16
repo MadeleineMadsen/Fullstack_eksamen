@@ -61,7 +61,9 @@ export class Movie {
     @Column({ type: "boolean", name: "is_admin", default: false })
     isAdmin!: boolean;
     
-
+    // Filmens trailer - kun fra TMDB
+    @Column({ type: "int", nullable: true })
+    tmdb_id: number | null;
 
     // ----------- RELATIONER -----------
 
