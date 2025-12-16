@@ -136,6 +136,7 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
 
                 return {
                     ...localMovie,
+                    tmdb_id: localMovie.tmdb_id ?? null,
                     metacritic: localMovie.metacritic ?? null,
                     runtime: movieData.runtime ?? localMovie.runtime,
                     director: director?.name ?? localMovie.director,
@@ -207,6 +208,7 @@ export const getMovie = async (id: number, countryCode: string = 'DK'): Promise<
         // Returnér komplet filmdata med streaming
         return {
             id: data.id,
+            tmdb_id: data.id,
             title: data.title,
             overview: data.overview,
             released: data.release_date,

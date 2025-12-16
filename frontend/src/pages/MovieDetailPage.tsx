@@ -85,21 +85,32 @@ const MovieDetailPage = () => {
                     director: data.director ?? undefined,
                     streaming_platforms: data.streaming_platforms ?? [],
                     has_streaming_info: data.has_streaming_info ?? false,
+                    tmdb_id: data.tmdb_id ?? null,
                 };
 
                 setMovie(mapped);
 
+                // Trailer afhænger KUN af tmdb_id
+                if (mapped.tmdb_id) {
                 try {
-                    const trailerRes = await fetch(`${API_BASE_URL}/api/movies/${id}/trailer`);
+                    const trailerRes = await fetch(
+                    `${API_BASE_URL}/api/movies/${id}/trailer`
+                    );
+
                     if (trailerRes.ok) {
-                        const trailerData = await trailerRes.json();
-                        setTrailerKey(trailerData?.key ?? null);
+                    const trailerData = await trailerRes.json();
+                    setTrailerKey(trailerData?.key ?? null);
                     } else {
-                        setTrailerKey(null);
+                    setTrailerKey(null);
                     }
                 } catch {
                     setTrailerKey(null);
                 }
+                } else {
+                // Admin-film → ingen trailer
+                setTrailerKey(null);
+                }
+
 
 
             } catch (err: any) {
